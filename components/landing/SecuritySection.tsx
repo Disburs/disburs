@@ -41,6 +41,12 @@ const ITEMS: Item[] = [
   },
 ];
 
+const ROLES: { who: string; sees: string }[] = [
+  { who: "You", sees: "See every payment, amount, and decision in full detail." },
+  { who: "Your contractors", sees: "See only their own pay, never what anyone else earns." },
+  { who: "Auditors & regulators", sees: "Verify every run is correct and compliant, without seeing a single salary." },
+];
+
 export default function SecuritySection() {
   return (
     <section
@@ -141,6 +147,31 @@ export default function SecuritySection() {
           })}
         </div>
 
+        {/* Role-based visibility strip */}
+        <FadeIn>
+          <div
+            className="mt-6 flex flex-col divide-y divide-[#E8E8E8] overflow-hidden md:flex-row md:divide-x md:divide-y-0"
+            style={{ borderRadius: "20px", border: "2px solid #E8E8E8", background: "#FFFFFF" }}
+          >
+            {ROLES.map((r) => (
+              <div key={r.who} className="flex-1" style={{ padding: "28px 32px" }}>
+                <div className="font-medium" style={{ fontSize: "13px", color: "#0A9200" }}>
+                  {r.who}
+                </div>
+                <div style={{ fontSize: "16px", color: "#1A1A1A", marginTop: "8px", lineHeight: 1.5 }}>
+                  {r.sees}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p
+            className="mt-4 text-center"
+            style={{ fontSize: "14px", color: "#8A8F98" }}
+          >
+            The same run, different views. Everyone sees exactly what they should,
+            and nothing more.
+          </p>
+        </FadeIn>
       </div>
     </section>
   );
