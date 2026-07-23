@@ -18,13 +18,6 @@ const CONTRACTOR_BULLETS = [
   "No crypto knowledge needed",
 ];
 
-const COUNTRIES = [
-  "🇳🇬 Nigeria",
-  "🇰🇪 Kenya",
-  "🇬🇭 Ghana",
-  "🇿🇦 South Africa",
-];
-
 function BulletList({ items }: { items: string[] }) {
   return (
     <ul className="flex flex-col gap-3">
@@ -59,7 +52,7 @@ export default function WhoWeServeSection() {
               lineHeight: 1.1,
             }}
           >
-            Built for how African teams actually work.
+            Built for how modern teams actually work.
           </h2>
         </FadeIn>
 
@@ -95,7 +88,7 @@ export default function WhoWeServeSection() {
               </h3>
               <p style={{ fontSize: "16px", color: "#8A8F98", marginTop: "12px" }}>
                 Startup in San Francisco, scale-up in Berlin, growing team in
-                Lagos. If you hire African contractors, Disburs saves you time
+                Lagos. If you hire contractors abroad, Disburs saves you time
                 and money every month.
               </p>
               <div
@@ -186,32 +179,6 @@ export default function WhoWeServeSection() {
             </div>
           </FadeIn>
         </div>
-
-        {/* Countries row */}
-        <FadeIn>
-          <div className="mt-12 flex flex-col items-center gap-4">
-            <span style={{ fontSize: "14px", color: "#8A8F98" }}>
-              Currently serving contractors in
-            </span>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {COUNTRIES.map((c) => (
-                <span
-                  key={c}
-                  style={{
-                    background: "#F5F5F5",
-                    border: "1px solid #E8E8E8",
-                    borderRadius: "20px",
-                    padding: "8px 16px",
-                    fontSize: "14px",
-                    color: "#1A1A1A",
-                  }}
-                >
-                  {c}
-                </span>
-              ))}
-            </div>
-          </div>
-        </FadeIn>
       </div>
     </section>
   );
