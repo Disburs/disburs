@@ -25,7 +25,7 @@ export default function TrustSection() {
   return (
     <section
       className="px-5 md:px-10"
-      style={{ background: "#F5F5F5", paddingTop: "80px", paddingBottom: "80px" }}
+      style={{ background: "#F5F5F5", paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
         <FadeIn>

@@ -73,9 +73,9 @@ export default function AgentDemoSection() {
     >
       <div className="mx-auto max-w-container">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-5 lg:gap-16">
-          {/* Left: label + oversized headline + proof stats */}
+          {/* Left: label + headline + proof stats */}
           <FadeIn className="lg:col-span-2">
-            <div className="lg:sticky lg:top-28">
+            <div>
               <span
                 className="block font-medium uppercase"
                 style={{
@@ -88,13 +88,13 @@ export default function AgentDemoSection() {
               </span>
 
               <h2
-                className="font-semibold"
+                className="font-medium"
                 style={{
                   color: "#1A1A1A",
-                  fontSize: "clamp(34px, 4.6vw, 54px)",
-                  lineHeight: 1.05,
-                  letterSpacing: "-0.02em",
-                  marginTop: "20px",
+                  fontSize: "clamp(28px, 5vw, 40px)",
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.01em",
+                  marginTop: "16px",
                 }}
               >
                 What true autonomy looks like
@@ -104,9 +104,9 @@ export default function AgentDemoSection() {
                 style={{
                   fontSize: "17px",
                   color: "#8A8F98",
-                  marginTop: "20px",
+                  marginTop: "16px",
                   lineHeight: 1.6,
-                  maxWidth: "380px",
+                  maxWidth: "360px",
                 }}
               >
                 One payroll week, start to finish. Everything alongside happens in
@@ -114,8 +114,8 @@ export default function AgentDemoSection() {
               </p>
 
               <div
-                className="grid grid-cols-2 gap-x-8 gap-y-7"
-                style={{ marginTop: "44px", maxWidth: "380px" }}
+                className="grid grid-cols-2 gap-x-8 gap-y-6"
+                style={{ marginTop: "36px", maxWidth: "360px" }}
               >
                 {STATS.map((s) => (
                   <div key={s.label}>
