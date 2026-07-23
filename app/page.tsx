@@ -1,6 +1,7 @@
 import NavBar from "@/components/landing/NavBar";
 import HeroSection from "@/components/landing/HeroSection";
 import BuiltOnStrip from "@/components/landing/BuiltOnStrip";
+import PillarsSection from "@/components/landing/PillarsSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import ChatSection from "@/components/landing/ChatSection";
 import AgentDemoSection from "@/components/landing/AgentDemoSection";
@@ -19,6 +20,7 @@ export default function Home() {
       <NavBar />
       <HeroSection />
       <BuiltOnStrip />
+      <PillarsSection />
       <HowItWorksSection />
       <ChatSection />
       <AgentDemoSection />
