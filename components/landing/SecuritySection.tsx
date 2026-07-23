@@ -3,8 +3,8 @@
 import {
   Wallet,
   ShieldCheck,
-  Lock,
   ScrollText,
+  EyeOff,
   type LucideIcon,
 } from "lucide-react";
 import FadeIn from "./FadeIn";
@@ -14,6 +14,7 @@ type Item = {
   icon: LucideIcon;
   title: string;
   desc: string;
+  soon?: boolean;
 };
 
 const ITEMS: Item[] = [
@@ -28,9 +29,10 @@ const ITEMS: Item[] = [
     desc: "Require one-click approval on every run and set spending limits the agent can never exceed.",
   },
   {
-    icon: Lock,
-    title: "Encrypted data",
-    desc: "Contracts and personal details are encrypted in transit and at rest, accessible only to your team.",
+    icon: EyeOff,
+    title: "Private by default",
+    desc: "Zero-knowledge proofs let the network verify a payroll is valid without revealing what anyone earns.",
+    soon: true,
   },
   {
     icon: ScrollText,
@@ -57,13 +59,16 @@ export default function SecuritySection() {
               lineHeight: 1.1,
             }}
           >
-            Your data and funds, protected.
+            Secure by design.
+            <br />
+            Compliant by default<span style={{ color: "#12FF80" }}>.</span>
           </h2>
           <p
             className="mx-auto mt-4 text-center"
             style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "520px" }}
           >
-            The agent acts on your behalf, never outside the limits you set.
+            Your funds never leave your wallet, your data stays encrypted, and
+            your payroll stays private.
           </p>
         </FadeIn>
 
@@ -95,12 +100,31 @@ export default function SecuritySection() {
                   >
                     <Icon size={20} color="#0A9200" />
                   </span>
-                  <h3
-                    className="font-medium"
-                    style={{ fontSize: "18px", color: "#1A1A1A", marginTop: "16px" }}
+                  <div
+                    className="flex flex-wrap items-center gap-2"
+                    style={{ marginTop: "16px" }}
                   >
-                    {item.title}
-                  </h3>
+                    <h3
+                      className="font-medium"
+                      style={{ fontSize: "18px", color: "#1A1A1A" }}
+                    >
+                      {item.title}
+                    </h3>
+                    {item.soon && (
+                      <span
+                        className="font-medium"
+                        style={{
+                          background: "#DEF6E9",
+                          color: "#0A9200",
+                          borderRadius: "4px",
+                          padding: "2px 8px",
+                          fontSize: "11px",
+                        }}
+                      >
+                        Soon
+                      </span>
+                    )}
+                  </div>
                   <p
                     style={{
                       fontSize: "16px",
@@ -116,6 +140,7 @@ export default function SecuritySection() {
             );
           })}
         </div>
+
       </div>
     </section>
   );

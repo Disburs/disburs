@@ -17,7 +17,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Which countries do you support?",
-    a: "Today: Nigeria, Kenya, Ghana, and South Africa, with more across Africa on the way. Contractors convert USDC to local currency through Stellar anchor partners.",
+    a: "Today: Nigeria, Kenya, Ghana, and South Africa, with more on the way. Contractors convert USDC to local currency through Stellar anchor partners.",
   },
   {
     q: "How fast do payments arrive?",
@@ -30,6 +30,10 @@ const FAQS: { q: string; a: string }[] = [
   {
     q: "What if the exchange rate moves?",
     a: "The agent monitors rates across anchor partners and executes at the best window of the day, so you never pay when it is most expensive.",
+  },
+  {
+    q: "Can anyone see our payroll on the blockchain?",
+    a: "Stellar is a public network, so transaction records are visible. We are bringing zero-knowledge proofs to Disburs so payroll amounts stay private while the network still verifies every payment is valid.",
   },
   {
     q: "Is it secure?",
