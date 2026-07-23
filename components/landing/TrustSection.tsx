@@ -37,7 +37,7 @@ export default function TrustSection() {
               lineHeight: 1.1,
             }}
           >
-            Built different.
+            Why Stellar. And why an agent.
           </h2>
         </FadeIn>
 

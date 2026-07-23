@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FadeIn from "./FadeIn";
@@ -77,14 +76,12 @@ const PLANS: Plan[] = [
   },
 ];
 
-function priceFor(plan: Plan, annual: boolean): string {
+function priceFor(plan: Plan): string {
   if (plan.monthly === null) return "Custom";
-  const value = annual ? Math.round(plan.monthly * 0.8) : plan.monthly;
-  return `$${value}`;
+  return `$${plan.monthly}`;
 }
 
 export default function PricingSection() {
-  const [annual, setAnnual] = useState(false);
 
   return (
     <section
@@ -109,8 +106,9 @@ export default function PricingSection() {
             className="mx-auto mt-4 text-center"
             style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "560px" }}
           >
-            Every plan includes the Disburs AI agent. 0.5% transaction fee on all
-            payroll runs.
+            Planned pricing at launch. Every plan includes the Disburs agent
+            and a 0.5% transaction fee per payroll run. Waitlist companies lock
+            these rates.
           </p>
 
           {/* Savings callout */}
@@ -131,60 +129,6 @@ export default function PricingSection() {
             </span>
           </div>
 
-          {/* Toggle */}
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <span
-              style={{
-                fontSize: "14px",
-                color: !annual ? "#1A1A1A" : "#8A8F98",
-                fontWeight: !annual ? 500 : 400,
-              }}
-            >
-              Monthly
-            </span>
-            <button
-              role="switch"
-              aria-checked={annual}
-              aria-label="Toggle annual billing"
-              onClick={() => setAnnual((a) => !a)}
-              className="relative transition-colors"
-              style={{
-                width: "48px",
-                height: "28px",
-                borderRadius: "9999px",
-                background: annual ? "#12FF80" : "#E8E8E8",
-                padding: "2px",
-              }}
-            >
-              <motion.span
-                className="block rounded-full bg-white"
-                style={{ width: "24px", height: "24px" }}
-                animate={{ x: annual ? 20 : 0 }}
-                transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
-              />
-            </button>
-            <span
-              style={{
-                fontSize: "14px",
-                color: annual ? "#1A1A1A" : "#8A8F98",
-                fontWeight: annual ? 500 : 400,
-              }}
-            >
-              Annual
-            </span>
-            <span
-              className="font-medium"
-              style={{
-                background: "#DEF6E9",
-                color: "#0A9200",
-                borderRadius: "4px",
-                padding: "2px 8px",
-                fontSize: "12px",
-              }}
-            >
-              Save 20%
-            </span>
-          </div>
         </FadeIn>
 
         {/* Cards */}
@@ -234,7 +178,7 @@ export default function PricingSection() {
                   <div className="mt-3 flex items-end gap-1">
                     <AnimatePresence mode="popLayout">
                       <motion.span
-                        key={priceFor(plan, annual)}
+                        key={priceFor(plan)}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
@@ -242,7 +186,7 @@ export default function PricingSection() {
                         className="font-medium"
                         style={{ fontSize: "48px", color: "#1A1A1A", lineHeight: 1 }}
                       >
-                        {priceFor(plan, annual)}
+                        {priceFor(plan)}
                       </motion.span>
                     </AnimatePresence>
                     {plan.monthly !== null && (
@@ -303,8 +247,8 @@ export default function PricingSection() {
             className="mx-auto mt-12 text-center"
             style={{ fontSize: "16px", color: "#8A8F98", maxWidth: "640px" }}
           >
-            All prices in USD. 0.5% transaction fee per payroll run applies on all
-            plans. Annual billing available at 20% discount.
+            All prices in USD and subject to change before launch. A 0.5%
+            transaction fee per payroll run applies on all plans.
           </p>
         </FadeIn>
       </div>
