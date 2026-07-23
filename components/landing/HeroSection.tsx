@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 const TRUST = [
   "Pay in seconds, not days",
   "Near-zero fees via Stellar",
+  "Zero-knowledge privacy",
   "No crypto knowledge needed",
 ];
 
@@ -29,9 +30,9 @@ export default function HeroSection() {
             fontSize: "clamp(32px, 8vw, 86px)",
           }}
         >
-          Your payroll
+          Payroll that
           <br />
-          runs itself<span style={{ color: "#12FF80" }}>.</span>
+          thinks<span style={{ color: "#12FF80" }}>.</span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -47,9 +48,10 @@ export default function HeroSection() {
             lineHeight: 1.6,
           }}
         >
-          An AI agent that reads your contracts, calculates what everyone&rsquo;s
-          owed, and pays your African team in seconds, at the best rate, on
-          Stellar.
+          Every payroll tool automates the clicks. Disburs is an AI agent that
+          reads your contracts, settles disputes, times the FX window, and pays
+          your team on Stellar. Last cycle it made 11 decisions. You made
+          none.
         </motion.p>
 
         {/* CTA row */}
