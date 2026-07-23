@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import {
   FileText,
   TrendingUp,
@@ -13,21 +15,19 @@ import {
 import FadeIn from "./FadeIn";
 
 /* ---------- Autonomous card visual: an agent-action selector ---------- */
-const ACTIONS: { icon: LucideIcon; title: string; sub: string; active?: boolean }[] = [
+const ACTIONS: { icon: LucideIcon; title: string; sub: string }[] = [
   { icon: FileText, title: "Read 14 contracts", sub: "Timesheets + terms" },
-  { icon: TrendingUp, title: "Locked FX at 1,618", sub: "Best rate in 6 days", active: true },
+  { icon: TrendingUp, title: "Locked FX at 1,618", sub: "Best rate in 6 days" },
   { icon: MessageCircle, title: "Resolved a dispute", sub: "Paid +$360 automatically" },
 ];
 
-function AgentMock() {
+const ROW_H = 56;
+const PAD = 8;
+
+function AgentMock({ active, reduced }: { active: number; reduced: boolean }) {
+  const shown = reduced ? 1 : active;
   return (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.55)",
-        borderRadius: "16px",
-        padding: "16px",
-      }}
-    >
+    <div style={{ background: "rgba(255,255,255,0.55)", borderRadius: "16px", padding: "16px" }}>
       <div
         className="text-center font-medium"
         style={{ fontSize: "13px", color: "#5C6068", marginBottom: "12px" }}
@@ -35,24 +35,28 @@ function AgentMock() {
         Agent this week
       </div>
       <div
+        className="relative"
         style={{
           background: "#FFFFFF",
           borderRadius: "12px",
-          padding: "8px",
+          padding: `${PAD}px`,
           boxShadow: "rgba(16,24,40,0.06) 0px 4px 14px",
         }}
       >
-        {ACTIONS.map((a) => {
+        {ACTIONS.map((a, i) => {
           const Icon = a.icon;
+          const on = shown === i;
           return (
             <div
               key={a.title}
-              className="relative flex items-center gap-3"
+              className="flex items-center gap-3"
               style={{
-                padding: "11px 12px",
+                height: `${ROW_H}px`,
+                padding: "0 12px",
                 borderRadius: "10px",
-                background: a.active ? "#F4F6FB" : "transparent",
-                border: a.active ? "1px solid #E4E8F2" : "1px solid transparent",
+                background: on ? "#F4F6FB" : "transparent",
+                border: on ? "1px solid #E4E8F2" : "1px solid transparent",
+                transition: "background-color 250ms ease, border-color 250ms ease",
               }}
             >
               <span
@@ -68,21 +72,30 @@ function AgentMock() {
                 <div style={{ fontSize: "12px", color: "#8A8F98" }}>{a.sub}</div>
               </div>
               <ChevronRight size={16} color="#C2C6CC" />
-              {a.active && (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="#1A1A1A"
-                  style={{ position: "absolute", right: "26px", bottom: "-6px" }}
-                  aria-hidden
-                >
-                  <path d="M5 2.5l14.5 8.2-6.3 1.3L9.7 21 5 2.5z" />
-                </svg>
-              )}
             </div>
           );
         })}
+
+        {!reduced && (
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute"
+            style={{ top: 0, right: 34 }}
+            initial={false}
+            animate={{ y: PAD + active * ROW_H + 22 }}
+            transition={{ type: "spring", stiffness: 300, damping: 26 }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="#1A1A1A"
+              style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.25))" }}
+            >
+              <path d="M5 2.5l14.5 8.2-6.3 1.3L9.7 21 5 2.5z" />
+            </svg>
+          </motion.div>
+        )}
       </div>
     </div>
   );
@@ -204,8 +217,29 @@ function PillarCard({
 }
 
 export default function PillarsSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(m.matches);
+    update();
+    m.addEventListener("change", update);
+    return () => m.removeEventListener("change", update);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start 0.8", "end 0.2"],
+  });
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setActive(v < 0.34 ? 0 : v < 0.67 ? 1 : 2);
+  });
+
   return (
     <section
+      ref={sectionRef}
       className="bg-white px-5 md:px-10"
       style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
@@ -240,7 +274,7 @@ export default function PillarsSection() {
               linkText="See how it works"
               linkHref="#how-it-works"
             >
-              <AgentMock />
+              <AgentMock active={active} reduced={reduced} />
             </PillarCard>
           </FadeIn>
           <FadeIn delay={0.08}>
