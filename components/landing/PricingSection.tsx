@@ -1,9 +1,7 @@
 "use client";
 
-import { Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Check } from "lucide-react";
 import FadeIn from "./FadeIn";
-import SectionLabel from "./SectionLabel";
 
 type Plan = {
   name: string;
@@ -11,7 +9,6 @@ type Plan = {
   tagline: string;
   features: string[];
   cta: string;
-  ctaPrimary: boolean;
   featured?: boolean;
 };
 
@@ -28,7 +25,6 @@ const PLANS: Plan[] = [
       "Basic reporting",
     ],
     cta: "Join the Waitlist",
-    ctaPrimary: true,
   },
   {
     name: "Growth",
@@ -43,7 +39,6 @@ const PLANS: Plan[] = [
       "Priority support",
     ],
     cta: "Join the Waitlist",
-    ctaPrimary: true,
     featured: true,
   },
   {
@@ -58,7 +53,6 @@ const PLANS: Plan[] = [
       "Dedicated support",
     ],
     cta: "Join the Waitlist",
-    ctaPrimary: true,
   },
   {
     name: "Enterprise",
@@ -72,17 +66,12 @@ const PLANS: Plan[] = [
       "Compliance consulting",
     ],
     cta: "Contact Us",
-    ctaPrimary: false,
   },
 ];
 
-function priceFor(plan: Plan): string {
-  if (plan.monthly === null) return "Custom";
-  return `$${plan.monthly}`;
-}
+const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
 export default function PricingSection() {
-
   return (
     <section
       id="pricing"
@@ -90,163 +79,145 @@ export default function PricingSection() {
       style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
+        {/* Header (left-aligned, editorial) */}
         <FadeIn>
-          <SectionLabel>Pricing</SectionLabel>
-          <h2
-            className="mx-auto mt-4 text-center font-medium"
-            style={{
-              color: "#1A1A1A",
-              fontSize: "clamp(28px, 5vw, 40px)",
-              lineHeight: 1.1,
-            }}
-          >
-            Simple, transparent pricing.
-          </h2>
-          <p
-            className="mx-auto mt-4 text-center"
-            style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "560px" }}
-          >
-            Planned pricing at launch. Every plan includes the Disburs agent
-            and a 0.5% transaction fee per payroll run. Waitlist companies lock
-            these rates.
-          </p>
-
-          {/* Savings callout */}
-          <div
-            className="mx-auto mt-6 flex w-fit items-center gap-2 text-center"
-            style={{
-              background: "#DEF6E9",
-              borderRadius: "20px",
-              padding: "8px 16px",
-            }}
-          >
+          <div style={{ maxWidth: "760px" }}>
             <span
-              className="font-medium"
-              style={{ fontSize: "14px", color: "#0A9200", lineHeight: 1.4 }}
+              className="mb-5 block uppercase"
+              style={{ fontFamily: MONO, fontSize: "12px", letterSpacing: "0.18em", color: "#8A8F98" }}
             >
-              Just 0.5% per run vs. the 2–4% Payoneer &amp; Wise take. Up to 8×
-              cheaper.
+              Pricing
             </span>
+            <h2
+              className="font-semibold"
+              style={{
+                fontSize: "clamp(2.25rem, 6vw, 4.25rem)",
+                lineHeight: 1.02,
+                letterSpacing: "-0.03em",
+                color: "#1A1A1A",
+              }}
+            >
+              Simple, transparent
+              <br />
+              <span
+                style={{
+                  color: "transparent",
+                  WebkitTextStroke: "1.5px #1A1A1A",
+                }}
+              >
+                pricing
+              </span>
+              <span style={{ color: "#12FF80" }}>.</span>
+            </h2>
+            <p style={{ fontSize: "18px", color: "#8A8F98", marginTop: "20px", maxWidth: "560px", lineHeight: 1.6 }}>
+              Planned pricing at launch. Every plan includes the Disburs agent
+              and a 0.5% fee per payroll run, versus the 2–4% Payoneer and Wise
+              take. Waitlist companies lock these rates.
+            </p>
           </div>
-
         </FadeIn>
 
-        {/* Cards */}
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {PLANS.map((plan, i) => (
-            <FadeIn key={plan.name} delay={(i % 4) * 0.05}>
-              <div className="relative h-full">
+        {/* Connected hairline-grid cards */}
+        <FadeIn>
+          <div
+            className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            style={{ gap: "1px", background: "#E8E8E8", border: "1px solid #E8E8E8" }}
+          >
+            {PLANS.map((plan, i) => (
+              <div
+                key={plan.name}
+                className="relative flex flex-col"
+                style={{
+                  background: "#FFFFFF",
+                  padding: "40px 32px",
+                  border: plan.featured ? "2px solid #12FF80" : "2px solid transparent",
+                  zIndex: plan.featured ? 1 : 0,
+                }}
+              >
                 {plan.featured && (
                   <span
-                    className="absolute left-1/2 font-medium"
+                    className="absolute uppercase"
                     style={{
-                      top: "-12px",
-                      transform: "translateX(-50%)",
+                      top: "-11px",
+                      left: "32px",
+                      fontFamily: MONO,
+                      fontSize: "11px",
+                      letterSpacing: "0.14em",
                       background: "#12FF80",
-                      color: "#1A1A1A",
-                      borderRadius: "4px",
-                      padding: "4px 12px",
-                      fontSize: "12px",
-                      whiteSpace: "nowrap",
+                      color: "#0A2E12",
+                      padding: "4px 10px",
                     }}
                   >
                     Most Popular
                   </span>
                 )}
-                <div
-                  className="flex h-full flex-col"
+
+                {/* Plan header */}
+                <span style={{ fontFamily: MONO, fontSize: "12px", color: "#B4B9C2" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-semibold" style={{ fontSize: "28px", color: "#1A1A1A", marginTop: "8px", letterSpacing: "-0.02em" }}>
+                  {plan.name}
+                </h3>
+                <p style={{ fontSize: "13.5px", color: "#8A8F98", marginTop: "8px", lineHeight: 1.5 }}>
+                  {plan.tagline}
+                </p>
+
+                {/* Price */}
+                <div style={{ margin: "28px 0", paddingBottom: "28px", borderBottom: "1px solid #E8E8E8" }}>
+                  {plan.monthly !== null ? (
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-semibold" style={{ fontSize: "48px", color: "#1A1A1A", lineHeight: 1, letterSpacing: "-0.03em" }}>
+                        ${plan.monthly}
+                      </span>
+                      <span style={{ fontSize: "15px", color: "#8A8F98" }}>/month</span>
+                    </div>
+                  ) : (
+                    <span className="font-semibold" style={{ fontSize: "40px", color: "#1A1A1A", letterSpacing: "-0.02em" }}>
+                      Custom
+                    </span>
+                  )}
+                </div>
+
+                {/* Features */}
+                <ul className="flex flex-1 flex-col gap-3.5">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5">
+                      <Check size={15} color="#12FF80" strokeWidth={3} className="mt-0.5 shrink-0" />
+                      <span style={{ fontSize: "14px", color: "#5C6068", lineHeight: 1.45 }}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <a
+                  href="#waitlist"
+                  className="group mt-9 flex w-full items-center justify-center gap-2 font-medium transition-all"
                   style={{
-                    borderRadius: "20px",
-                    border: plan.featured
-                      ? "2px solid #12FF80"
-                      : "2px solid #E8E8E8",
-                    background: "#FFFFFF",
-                    padding: "40px",
+                    height: "50px",
+                    fontSize: "14.5px",
+                    background: plan.featured ? "#12FF80" : "transparent",
+                    color: "#1A1A1A",
+                    border: plan.featured ? "1px solid #12FF80" : "1px solid #D7DADF",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!plan.featured) e.currentTarget.style.borderColor = "#1A1A1A";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!plan.featured) e.currentTarget.style.borderColor = "#D7DADF";
                   }}
                 >
-                  <span
-                    className="font-medium uppercase"
-                    style={{
-                      fontSize: "14px",
-                      color: "#8A8F98",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    {plan.name}
-                  </span>
-
-                  <div className="mt-3 flex items-end gap-1">
-                    <AnimatePresence mode="popLayout">
-                      <motion.span
-                        key={priceFor(plan)}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.2 }}
-                        className="font-medium"
-                        style={{ fontSize: "48px", color: "#1A1A1A", lineHeight: 1 }}
-                      >
-                        {priceFor(plan)}
-                      </motion.span>
-                    </AnimatePresence>
-                    {plan.monthly !== null && (
-                      <span style={{ fontSize: "16px", color: "#8A8F98" }}>
-                        /month
-                      </span>
-                    )}
-                  </div>
-
-                  <p style={{ fontSize: "14px", color: "#8A8F98", marginTop: "12px" }}>
-                    {plan.tagline}
-                  </p>
-
-                  <div
-                    style={{ borderTop: "1px solid #E8E8E8", margin: "24px 0" }}
-                  />
-
-                  <ul className="flex flex-1 flex-col gap-3">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2">
-                        <span className="mt-1 shrink-0">
-                          <Check size={16} color="#12FF80" strokeWidth={3} />
-                        </span>
-                        <span style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                          {f}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <a
-                    href="#waitlist"
-                    className="mt-8 flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
-                    style={{
-                      height: "48px",
-                      padding: "12px 24px",
-                      borderRadius: "4px",
-                      fontSize: "16px",
-                      background: plan.ctaPrimary ? "#12FF80" : "transparent",
-                      color: "#1A1A1A",
-                      border: plan.ctaPrimary ? "none" : "1px solid #E8E8E8",
-                      boxShadow: plan.ctaPrimary
-                        ? "rgba(0,0,0,0.06) 0px 4px 4px 0px"
-                        : "none",
-                    }}
-                  >
-                    {plan.cta}
-                  </a>
-                </div>
+                  {plan.cta}
+                  <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+                </a>
               </div>
-            </FadeIn>
-          ))}
-        </div>
+            ))}
+          </div>
+        </FadeIn>
 
-        {/* Fine print */}
+        {/* Bottom note */}
         <FadeIn>
-          <p
-            className="mx-auto mt-12 text-center"
-            style={{ fontSize: "16px", color: "#8A8F98", maxWidth: "640px" }}
-          >
+          <p style={{ fontSize: "14px", color: "#8A8F98", marginTop: "28px" }}>
             All prices in USD and subject to change before launch. A 0.5%
             transaction fee per payroll run applies on all plans.
           </p>

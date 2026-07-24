@@ -3,7 +3,7 @@ import HeroSection from "@/components/landing/HeroSection";
 import BuiltOnStrip from "@/components/landing/BuiltOnStrip";
 import PillarsSection from "@/components/landing/PillarsSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import ChatSection from "@/components/landing/ChatSection";
+import CalloutSection from "@/components/landing/CalloutSection";
 import AgentDemoSection from "@/components/landing/AgentDemoSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import WhoWeServeSection from "@/components/landing/WhoWeServeSection";
@@ -16,15 +16,15 @@ import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <main className="overflow-x-hidden">
+    <main className="overflow-x-clip">
       <NavBar />
       <HeroSection />
       <BuiltOnStrip />
       <PillarsSection />
       <HowItWorksSection />
-      <ChatSection />
       <AgentDemoSection />
       <FeaturesSection />
+      <CalloutSection />
       <SecuritySection />
       <FxSection />
       <WhoWeServeSection />
