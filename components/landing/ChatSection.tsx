@@ -14,7 +14,7 @@ export default function ChatSection() {
   return (
     <section
       className="bg-white px-5 md:px-10"
-      style={{ paddingTop: "80px", paddingBottom: "80px" }}
+      style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
         <FadeIn>

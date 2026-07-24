@@ -3,8 +3,8 @@
 import {
   Wallet,
   ShieldCheck,
-  Lock,
   ScrollText,
+  EyeOff,
   type LucideIcon,
 } from "lucide-react";
 import FadeIn from "./FadeIn";
@@ -14,6 +14,7 @@ type Item = {
   icon: LucideIcon;
   title: string;
   desc: string;
+  soon?: boolean;
 };
 
 const ITEMS: Item[] = [
@@ -28,9 +29,10 @@ const ITEMS: Item[] = [
     desc: "Require one-click approval on every run and set spending limits the agent can never exceed.",
   },
   {
-    icon: Lock,
-    title: "Encrypted data",
-    desc: "Contracts and personal details are encrypted in transit and at rest, accessible only to your team.",
+    icon: EyeOff,
+    title: "Private by default",
+    desc: "Zero-knowledge proofs let the network verify a payroll is valid without revealing what anyone earns.",
+    soon: true,
   },
   {
     icon: ScrollText,
@@ -39,11 +41,18 @@ const ITEMS: Item[] = [
   },
 ];
 
+const ROLES: { who: string; sees: string }[] = [
+  { who: "You", sees: "See every payment, amount, and decision in full detail." },
+  { who: "Your contractors", sees: "See only their own pay, never what anyone else earns." },
+  { who: "Auditors & regulators", sees: "Verify every run is correct and compliant, without seeing a single salary." },
+];
+
 export default function SecuritySection() {
   return (
     <section
+      id="security"
       className="bg-white px-5 md:px-10"
-      style={{ paddingTop: "80px", paddingBottom: "80px" }}
+      style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
         <FadeIn>
@@ -57,13 +66,16 @@ export default function SecuritySection() {
               lineHeight: 1.1,
             }}
           >
-            Your data and funds, protected.
+            Secure by design.
+            <br />
+            Compliant by default<span style={{ color: "#12FF80" }}>.</span>
           </h2>
           <p
             className="mx-auto mt-4 text-center"
             style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "520px" }}
           >
-            The agent acts on your behalf, never outside the limits you set.
+            Your funds never leave your wallet, your data stays encrypted, and
+            your payroll stays private.
           </p>
         </FadeIn>
 
@@ -95,12 +107,31 @@ export default function SecuritySection() {
                   >
                     <Icon size={20} color="#0A9200" />
                   </span>
-                  <h3
-                    className="font-medium"
-                    style={{ fontSize: "18px", color: "#1A1A1A", marginTop: "16px" }}
+                  <div
+                    className="flex flex-wrap items-center gap-2"
+                    style={{ marginTop: "16px" }}
                   >
-                    {item.title}
-                  </h3>
+                    <h3
+                      className="font-medium"
+                      style={{ fontSize: "18px", color: "#1A1A1A" }}
+                    >
+                      {item.title}
+                    </h3>
+                    {item.soon && (
+                      <span
+                        className="font-medium"
+                        style={{
+                          background: "#DEF6E9",
+                          color: "#0A9200",
+                          borderRadius: "4px",
+                          padding: "2px 8px",
+                          fontSize: "11px",
+                        }}
+                      >
+                        Soon
+                      </span>
+                    )}
+                  </div>
                   <p
                     style={{
                       fontSize: "16px",
@@ -116,6 +147,32 @@ export default function SecuritySection() {
             );
           })}
         </div>
+
+        {/* Role-based visibility strip */}
+        <FadeIn>
+          <div
+            className="mt-6 flex flex-col divide-y divide-[#E8E8E8] overflow-hidden md:flex-row md:divide-x md:divide-y-0"
+            style={{ borderRadius: "20px", border: "2px solid #E8E8E8", background: "#FFFFFF" }}
+          >
+            {ROLES.map((r) => (
+              <div key={r.who} className="flex-1" style={{ padding: "28px 32px" }}>
+                <div className="font-medium" style={{ fontSize: "13px", color: "#0A9200" }}>
+                  {r.who}
+                </div>
+                <div style={{ fontSize: "16px", color: "#1A1A1A", marginTop: "8px", lineHeight: 1.5 }}>
+                  {r.sees}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p
+            className="mt-4 text-center"
+            style={{ fontSize: "14px", color: "#8A8F98" }}
+          >
+            The same run, different views. Everyone sees exactly what they should,
+            and nothing more.
+          </p>
+        </FadeIn>
       </div>
     </section>
   );

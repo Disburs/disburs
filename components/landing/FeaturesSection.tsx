@@ -7,7 +7,6 @@ import {
   Bell,
   Zap,
   Globe,
-  MessageSquare,
   Shield,
   type LucideIcon,
 } from "lucide-react";
@@ -20,6 +19,7 @@ type Feature = {
   desc: string;
   badge?: string;
   big?: boolean;
+  mdWide?: boolean;
 };
 
 // Order tuned for a bento rhythm: big tiles land on alternating sides
@@ -43,12 +43,6 @@ const FEATURES: Feature[] = [
     desc: "The agent checks your USDC balance before payroll day, not on it. You get a top-up alert 3 days early, every time.",
   },
   {
-    icon: MessageSquare,
-    title: "Natural language interface",
-    desc: "Type: 'Pay the design team October salary plus a bonus for Chidi.' The agent does the rest. No forms, no spreadsheets.",
-    big: true,
-  },
-  {
     icon: MessageCircle,
     title: "Autonomous dispute resolution",
     desc: "Contractor messages about a wrong payment? The agent reads it, checks the evidence, and resolves it, often without you seeing it.",
@@ -70,7 +64,7 @@ const FEATURES: Feature[] = [
     icon: Globe,
     title: "Multi-country offramps",
     desc: "Nigeria, Kenya, Ghana, South Africa. Contractors convert USDC to local currency instantly via Stellar anchor partners.",
-    big: true,
+    mdWide: true,
   },
 ];
 
@@ -96,7 +90,7 @@ export default function FeaturesSection() {
     <section
       id="features"
       className="bg-white px-5 md:px-10"
-      style={{ paddingTop: "80px", paddingBottom: "80px" }}
+      style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
         <FadeIn>
@@ -121,7 +115,13 @@ export default function FeaturesSection() {
               <FadeIn
                 key={f.title}
                 delay={(i % 3) * 0.05}
-                className={f.big ? "h-full lg:col-span-2" : "h-full"}
+                className={
+                  f.big
+                    ? "h-full lg:col-span-2"
+                    : f.mdWide
+                    ? "h-full md:col-span-2 lg:col-span-1"
+                    : "h-full"
+                }
               >
                 <div
                   className={`relative h-full overflow-hidden ${

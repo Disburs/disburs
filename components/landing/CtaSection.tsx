@@ -53,9 +53,9 @@ export default function CtaSection() {
               lineHeight: 1.1,
             }}
           >
-            Your next payroll
+            The next payroll
             <br />
-            should run itself<span style={{ color: "#12FF80" }}>.</span>
+            won&rsquo;t need you<span style={{ color: "#12FF80" }}>.</span>
           </h2>
           <p
             className="mx-auto mt-6"
@@ -141,7 +141,8 @@ export default function CtaSection() {
               className="mt-6"
               style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)" }}
             >
-              No credit card required · Cancel anytime · Built on Stellar
+              No credit card required · Non-custodial, we never hold your funds ·
+              Built on Stellar
             </p>
           </div>
         </FadeIn>

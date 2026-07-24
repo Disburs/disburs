@@ -38,7 +38,7 @@ export default function FxSection() {
   return (
     <section
       className="px-5 md:px-10"
-      style={{ background: "#F5F5F5", paddingTop: "80px", paddingBottom: "80px" }}
+      style={{ background: "#F5F5F5", paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
         <FadeIn>
@@ -58,7 +58,7 @@ export default function FxSection() {
             className="mx-auto mt-4 text-center"
             style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "520px" }}
           >
-            Pay across Africa in seconds, for a fraction of what banks and money
+            Pay your contractors in seconds, for a fraction of what banks and money
             transfer services charge.
           </p>
         </FadeIn>

@@ -29,7 +29,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 16);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -42,14 +42,30 @@ export default function NavBar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-200"
+      className="fixed left-0 right-0 top-0 z-50"
       style={{
-        height: "81px",
-        background: scrolled ? "#FFFFFF" : "transparent",
-        borderBottom: scrolled ? "1px solid #E8E8E8" : "1px solid transparent",
+        padding: scrolled ? "12px 20px 0" : "0px",
+        transition: "padding 400ms cubic-bezier(0.22, 1, 0.36, 1)",
       }}
     >
-      <div className="mx-auto flex h-full max-w-container items-center justify-between px-5 md:px-10">
+      <div
+        className="mx-auto flex max-w-container items-center justify-between px-5 md:px-10"
+        style={{
+          height: scrolled ? "62px" : "81px",
+          background: scrolled ? "rgba(255,255,255,0.82)" : "transparent",
+          backdropFilter: scrolled ? "saturate(180%) blur(16px)" : "none",
+          WebkitBackdropFilter: scrolled ? "saturate(180%) blur(16px)" : "none",
+          borderRadius: scrolled ? "26px" : "0px",
+          border: scrolled
+            ? "1px solid rgba(16,24,40,0.07)"
+            : "1px solid transparent",
+          boxShadow: scrolled
+            ? "0 14px 34px -16px rgba(16,24,40,0.28)"
+            : "0 0 0 0 rgba(0,0,0,0)",
+          transition:
+            "height 400ms cubic-bezier(0.22,1,0.36,1), background 300ms ease, border-radius 400ms cubic-bezier(0.22,1,0.36,1), box-shadow 400ms ease, border-color 400ms ease",
+        }}
+      >
         {/* Left: wordmark */}
         <a href="#top" aria-label="Disburs home">
           <Wordmark />
