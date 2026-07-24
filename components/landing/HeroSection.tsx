@@ -1,321 +1,214 @@
 "use client";
 
-import { Check, Sparkles, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import AnimatedSphere from "./AnimatedSphere";
 
-const TRUST = [
-  "Pay in seconds, not days",
-  "Near-zero fees via Stellar",
-  "Zero-knowledge privacy",
-  "No crypto knowledge needed",
+// Verbs that describe what the Disburs agent actually does
+const WORDS = ["thinks", "reasons", "adapts", "resolves"];
+
+const STATS = [
+  { value: "~4 sec", label: "settles on Stellar" },
+  { value: "0.5%", label: "flat fee per run" },
+  { value: "< $0.01", label: "network fee per payment" },
+  { value: "4", label: "countries served" },
+  { value: "24/7", label: "agent on watch" },
 ];
 
-export default function HeroSection() {
+function GridLines() {
   return (
-    <section
-      id="top"
-      className="bg-white px-5 md:px-10"
-      style={{ paddingTop: "176px", paddingBottom: "80px" }}
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      style={{ opacity: 0.4 }}
     >
-      <div className="mx-auto flex max-w-container flex-col items-center text-center">
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
-          className="font-medium"
-          style={{
-            color: "#1A1A1A",
-            lineHeight: 1.0,
-            fontSize: "clamp(32px, 8vw, 86px)",
-          }}
-        >
-          Payroll that
-          <br />
-          thinks<span style={{ color: "#12FF80" }}>.</span>
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
-          className="mt-6 font-normal"
-          style={{
-            fontSize: "20px",
-            color: "#8A8F98",
-            maxWidth: "640px",
-            lineHeight: 1.6,
-          }}
-        >
-          Every payroll tool automates the clicks. Disburs is an AI agent that
-          reads your contracts, settles disputes, times the FX window, and pays
-          your team on Stellar. Last cycle it made 11 decisions. You made
-          none.
-        </motion.p>
-
-        {/* CTA row */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.15 }}
-          className="mt-8 flex flex-col items-center gap-3 sm:flex-row"
-        >
-          <a
-            href="#waitlist"
-            className="flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
-            style={{
-              height: "48px",
-              padding: "12px 24px",
-              borderRadius: "4px",
-              background: "#12FF80",
-              color: "#1A1A1A",
-              fontSize: "16px",
-              boxShadow: "rgba(0,0,0,0.06) 0px 4px 4px 0px",
-            }}
-          >
-            Join the Waitlist →
-          </a>
-          <a
-            href="#how-it-works"
-            className="flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
-            style={{
-              height: "48px",
-              padding: "12px 24px",
-              borderRadius: "4px",
-              background: "transparent",
-              color: "#1A1A1A",
-              border: "1px solid #E8E8E8",
-              fontSize: "16px",
-            }}
-          >
-            See How It Works
-          </a>
-        </motion.div>
-
-        {/* Trust indicators */}
-        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
-          {TRUST.map((t) => (
-            <div key={t} className="flex items-center gap-2">
-              <Check size={16} color="#12FF80" strokeWidth={3} />
-              <span style={{ fontSize: "14px", color: "#8A8F98" }}>{t}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Hero visual: payroll dashboard mockup with mint glow */}
-        <div className="relative mt-16 flex w-full justify-center">
-          <div
-            aria-hidden
-            className="mint-glow absolute"
-            style={{
-              top: "-80px",
-              width: "min(900px, 120%)",
-              height: "520px",
-              borderRadius: "9999px",
-              zIndex: 0,
-            }}
-          />
-          <div className="relative w-full" style={{ zIndex: 1 }}>
-            <DashboardMockup />
-          </div>
-        </div>
-      </div>
-    </section>
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div
+          key={`h-${i}`}
+          className="absolute left-0 right-0"
+          style={{ top: `${12.5 * (i + 1)}%`, height: "1px", background: "#E8E8E8" }}
+        />
+      ))}
+      {Array.from({ length: 11 }).map((_, i) => (
+        <div
+          key={`v-${i}`}
+          className="absolute top-0 bottom-0"
+          style={{ left: `${8.33 * (i + 1)}%`, width: "1px", background: "#E8E8E8" }}
+        />
+      ))}
+    </div>
   );
 }
 
-type Row = {
-  initials: string;
-  name: string;
-  flag: string;
-  role: string;
-  amount: string;
-};
+export default function HeroSection() {
+  const [visible, setVisible] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
 
-const ROWS: Row[] = [
-  { initials: "CO", name: "Chidi O.", flag: "🇳🇬", role: "Product Designer", amount: "$900" },
-  { initials: "AN", name: "Amara N.", flag: "🇰🇪", role: "Frontend Engineer", amount: "$1,200" },
-  { initials: "BA", name: "Bola A.", flag: "🇬🇭", role: "Project Manager", amount: "$760" },
-];
+  useEffect(() => setVisible(true), []);
 
-const STATS = [
-  { label: "Total due", value: "$12,400" },
-  { label: "USDC balance", value: "$12,600" },
-  { label: "Best FX rate", value: "1,618", sub: "NGN/USDC" },
-];
+  useEffect(() => {
+    const id = setInterval(
+      () => setWordIndex((p) => (p + 1) % WORDS.length),
+      2600
+    );
+    return () => clearInterval(id);
+  }, []);
 
-function DashboardMockup() {
+  const word = WORDS[wordIndex];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-      className="mx-auto w-full bg-white text-left"
-      style={{
-        maxWidth: "880px",
-        borderRadius: "20px",
-        border: "2px solid #E8E8E8",
-        padding: "24px",
-      }}
+    <section
+      id="top"
+      className="relative flex flex-col justify-center overflow-hidden bg-white"
+      style={{ minHeight: "100vh" }}
     >
-      {/* Top bar */}
+      {/* Animated ASCII sphere */}
       <div
-        className="flex flex-col gap-3 pb-5 sm:flex-row sm:items-start sm:justify-between"
-        style={{ borderBottom: "1px solid #E8E8E8" }}
+        aria-hidden
+        className="pointer-events-none absolute right-[-6%] top-1/2 hidden -translate-y-1/2 md:block"
+        style={{ width: "min(46vw, 760px)", height: "min(46vw, 760px)", opacity: 0.42 }}
       >
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium" style={{ fontSize: "18px", color: "#1A1A1A" }}>
-              October Payroll
-            </span>
-            <span
-              className="font-medium"
-              style={{
-                background: "#DEF6E9",
-                color: "#0A9200",
-                borderRadius: "4px",
-                padding: "2px 8px",
-                fontSize: "12px",
-              }}
-            >
-              Due in 2 days
-            </span>
-          </div>
-          <div style={{ fontSize: "13px", color: "#8A8F98", marginTop: "4px" }}>
-            14 contractors · Nigeria, Kenya, Ghana
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="inline-block rounded-full"
-            style={{ width: "8px", height: "8px", background: "#12FF80" }}
-          />
-          <span style={{ fontSize: "12px", color: "#8A8F98" }}>Agent ready</span>
-        </div>
+        <AnimatedSphere />
       </div>
 
-      {/* Stats */}
-      <div className="mt-5 grid grid-cols-3 gap-3">
-        {STATS.map((s) => (
-          <div
-            key={s.label}
-            style={{
-              background: "#F5F5F5",
-              borderRadius: "12px",
-              padding: "14px 16px",
-            }}
-          >
-            <div style={{ fontSize: "12px", color: "#8A8F98" }}>{s.label}</div>
-            <div className="mt-1 flex items-baseline gap-1">
-              <span
-                className="font-medium"
-                style={{ fontSize: "22px", color: "#1A1A1A", lineHeight: 1 }}
-              >
-                {s.value}
-              </span>
-              {s.sub && (
-                <span style={{ fontSize: "11px", color: "#8A8F98" }}>{s.sub}</span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+      <GridLines />
 
-      {/* Agent insight */}
+      {/* Content */}
       <div
-        className="mt-4 flex items-center gap-2"
-        style={{ background: "#DEF6E9", borderRadius: "12px", padding: "12px 16px" }}
+        className="relative z-10 mx-auto w-full max-w-container px-5 md:px-10"
+        style={{ paddingTop: "150px", paddingBottom: "150px" }}
       >
-        <Sparkles size={16} color="#0A9200" />
-        <span
-          className="font-medium"
-          style={{ fontSize: "13px", color: "#0A9200", lineHeight: 1.4 }}
-        >
-          Best FX window detected. Running now saves you $204.
-        </span>
-      </div>
-
-      {/* Contractor rows */}
-      <div className="mt-5">
-        {ROWS.map((r, i) => (
-          <div
-            key={r.name}
-            className="flex items-center justify-between py-3"
-            style={{
-              borderBottom: i < ROWS.length - 1 ? "1px solid #E8E8E8" : "none",
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <span
-                className="flex items-center justify-center font-medium"
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "9999px",
-                  background: "#F5F5F5",
-                  fontSize: "12px",
-                  color: "#1A1A1A",
-                }}
-              >
-                {r.initials}
-              </span>
-              <div>
-                <div style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                  {r.name} <span aria-hidden>{r.flag}</span>
-                </div>
-                <div style={{ fontSize: "12px", color: "#8A8F98" }}>{r.role}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 sm:gap-4">
-              <span
-                className="font-medium"
-                style={{ fontSize: "14px", color: "#1A1A1A" }}
-              >
-                {r.amount}
-              </span>
-              <span
-                className="font-medium"
-                style={{
-                  background: "#DEF6E9",
-                  color: "#0A9200",
-                  borderRadius: "4px",
-                  padding: "2px 8px",
-                  fontSize: "12px",
-                }}
-              >
-                Ready
-              </span>
-            </div>
-          </div>
-        ))}
-        <div style={{ fontSize: "13px", color: "#8A8F98", marginTop: "12px" }}>
-          + 11 more contractors
-        </div>
-      </div>
-
-      {/* Bottom action */}
-      <div
-        className="mt-5 flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between"
-        style={{ borderTop: "1px solid #E8E8E8" }}
-      >
-        <span style={{ fontSize: "13px", color: "#8A8F98" }}>
-          1 Stellar transaction · ~4 seconds
-        </span>
-        <button
-          className="flex items-center justify-center gap-1 font-medium"
+        {/* Eyebrow */}
+        <div
+          className="mb-8 transition-all duration-700"
           style={{
-            height: "40px",
-            padding: "8px 16px",
-            borderRadius: "4px",
-            background: "#12FF80",
-            color: "#1A1A1A",
-            fontSize: "14px",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "none" : "translateY(16px)",
           }}
         >
-          Run payroll <ArrowRight size={16} />
-        </button>
+          <span className="inline-flex items-center gap-3" style={{ fontFamily: "ui-monospace, monospace", fontSize: "13px", color: "#8A8F98", letterSpacing: "0.02em" }}>
+            <span style={{ width: "32px", height: "1px", background: "#C2C6CC" }} />
+            The autonomous payroll agent
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1
+          className="font-semibold transition-all duration-1000"
+          style={{
+            fontSize: "clamp(2.75rem, 9vw, 6.75rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.04em",
+            color: "#1A1A1A",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "none" : "translateY(28px)",
+          }}
+        >
+          <span className="block">Payroll that</span>
+          <span className="block">
+            <span className="relative inline-block">
+              <span
+                aria-hidden
+                className="absolute left-0 right-0"
+                style={{ bottom: "0.14em", height: "0.16em", background: "rgba(18,255,128,0.35)", zIndex: 0 }}
+              />
+              <span key={wordIndex} className="relative inline-flex" style={{ zIndex: 1 }}>
+                {word.split("").map((char, i) => (
+                  <span
+                    key={`${wordIndex}-${i}`}
+                    className="animate-char-in"
+                    style={{ animationDelay: `${i * 45}ms` }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+            </span>
+            <span style={{ color: "#12FF80" }}>.</span>
+          </span>
+        </h1>
+
+        {/* Description + CTAs */}
+        <div className="mt-12 grid items-end gap-10 lg:grid-cols-2 lg:gap-20">
+          <p
+            className="transition-all duration-700"
+            style={{
+              fontSize: "20px",
+              lineHeight: 1.6,
+              color: "#8A8F98",
+              maxWidth: "560px",
+              transitionDelay: "200ms",
+              opacity: visible ? 1 : 0,
+              transform: visible ? "none" : "translateY(16px)",
+            }}
+          >
+            Every payroll tool automates the clicks. Disburs reads your contracts,
+            times the FX window, and pays your team on Stellar. Last cycle it made
+            11 decisions. You made none.
+          </p>
+
+          <div
+            className="flex flex-col items-start gap-4 transition-all duration-700 sm:flex-row"
+            style={{
+              transitionDelay: "300ms",
+              opacity: visible ? 1 : 0,
+              transform: visible ? "none" : "translateY(16px)",
+            }}
+          >
+            <a
+              href="#waitlist"
+              className="group inline-flex items-center justify-center gap-2 font-medium transition-transform hover:scale-[1.02]"
+              style={{
+                height: "56px",
+                padding: "0 28px",
+                borderRadius: "9999px",
+                background: "#12FF80",
+                color: "#1A1A1A",
+                fontSize: "16px",
+                boxShadow: "0 10px 30px -10px rgba(18,255,128,0.6)",
+              }}
+            >
+              Join the Waitlist
+              <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
+            </a>
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center justify-center font-medium transition-colors hover:bg-black/[0.04]"
+              style={{
+                height: "56px",
+                padding: "0 28px",
+                borderRadius: "9999px",
+                border: "1px solid #E1E1E1",
+                color: "#1A1A1A",
+                fontSize: "16px",
+              }}
+            >
+              See how it works
+            </a>
+          </div>
+        </div>
       </div>
-    </motion.div>
+
+      {/* Stats marquee */}
+      <div
+        className="absolute bottom-12 left-0 right-0 overflow-hidden transition-opacity duration-700"
+        style={{ opacity: visible ? 1 : 0, transitionDelay: "500ms" }}
+      >
+        <div className="marquee flex w-max gap-16 whitespace-nowrap">
+          {[0, 1].map((copy) => (
+            <div key={copy} className="flex gap-16" aria-hidden={copy === 1}>
+              {STATS.map((s) => (
+                <div key={`${copy}-${s.label}`} className="flex items-baseline gap-3">
+                  <span className="font-semibold" style={{ fontSize: "clamp(28px, 3vw, 40px)", color: "#1A1A1A", letterSpacing: "-0.02em" }}>
+                    {s.value}
+                  </span>
+                  <span style={{ fontSize: "14px", color: "#8A8F98" }}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

@@ -95,3 +95,46 @@ a {
   );
   pointer-events: none;
 }
+
+/* Per-character reveal for the cycling hero word */
+@keyframes char-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-char-in {
+  display: inline-block;
+  opacity: 0;
+  animation: char-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Seamless horizontal marquee (two copies, translate -50%) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  animation: marquee 34s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-char-in {
+    animation: none;
+    opacity: 1;
+  }
+  .marquee {
+    animation: none;
+  }
+}
