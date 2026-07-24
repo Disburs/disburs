@@ -76,9 +76,9 @@ export default function AnimatedCube() {
       ctx.clearRect(0, 0, rect.width, rect.height);
       const cx = rect.width / 2;
       const cy = rect.height / 2;
-      const scale = Math.min(rect.width, rect.height) * 0.34;
+      const scale = Math.min(rect.width, rect.height) * 0.3;
 
-      ctx.font = "18px monospace";
+      ctx.font = "12px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
@@ -92,7 +92,7 @@ export default function AnimatedCube() {
       };
 
       edges.forEach(([i, j]) => {
-        for (let t = 0; t <= 1; t += 0.05) {
+        for (let t = 0; t <= 1; t += 0.11) {
           push({
             x: V[i].x + (V[j].x - V[i].x) * t,
             y: V[i].y + (V[j].y - V[i].y) * t,
@@ -102,8 +102,8 @@ export default function AnimatedCube() {
       });
 
       faces.forEach(([a, b, c, d]) => {
-        for (let u = 0; u <= 1; u += 0.13) {
-          for (let v = 0; v <= 1; v += 0.13) {
+        for (let u = 0; u <= 1; u += 0.12) {
+          for (let v = 0; v <= 1; v += 0.12) {
             push({
               x: V[a].x * (1 - u) * (1 - v) + V[b].x * u * (1 - v) + V[c].x * u * v + V[d].x * (1 - u) * v,
               y: V[a].y * (1 - u) * (1 - v) + V[b].y * u * (1 - v) + V[c].y * u * v + V[d].y * (1 - u) * v,
@@ -117,7 +117,7 @@ export default function AnimatedCube() {
 
       pts.forEach((p) => {
         const front = Math.max(0, Math.min(1, (p.z + 1.5) / 3));
-        const alpha = 0.18 + front * 0.55;
+        const alpha = 0.16 + front * 0.5;
         ctx.fillStyle =
           front > 0.5 ? `rgba(18, 255, 128, ${alpha})` : `rgba(10, 146, 0, ${alpha})`;
         ctx.fillText(p.char, p.x, p.y);
