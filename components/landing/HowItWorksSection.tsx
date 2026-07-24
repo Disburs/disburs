@@ -94,13 +94,12 @@ function StepCircle({ n, active }: { n: number; active: boolean }) {
           width: "48px",
           height: "48px",
           borderRadius: "9999px",
-          background: active ? "#12FF80" : "#DEF6E9",
-          color: active ? "#0A2E12" : "#0A9200",
+          background: "#DEF6E9",
+          color: "#0A9200",
           fontSize: "18px",
-          transform: active ? "scale(1.06)" : "scale(1)",
-          boxShadow: active ? "0 8px 22px -6px rgba(18,255,128,0.7)" : "none",
-          transition:
-            "background 300ms ease, color 300ms ease, transform 300ms ease, box-shadow 300ms ease",
+          transform: active ? "scale(1.05)" : "scale(1)",
+          boxShadow: active ? "0 6px 18px -6px rgba(18,255,128,0.5)" : "none",
+          transition: "transform 300ms ease, box-shadow 300ms ease",
         }}
       >
         {n}
