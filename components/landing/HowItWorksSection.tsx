@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
 import FadeIn from "./FadeIn";
 import SectionLabel from "./SectionLabel";
 
@@ -57,25 +59,110 @@ function DoerBadge({ doer }: { doer: Doer }) {
   );
 }
 
-function StepCircle({ n }: { n: number }) {
+const RING_R = 25;
+const RING_C = 2 * Math.PI * RING_R;
+
+function StepCircle({ n, active }: { n: number; active: boolean }) {
   return (
-    <div
-      className="flex shrink-0 items-center justify-center font-medium"
-      style={{
-        width: "48px",
-        height: "48px",
-        borderRadius: "9999px",
-        background: "#DEF6E9",
-        color: "#0A9200",
-        fontSize: "18px",
-      }}
-    >
-      {n}
+    <div className="relative flex items-center justify-center" style={{ width: "48px", height: "48px" }}>
+      {/* Tracing ring that draws around the number when reached */}
+      <svg
+        width="58"
+        height="58"
+        viewBox="0 0 58 58"
+        aria-hidden
+        className="absolute"
+        style={{ transform: "rotate(-90deg)" }}
+      >
+        <circle
+          cx="29"
+          cy="29"
+          r={RING_R}
+          fill="none"
+          stroke="#12FF80"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeDasharray={RING_C}
+          strokeDashoffset={active ? 0 : RING_C}
+          style={{ transition: "stroke-dashoffset 600ms ease" }}
+        />
+      </svg>
+
+      <div
+        className="flex items-center justify-center font-medium"
+        style={{
+          width: "48px",
+          height: "48px",
+          borderRadius: "9999px",
+          background: active ? "#12FF80" : "#DEF6E9",
+          color: active ? "#0A2E12" : "#0A9200",
+          fontSize: "18px",
+          transform: active ? "scale(1.06)" : "scale(1)",
+          boxShadow: active ? "0 8px 22px -6px rgba(18,255,128,0.7)" : "none",
+          transition:
+            "background 300ms ease, color 300ms ease, transform 300ms ease, box-shadow 300ms ease",
+        }}
+      >
+        {n}
+      </div>
     </div>
   );
 }
 
 export default function HowItWorksSection() {
+  const posRef = useRef<HTMLDivElement>(null);
+  const circleRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [activeCount, setActiveCount] = useState(0);
+  const [reduced, setReduced] = useState(false);
+
+  const { scrollYProgress } = useScroll({
+    target: posRef,
+    offset: ["start 0.85", "end 0.5"],
+  });
+  const fillPct = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  useEffect(() => {
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(m.matches);
+    update();
+    m.addEventListener("change", update);
+    return () => m.removeEventListener("change", update);
+  }, []);
+
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    if (reduced) {
+      setActiveCount(STEPS.length);
+      return;
+    }
+    const cont = posRef.current;
+    if (!cont) return;
+    const cr = cont.getBoundingClientRect();
+    const connTop = cr.top + 24;
+    const filled = (cr.height - 48) * p;
+    let n = 0;
+    circleRefs.current.forEach((el) => {
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const centerFromTop = r.top + r.height / 2 - connTop;
+      if (filled >= centerFromTop - 4) n += 1;
+    });
+    setActiveCount(n);
+  });
+
+  const trackFill = (
+    <motion.div
+      style={{
+        position: "absolute",
+        left: "-2px",
+        top: 0,
+        width: "2px",
+        background: "#12FF80",
+        boxShadow: "0 0 10px rgba(18,255,128,0.55)",
+        height: reduced ? "100%" : fillPct,
+      }}
+    />
+  );
+
   return (
     <section
       id="how-it-works"
@@ -105,34 +192,39 @@ export default function HowItWorksSection() {
         </FadeIn>
 
         {/* Timeline */}
-        <div className="relative mx-auto mt-12" style={{ maxWidth: "900px" }}>
-          {/* Dashed connector line */}
+        <div ref={posRef} className="relative mx-auto mt-12" style={{ maxWidth: "900px" }}>
+          {/* Desktop connector (centered) */}
           <div
             className="absolute hidden md:block"
             style={{
               left: "50%",
               top: "24px",
               bottom: "24px",
-              width: 0,
+              width: "2px",
               borderLeft: "2px dashed #E8E8E8",
               transform: "translateX(-50%)",
             }}
-          />
-          {/* Mobile connector line */}
+          >
+            {trackFill}
+          </div>
+          {/* Mobile connector (left) */}
           <div
             className="absolute md:hidden"
             style={{
               left: "23px",
               top: "24px",
               bottom: "24px",
-              width: 0,
+              width: "2px",
               borderLeft: "2px dashed #E8E8E8",
             }}
-          />
+          >
+            {trackFill}
+          </div>
 
           <div className="flex flex-col gap-10">
             {STEPS.map((step, i) => {
               const leftSide = i % 2 === 0;
+              const active = i < activeCount;
               return (
                 <FadeIn key={step.title}>
                   <div
@@ -142,16 +234,19 @@ export default function HowItWorksSection() {
                   >
                     {/* content half */}
                     <div className="hidden flex-1 md:block">
-                      <div
-                        className={leftSide ? "pr-12 text-right" : "pl-12 text-left"}
-                      >
+                      <div className={leftSide ? "pr-12 text-right" : "pl-12 text-left"}>
                         <StepContent step={step} />
                       </div>
                     </div>
 
                     {/* center circle */}
-                    <div className="relative z-10 flex md:mx-0">
-                      <StepCircle n={i + 1} />
+                    <div
+                      ref={(el) => {
+                        circleRefs.current[i] = el;
+                      }}
+                      className="relative z-10 flex md:mx-0"
+                    >
+                      <StepCircle n={i + 1} active={active} />
                     </div>
 
                     {/* spacer half (desktop) */}
