@@ -1,53 +1,63 @@
 "use client";
 
-import {
-  Wallet,
-  ShieldCheck,
-  ScrollText,
-  EyeOff,
-  type LucideIcon,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Wallet, ShieldCheck, EyeOff, ScrollText, type LucideIcon } from "lucide-react";
 import FadeIn from "./FadeIn";
-import SectionLabel from "./SectionLabel";
 
-type Item = {
+type Feature = {
   icon: LucideIcon;
   title: string;
   desc: string;
   soon?: boolean;
 };
 
-const ITEMS: Item[] = [
+const FEATURES: Feature[] = [
   {
     icon: Wallet,
     title: "Non-custodial funds",
-    desc: "Money moves directly on Stellar from your wallet to your contractors. Disburs never holds your funds.",
+    desc: "Money moves wallet-to-wallet on Stellar. Disburs never holds it.",
   },
   {
     icon: ShieldCheck,
-    title: "You stay in control",
-    desc: "Require one-click approval on every run and set spending limits the agent can never exceed.",
+    title: "You set the limits",
+    desc: "Approval thresholds and spending caps the agent can never exceed.",
   },
   {
     icon: EyeOff,
     title: "Private by default",
-    desc: "Zero-knowledge proofs let the network verify a payroll is valid without revealing what anyone earns.",
+    desc: "Zero-knowledge proofs keep every amount off the public chain.",
     soon: true,
   },
   {
     icon: ScrollText,
     title: "Full audit trail",
-    desc: "Every agent decision is logged in plain English, ready for compliance and review at any time.",
+    desc: "Every agent decision logged in plain English, ready for review.",
   },
 ];
 
-const ROLES: { who: string; sees: string }[] = [
-  { who: "You", sees: "See every payment, amount, and decision in full detail." },
-  { who: "Your contractors", sees: "See only their own pay, never what anyone else earns." },
-  { who: "Auditors & regulators", sees: "Verify every run is correct and compliant, without seeing a single salary." },
-];
+// Honest posture, not certifications we don't hold
+const BADGES = ["Non-custodial", "Encrypted", "Audit trail", "GDPR-ready"];
+
+const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
 export default function SecuritySection() {
+  const [active, setActive] = useState(0);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (reduced) return;
+    const id = setInterval(() => setActive((p) => (p + 1) % FEATURES.length), 3000);
+    return () => clearInterval(id);
+  }, [reduced]);
+
   return (
     <section
       id="security"
@@ -55,124 +65,157 @@ export default function SecuritySection() {
       style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
+        {/* Header */}
         <FadeIn>
-          <SectionLabel>Security</SectionLabel>
-          <h2
-            className="mx-auto mt-4 text-center font-medium"
-            style={{
-              color: "#1A1A1A",
-              maxWidth: "560px",
-              fontSize: "clamp(28px, 5vw, 40px)",
-              lineHeight: 1.1,
-            }}
-          >
-            Secure by design.
-            <br />
-            Compliant by default<span style={{ color: "#12FF80" }}>.</span>
-          </h2>
-          <p
-            className="mx-auto mt-4 text-center"
-            style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "520px" }}
-          >
-            Your funds never leave your wallet, your data stays encrypted, and
-            your payroll stays private.
-          </p>
+          <div className="mb-16" style={{ maxWidth: "820px" }}>
+            <span
+              className="mb-7 inline-flex items-center gap-4 uppercase"
+              style={{ fontFamily: MONO, fontSize: "12px", letterSpacing: "0.16em", color: "#8A8F98" }}
+            >
+              <span style={{ width: "48px", height: "1px", background: "#C2C6CC" }} />
+              Security &amp; Compliance
+            </span>
+            <h2
+              className="font-semibold"
+              style={{
+                fontSize: "clamp(2.5rem, 7vw, 5rem)",
+                lineHeight: 0.98,
+                letterSpacing: "-0.03em",
+                color: "#1A1A1A",
+              }}
+            >
+              Autonomous,
+              <br />
+              <span style={{ color: "#B4B9C2" }}>not unchecked.</span>
+            </h2>
+            <p style={{ fontSize: "20px", color: "#8A8F98", marginTop: "24px", maxWidth: "620px", lineHeight: 1.6 }}>
+              The agent is powerful, but bounded. It only ever does what you allow,
+              on funds it never holds, with every decision on the record.
+            </p>
+          </div>
         </FadeIn>
 
-        <div
-          className="mt-12 grid gap-6"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}
-        >
-          {ITEMS.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <FadeIn key={item.title} delay={(i % 4) * 0.05}>
-                <div
-                  className="h-full"
-                  style={{
-                    borderRadius: "20px",
-                    border: "2px solid #E8E8E8",
-                    background: "#FFFFFF",
-                    padding: "32px",
-                  }}
-                >
-                  <span
-                    className="flex items-center justify-center"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "9999px",
-                      background: "#DEF6E9",
-                    }}
-                  >
-                    <Icon size={20} color="#0A9200" />
-                  </span>
-                  <div
-                    className="flex flex-wrap items-center gap-2"
-                    style={{ marginTop: "16px" }}
-                  >
-                    <h3
-                      className="font-medium"
-                      style={{ fontSize: "18px", color: "#1A1A1A" }}
-                    >
-                      {item.title}
-                    </h3>
-                    {item.soon && (
-                      <span
-                        className="font-medium"
-                        style={{
-                          background: "#DEF6E9",
-                          color: "#0A9200",
-                          borderRadius: "4px",
-                          padding: "2px 8px",
-                          fontSize: "11px",
-                        }}
-                      >
-                        Soon
-                      </span>
-                    )}
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "#8A8F98",
-                      marginTop: "8px",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-              </FadeIn>
-            );
-          })}
-        </div>
+        {/* Main content */}
+        <div className="grid gap-4 lg:grid-cols-12">
+          {/* Big visual card */}
+          <FadeIn className="lg:col-span-7">
+            <div
+              className="relative h-full overflow-hidden"
+              style={{ border: "1px solid #E8E8E8", borderRadius: "20px", minHeight: "420px", padding: "40px" }}
+            >
+              {/* Cross-fading icon reflecting the active feature */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 items-center justify-center lg:flex">
+                {FEATURES.map((f, i) => {
+                  const Icon = f.icon;
+                  return (
+                    <Icon
+                      key={f.title}
+                      size={260}
+                      color="#12FF80"
+                      strokeWidth={1}
+                      className="absolute transition-opacity duration-500"
+                      style={{ opacity: active === i ? 0.16 : 0 }}
+                    />
+                  );
+                })}
+              </div>
 
-        {/* Role-based visibility strip */}
-        <FadeIn>
-          <div
-            className="mt-6 flex flex-col divide-y divide-[#E8E8E8] overflow-hidden md:flex-row md:divide-x md:divide-y-0"
-            style={{ borderRadius: "20px", border: "2px solid #E8E8E8", background: "#FFFFFF" }}
-          >
-            {ROLES.map((r) => (
-              <div key={r.who} className="flex-1" style={{ padding: "28px 32px" }}>
-                <div className="font-medium" style={{ fontSize: "13px", color: "#0A9200" }}>
-                  {r.who}
-                </div>
-                <div style={{ fontSize: "16px", color: "#1A1A1A", marginTop: "8px", lineHeight: 1.5 }}>
-                  {r.sees}
+              <div className="relative z-10">
+                <span style={{ fontFamily: MONO, fontSize: "13px", color: "#8A8F98" }}>
+                  Non-custodial by design
+                </span>
+                <div className="mt-10">
+                  <span className="font-semibold" style={{ fontSize: "clamp(4rem, 9vw, 6.5rem)", color: "#1A1A1A", lineHeight: 1, letterSpacing: "-0.04em" }}>
+                    $0
+                  </span>
+                  <span className="mt-3 block" style={{ fontSize: "16px", color: "#8A8F98" }}>
+                    ever held by Disburs. Funds go straight from your wallet to
+                    your team.
+                  </span>
                 </div>
               </div>
-            ))}
+
+              {/* Posture badges */}
+              <div className="absolute bottom-8 left-10 right-10 flex flex-wrap gap-2">
+                {BADGES.map((b) => (
+                  <span
+                    key={b}
+                    className="uppercase"
+                    style={{
+                      fontFamily: MONO,
+                      fontSize: "11px",
+                      letterSpacing: "0.08em",
+                      color: "#8A8F98",
+                      border: "1px solid #E8E8E8",
+                      borderRadius: "6px",
+                      padding: "5px 10px",
+                    }}
+                  >
+                    {b}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Feature cards stack */}
+          <div className="flex flex-col gap-4 lg:col-span-5">
+            {FEATURES.map((f, i) => {
+              const Icon = f.icon;
+              const on = active === i;
+              return (
+                <FadeIn key={f.title} delay={i * 0.05}>
+                  <button
+                    type="button"
+                    onMouseEnter={() => setActive(i)}
+                    onFocus={() => setActive(i)}
+                    onClick={() => setActive(i)}
+                    className="w-full text-left transition-all duration-300"
+                    style={{
+                      borderRadius: "16px",
+                      border: on ? "1px solid #12FF80" : "1px solid #E8E8E8",
+                      background: on ? "#F7FBF8" : "#FFFFFF",
+                      padding: "22px 24px",
+                    }}
+                  >
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="flex shrink-0 items-center justify-center transition-colors duration-300"
+                        style={{
+                          width: "42px",
+                          height: "42px",
+                          borderRadius: "11px",
+                          background: on ? "#12FF80" : "#F0F1F3",
+                          color: on ? "#0A2E12" : "#8A8F98",
+                        }}
+                      >
+                        <Icon size={20} />
+                      </span>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-medium" style={{ fontSize: "17px", color: "#1A1A1A" }}>
+                            {f.title}
+                          </h3>
+                          {f.soon && (
+                            <span
+                              className="font-medium"
+                              style={{ background: "#DEF6E9", color: "#0A9200", borderRadius: "5px", padding: "2px 7px", fontSize: "11px" }}
+                            >
+                              Soon
+                            </span>
+                          )}
+                        </div>
+                        <p style={{ fontSize: "14px", color: "#8A8F98", marginTop: "6px", lineHeight: 1.5 }}>
+                          {f.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </FadeIn>
+              );
+            })}
           </div>
-          <p
-            className="mt-4 text-center"
-            style={{ fontSize: "14px", color: "#8A8F98" }}
-          >
-            The same run, different views. Everyone sees exactly what they should,
-            and nothing more.
-          </p>
-        </FadeIn>
+        </div>
       </div>
     </section>
   );
