@@ -8,10 +8,10 @@ import AnimatedSphere from "./AnimatedSphere";
 const WORDS = ["thinks", "reasons", "adapts", "resolves"];
 
 const STATS = [
-  { value: "~4 sec", label: "settles on Stellar" },
-  { value: "0.5%", label: "flat fee per run" },
-  { value: "< $0.01", label: "network fee per payment" },
-  { value: "4", label: "countries served" },
+  { value: "0", label: "actions from you" },
+  { value: "11", label: "agent decisions per run" },
+  { value: "100%", label: "of contracts read" },
+  { value: "ZK", label: "private by design" },
   { value: "24/7", label: "agent on watch" },
 ];
 
@@ -143,7 +143,7 @@ export default function HeroSection() {
             }}
           >
             Every payroll tool automates the clicks. Disburs reads your contracts,
-            times the FX window, and pays your team on Stellar. Last cycle it made
+            settles disputes, and pays your team privately. Last cycle it made
             11 decisions. You made none.
           </p>
 

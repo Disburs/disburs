@@ -7,10 +7,10 @@ import SectionLabel from "./SectionLabel";
 import CountUp from "./CountUp";
 
 const STATS: { to?: number; display?: string; label: string }[] = [
-  { to: 4, label: "Countries served" },
-  { display: "~4s", label: "Avg. settlement time" },
-  { display: "< $0.01", label: "Network fee per payment" },
-  { display: "0.5%", label: "Flat fee vs 2–4% elsewhere" },
+  { display: "24/7", label: "Rate watch by the agent" },
+  { display: "Best", label: "window, auto-selected" },
+  { display: "$204", label: "Saved on the last run" },
+  { display: "0", label: "Rates you check yourself" },
 ];
 
 type CurrencyKey = "NGN" | "KES" | "GHS" | "ZAR";
@@ -42,24 +42,25 @@ export default function FxSection() {
     >
       <div className="mx-auto max-w-container">
         <FadeIn>
-          <SectionLabel>Cross-Border</SectionLabel>
+          <SectionLabel>FX, handled</SectionLabel>
           <h2
             className="mx-auto mt-4 text-center font-medium"
             style={{
               color: "#1A1A1A",
-              maxWidth: "560px",
+              maxWidth: "600px",
               fontSize: "clamp(28px, 5vw, 40px)",
               lineHeight: 1.1,
             }}
           >
-            Send more. Lose less.
+            The agent times the market for you.
           </h2>
           <p
             className="mx-auto mt-4 text-center"
-            style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "520px" }}
+            style={{ fontSize: "18px", color: "#8A8F98", maxWidth: "540px" }}
           >
-            Pay your contractors in seconds, for a fraction of what banks and money
-            transfer services charge.
+            Disburs watches the rate across anchors around the clock and pays at
+            the best window, so nobody on your team ever sends at the worst
+            moment.
           </p>
         </FadeIn>
 
