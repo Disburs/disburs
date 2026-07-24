@@ -103,7 +103,7 @@ function AgentMock({ active, reduced }: { active: number; reduced: boolean }) {
 
 /* ---------- Private card visual: masked payroll ---------- */
 const MASK_ROWS = [
-  { name: "Chidi O.", flag: "🇳🇬" },
+  { name: "Chike O.", flag: "🇳🇬" },
   { name: "Amara N.", flag: "🇰🇪" },
   { name: "Bola A.", flag: "🇬🇭" },
 ];
