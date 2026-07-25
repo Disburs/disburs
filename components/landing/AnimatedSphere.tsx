@@ -72,12 +72,13 @@ export default function AnimatedSphere() {
 
       points.forEach((point) => {
         const front = (point.z + 1) / 2;
-        const alpha = 0.14 + front * 0.34;
-        // Front-most points get a subtle mint tint; the rest stay neutral ink
+        const alpha = 0.16 + front * 0.5;
+        // Brand mint: bright (#12FF80) on the near side, deeper (#0A9200)
+        // on the receding side so the particles keep depth on white.
         ctx.fillStyle =
-          front > 0.72
-            ? `rgba(10, 146, 0, ${alpha})`
-            : `rgba(26, 26, 26, ${alpha})`;
+          front > 0.5
+            ? `rgba(18, 255, 128, ${alpha})`
+            : `rgba(10, 146, 0, ${alpha})`;
         ctx.fillText(point.char, point.x, point.y);
       });
 

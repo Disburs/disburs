@@ -8,10 +8,10 @@ import AnimatedSphere from "./AnimatedSphere";
 const WORDS = ["thinks", "reasons", "adapts", "resolves"];
 
 const STATS = [
-  { value: "~4 sec", label: "settles on Stellar" },
-  { value: "0.5%", label: "flat fee per run" },
-  { value: "< $0.01", label: "network fee per payment" },
-  { value: "4", label: "countries served" },
+  { value: "0", label: "actions from you" },
+  { value: "11", label: "agent decisions per run" },
+  { value: "100%", label: "of contracts read" },
+  { value: "ZK", label: "private by design" },
   { value: "24/7", label: "agent on watch" },
 ];
 
@@ -66,7 +66,7 @@ export default function HeroSection() {
       <div
         aria-hidden
         className="pointer-events-none absolute right-[-6%] top-1/2 hidden -translate-y-1/2 md:block"
-        style={{ width: "min(46vw, 760px)", height: "min(46vw, 760px)", opacity: 0.42 }}
+        style={{ width: "min(46vw, 760px)", height: "min(46vw, 760px)", opacity: 0.55 }}
       >
         <AnimatedSphere />
       </div>
@@ -143,7 +143,7 @@ export default function HeroSection() {
             }}
           >
             Every payroll tool automates the clicks. Disburs reads your contracts,
-            times the FX window, and pays your team on Stellar. Last cycle it made
+            settles disputes, and pays your team privately. Last cycle it made
             11 decisions. You made none.
           </p>
 
@@ -194,15 +194,25 @@ export default function HeroSection() {
         className="absolute bottom-12 left-0 right-0 overflow-hidden transition-opacity duration-700"
         style={{ opacity: visible ? 1 : 0, transitionDelay: "500ms" }}
       >
-        <div className="marquee flex w-max gap-16 whitespace-nowrap">
+        <div className="marquee flex w-max gap-16 whitespace-nowrap" style={{ padding: "6px 0" }}>
           {[0, 1].map((copy) => (
             <div key={copy} className="flex gap-16" aria-hidden={copy === 1}>
               {STATS.map((s) => (
                 <div key={`${copy}-${s.label}`} className="flex items-baseline gap-3">
-                  <span className="font-semibold" style={{ fontSize: "clamp(28px, 3vw, 40px)", color: "#1A1A1A", letterSpacing: "-0.02em" }}>
+                  <span
+                    className="font-semibold"
+                    style={{
+                      fontSize: "clamp(28px, 3vw, 40px)",
+                      lineHeight: 1.1,
+                      color: "#1A1A1A",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
                     {s.value}
                   </span>
-                  <span style={{ fontSize: "14px", color: "#8A8F98" }}>{s.label}</span>
+                  <span style={{ fontSize: "14px", lineHeight: 1.2, color: "#8A8F98" }}>
+                    {s.label}
+                  </span>
                 </div>
               ))}
             </div>
