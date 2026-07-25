@@ -6,7 +6,7 @@ import {
   TrendingUp,
   Bell,
   Zap,
-  Globe,
+  EyeOff,
   Shield,
   type LucideIcon,
 } from "lucide-react";
@@ -34,8 +34,9 @@ const FEATURES: Feature[] = [
   },
   {
     icon: TrendingUp,
-    title: "FX rate optimization",
-    desc: "The agent monitors exchange rates across anchor partners and executes at the best window of the day. Saves hundreds per month.",
+    title: "Best-rate execution",
+    desc: "The agent monitors exchange rates around the clock and executes at the best window of the day. You never pay at the worst moment.",
+    badge: "AI-powered",
   },
   {
     icon: Bell,
@@ -61,9 +62,10 @@ const FEATURES: Feature[] = [
     desc: "Every decision the agent makes is logged with a plain-English reason. Total transparency. Full compliance.",
   },
   {
-    icon: Globe,
-    title: "Multi-country offramps",
-    desc: "Nigeria, Kenya, Ghana, South Africa. Contractors convert USDC to local currency instantly via Stellar anchor partners.",
+    icon: EyeOff,
+    title: "Private payroll",
+    desc: "Zero-knowledge proofs verify every payment is correct without revealing what anyone earns. Your payroll stays off the public chain.",
+    badge: "Zero-knowledge",
     mdWide: true,
   },
 ];

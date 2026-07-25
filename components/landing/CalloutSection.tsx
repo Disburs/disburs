@@ -92,7 +92,7 @@ export default function CalloutSection() {
                 </div>
 
                 {/* Right animation */}
-                <div className="hidden items-center justify-center lg:flex" style={{ width: "420px", height: "420px", marginRight: "-32px" }}>
+                <div className="hidden items-center justify-center lg:flex" style={{ width: "420px", height: "420px", marginRight: "-32px", opacity: 0.4 }}>
                   <AnimatedCube />
                 </div>
               </div>
