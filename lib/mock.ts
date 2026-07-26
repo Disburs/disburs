@@ -35,10 +35,10 @@ export const company = {
 
 export const contractors: Contractor[] = [
   {
-    id: "chidi",
-    name: "Chidi Okonkwo",
+    id: "Laycon",
+    name: "Laycon Okonkwo",
     initials: "CO",
-    email: "chidi@northwind.studio",
+    email: "Laycon@northwind.studio",
     country: "Nigeria",
     flag: "🇳🇬",
     role: "Product Designer",
@@ -191,13 +191,13 @@ export const contractors: Contractor[] = [
 
 export type Activity = {
   icon:
-    | "check"
-    | "dispute"
-    | "fx"
-    | "shield"
-    | "bell"
-    | "file"
-    | "wallet";
+  | "check"
+  | "dispute"
+  | "fx"
+  | "shield"
+  | "bell"
+  | "file"
+  | "wallet";
   text: string;
   time: string;
 };
@@ -269,8 +269,8 @@ export type PayrollLine = {
 
 export const payrollLines: PayrollLine[] = [
   {
-    id: "chidi",
-    name: "Chidi Okonkwo",
+    id: "Laycon",
+    name: "Laycon Okonkwo",
     initials: "CO",
     flag: "🇳🇬",
     country: "Nigeria",

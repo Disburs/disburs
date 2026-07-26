@@ -24,7 +24,7 @@ const INTRO: Msg[] = [
   {
     id: 1,
     role: "agent",
-    text: "Hi Chidi 👋 I'm the Disburs agent for Northwind Studios. You were paid $1,200 on Nov 1, which included your $300 milestone bonus. How can I help?",
+    text: "Hi Laycon 👋 I'm the Disburs agent for Northwind Studios. You were paid $1,200 on Nov 1, which included your $300 milestone bonus. How can I help?",
   },
 ];
 

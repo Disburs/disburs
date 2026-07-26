@@ -1,10 +1,10 @@
 // Simulated data for the contractor portal demo. No backend.
 
 export const contractor = {
-  name: "Chidi Okonkwo",
-  firstName: "Chidi",
+  name: "Laycon Okonkwo",
+  firstName: "Laycon",
   initials: "CO",
-  email: "chidi@northwind.studio",
+  email: "Laycon@northwind.studio",
   phone: "+234 802 •••• 41",
   country: "Nigeria",
   flag: "🇳🇬",
