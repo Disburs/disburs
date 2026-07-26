@@ -1,6 +1,7 @@
 "use client";
 
 import { Twitter, Linkedin, Github } from "lucide-react";
+import { DemoOnly } from "@/components/DemoGate";
 
 const COLUMNS: { header: string; links: string[] }[] = [
   {
@@ -109,20 +110,22 @@ export default function Footer() {
             © 2026 Disburs Ltd. All rights reserved.
           </span>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <a
-              href="/onboarding"
-              className="transition-colors"
-              style={{ fontSize: "14px", color: "#12FF80" }}
-            >
-              Employer demo →
-            </a>
-            <a
-              href="/contractor/onboarding"
-              className="transition-colors"
-              style={{ fontSize: "14px", color: "#12FF80" }}
-            >
-              Contractor demo →
-            </a>
+            <DemoOnly>
+              <a
+                href="/onboarding"
+                className="transition-colors"
+                style={{ fontSize: "14px", color: "#12FF80" }}
+              >
+                Employer demo →
+              </a>
+              <a
+                href="/contractor/onboarding"
+                className="transition-colors"
+                style={{ fontSize: "14px", color: "#12FF80" }}
+              >
+                Contractor demo →
+              </a>
+            </DemoOnly>
             <span style={{ fontSize: "14px", color: "#8A8F98" }}>
               Built on Stellar · Powered by Claude
             </span>

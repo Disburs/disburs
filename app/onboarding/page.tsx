@@ -269,7 +269,7 @@ function FundStep() {
   }, []);
 
   const copy = () => {
-    navigator.clipboard?.writeText(WALLET_ADDRESS).catch(() => {});
+    navigator.clipboard?.writeText(WALLET_ADDRESS).catch(() => { });
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
   };
@@ -406,10 +406,10 @@ function ContractorStep() {
       <Card>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Full name">
-            <input style={inputStyle} placeholder="Chidi Okonkwo" />
+            <input style={inputStyle} placeholder="Laycon Okonkwo" />
           </Field>
           <Field label="Email">
-            <input style={inputStyle} placeholder="chidi@company.com" />
+            <input style={inputStyle} placeholder="Laycon@company.com" />
           </Field>
           <Field label="Country">
             <select style={inputStyle} defaultValue="Nigeria">
@@ -454,7 +454,7 @@ function ContractorStep() {
         ) : (
           <div className="flex items-center gap-3" style={{ border: "1px solid #E8E8E8", borderRadius: "10px", padding: "12px 14px" }}>
             <FileText size={18} color="#0A9200" />
-            <span style={{ fontSize: "14px", color: "#1A1A1A" }}>chidi-contract.pdf</span>
+            <span style={{ fontSize: "14px", color: "#1A1A1A" }}>Laycon-contract.pdf</span>
           </div>
         )}
 
