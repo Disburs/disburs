@@ -59,7 +59,7 @@ function reply(input: string): Msg {
     return {
       id,
       role: "agent",
-      text: "I've read all 9 contracts and timesheets. Chidi has a $300 milestone bonus that qualifies, and Kwame is capped at 40 hrs/week. Ready to pay 9 contractors for December at 1,618 NGN/USDC.",
+      text: "I've read all 9 contracts and timesheets. Laycon has a $300 milestone bonus that qualifies, and Kwame is capped at 40 hrs/week. Ready to pay 9 contractors for December at 1,618 NGN/USDC.",
       action: { label: "Approve & Execute", total: "$12,180 USDC" },
     };
   }
@@ -103,15 +103,15 @@ export default function ChatPage() {
     counter += 1;
     const note: Msg = approved
       ? {
-          id: counter,
-          role: "agent",
-          text: "Done. 9 contractors paid in one Stellar transaction (tx GADT…K39P) in 4 seconds. I've logged the run and notified everyone. Receipts are in Payment History.",
-        }
+        id: counter,
+        role: "agent",
+        text: "Done. 9 contractors paid in one Stellar transaction (tx GADT…K39P) in 4 seconds. I've logged the run and notified everyone. Receipts are in Payment History.",
+      }
       : {
-          id: counter,
-          role: "agent",
-          text: "No problem, I've cancelled that run. Nothing was sent. Let me know when you'd like to revisit it.",
-        };
+        id: counter,
+        role: "agent",
+        text: "No problem, I've cancelled that run. Nothing was sent. Let me know when you'd like to revisit it.",
+      };
     setTyping(true);
     window.setTimeout(() => {
       setTyping(false);

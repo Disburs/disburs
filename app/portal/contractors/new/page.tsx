@@ -106,10 +106,10 @@ export default function AddContractorPage() {
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Full name">
-              <input style={inputStyle} placeholder="Chidi Okonkwo" />
+              <input style={inputStyle} placeholder="Laycon Okonkwo" />
             </Field>
             <Field label="Email">
-              <input style={inputStyle} type="email" placeholder="chidi@company.com" />
+              <input style={inputStyle} type="email" placeholder="Laycon@company.com" />
             </Field>
             <Field label="Country">
               <select style={inputStyle} defaultValue="Nigeria">
@@ -238,7 +238,7 @@ export default function AddContractorPage() {
             >
               <FileText size={18} color="#0A9200" />
               <span style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                chidi-okonkwo-contract.pdf
+                Laycon-okonkwo-contract.pdf
               </span>
             </div>
           )}

@@ -6,7 +6,7 @@ import SectionLabel from "./SectionLabel";
 
 const EXAMPLES = [
   "Pay October salary",
-  "Add a bonus for Chidi",
+  "Add a bonus for Laycon",
   "Why was Amara underpaid?",
 ];
 
@@ -97,7 +97,7 @@ export default function ChatSection() {
                   className="flex-1"
                   style={{ fontSize: "14px", color: "#1A1A1A" }}
                 >
-                  Pay the design team October salary plus a bonus for Chidi
+                  Pay the design team October salary plus a bonus for Laycon
                   <span className="typing-cursor">|</span>
                 </span>
                 <button
