@@ -181,6 +181,11 @@ a {
   will-change: transform;
 }
 
+/* Reverse direction: content travels left to right */
+.marquee--ltr {
+  animation-direction: reverse;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-char-in {
     animation: none;
