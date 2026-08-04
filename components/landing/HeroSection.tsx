@@ -61,9 +61,9 @@ function useTypewriter() {
 const COINS = [
   { src: "/hero/usdc.png", size: 82, top: "16%", left: "5%", dur: "7s", delay: "0s", rot: "-12deg" },
   { src: "/hero/xlm.png", size: 60, top: "30%", left: "15%", dur: "8.5s", delay: "0.6s", rot: "10deg" },
-  { src: "/hero/eth.png", size: 52, top: "64%", left: "8%", dur: "6.5s", delay: "0.3s", rot: "-8deg" },
-  { src: "/hero/usdt.png", size: 58, top: "22%", right: "9%", dur: "7.5s", delay: "0.9s", rot: "14deg" },
-  { src: "/hero/dai.png", size: 50, top: "52%", right: "14%", dur: "9s", delay: "0.2s", rot: "-16deg" },
+  { src: "/hero/usdc.png", size: 52, top: "64%", left: "8%", dur: "6.5s", delay: "0.3s", rot: "-8deg" },
+  { src: "/hero/xlm.png", size: 58, top: "22%", right: "9%", dur: "7.5s", delay: "0.9s", rot: "14deg" },
+  { src: "/hero/usdc.png", size: 50, top: "52%", right: "14%", dur: "9s", delay: "0.2s", rot: "-16deg" },
   { src: "/hero/usdc.png", size: 66, top: "70%", right: "6%", dur: "8s", delay: "0.5s", rot: "8deg" },
 ];
 
