@@ -1,18 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-primary: 'Citerne', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Poppins', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Design system colors */
   --mint: #12FF80;
   --mint-hover: #0A9200;
   --ink: #1A1A1A;
+  --ink-deep: #15171C;
   --muted: #8A8F98;
   --light-bg: #F5F5F5;
+  --paper: #F6F5F0;
   --card-border: #E8E8E8;
   --link: #0550AE;
   --mint-soft: #DEF6E9;
@@ -75,6 +79,54 @@ a {
 /* Hide scrollbar on mobile drawer when open */
 .no-scroll {
   overflow: hidden;
+}
+
+/* Floating crypto assets on the hero */
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-16px) rotate(var(--rot, 0deg));
+  }
+}
+
+.floaty {
+  animation: floaty var(--dur, 7s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
+/* Blinking caret for the typewriter headline */
+@keyframes caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  display: inline-block;
+  width: 3px;
+  border-radius: 2px;
+  background: #12ff80;
+  animation: caret 1s step-start infinite;
+  margin-left: 4px;
+  vertical-align: baseline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floaty {
+    animation: none;
+  }
+  .caret {
+    animation: none;
+  }
 }
 
 /* Soft mint wash for bento feature tiles */

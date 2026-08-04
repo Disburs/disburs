@@ -68,7 +68,7 @@ export default function NavBar() {
       >
         {/* Left: wordmark */}
         <a href="#top" aria-label="Disburs home">
-          <Wordmark />
+          <Wordmark dark={!scrolled} />
         </a>
 
         {/* Center: nav links (desktop) */}
@@ -78,7 +78,7 @@ export default function NavBar() {
               key={link.href}
               href={link.href}
               className="font-normal transition-colors hover:text-mint"
-              style={{ fontSize: "16px", color: "#1A1A1A" }}
+              style={{ fontSize: "15px", color: scrolled ? "#1A1A1A" : "#C9CFCC" }}
             >
               {link.label}
             </a>
@@ -91,13 +91,13 @@ export default function NavBar() {
             href="#waitlist"
             className="flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
             style={{
-              height: "40px",
-              padding: "8px 16px",
-              borderRadius: "4px",
+              height: "42px",
+              padding: "0 18px",
+              borderRadius: "9999px",
               background: "#12FF80",
-              color: "#1A1A1A",
+              color: "#06120C",
               fontSize: "14px",
-              boxShadow: "rgba(0,0,0,0.06) 0px 4px 4px 0px",
+              boxShadow: "0 8px 22px -10px rgba(18,255,128,0.6)",
             }}
           >
             Join the Waitlist
@@ -110,7 +110,7 @@ export default function NavBar() {
           aria-label="Open menu"
           onClick={() => setOpen(true)}
         >
-          <Menu size={24} color="#1A1A1A" />
+          <Menu size={24} color={scrolled ? "#1A1A1A" : "#F4F6F4"} />
         </button>
       </div>
 
@@ -164,7 +164,7 @@ export default function NavBar() {
                     height: "48px",
                     borderRadius: "4px",
                     background: "#12FF80",
-                    color: "#1A1A1A",
+                    color: "#06120C",
                     fontSize: "16px",
                     boxShadow: "rgba(0,0,0,0.06) 0px 4px 4px 0px",
                   }}
