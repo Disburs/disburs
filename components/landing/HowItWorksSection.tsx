@@ -266,10 +266,10 @@ export default function HowItWorksSection() {
       <div className="mx-auto max-w-container">
         <FadeIn>
           <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: "760px", fontSize: "clamp(28px, 4.6vw, 42px)", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-            The bridge between your treasury and your team
+            Fund your treasury. Your agent handles the rest.
           </h2>
           <p className="mx-auto mt-4 text-center" style={{ fontSize: "18px", color: MUTED, maxWidth: "560px" }}>
-            Autonomous money movement, from your USDC treasury to every contractor.
+            From reading contracts to paying your team on Stellar, every step runs on its own.
           </p>
         </FadeIn>
 
