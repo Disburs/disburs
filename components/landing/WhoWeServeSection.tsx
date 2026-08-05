@@ -1,184 +1,307 @@
 "use client";
 
-import { Check } from "lucide-react";
+/* eslint-disable @next/next/no-img-element */
+
+import { useState } from "react";
+import {
+  Building2,
+  Users,
+  FileText,
+  EyeOff,
+  LayoutDashboard,
+  Zap,
+  ArrowLeftRight,
+  ShieldCheck,
+  ChevronDown,
+  ArrowRight,
+  Landmark,
+  Copy,
+  type LucideIcon,
+} from "lucide-react";
 import FadeIn from "./FadeIn";
-import SectionLabel from "./SectionLabel";
 
-const COMPANY_BULLETS = [
-  "One-click payroll for teams of 1–500 contractors",
-  "Pay in USDC, contractors receive in local currency",
-  "Agent handles disputes, anomalies, and compliance",
-  "Full reports for your accounting team",
-];
+const DISPLAY = "var(--font-display)";
+const INK = "#0E1A14";
+const MUT = "#5B6B62";
+const FAINT = "#8FA398";
+const MINT = "#12FF80";
+const DEEP = "#0A9200";
+const LINE = "#E7ECE8";
 
-const CONTRACTOR_BULLETS = [
-  "Receive USDC in seconds after payroll runs",
-  "Convert to naira, KES, GHS instantly",
-  "Message the agent directly if something's wrong",
-  "No crypto knowledge needed",
-];
+/* ---------------- accordion ---------------- */
 
-function BulletList({ items }: { items: string[] }) {
+type Item = { icon: LucideIcon; title: string; desc: string };
+
+function Accordion({ items }: { items: Item[] }) {
+  const [open, setOpen] = useState(0);
   return (
-    <ul className="flex flex-col gap-3">
-      {items.map((b) => (
-        <li key={b} className="flex items-start gap-3">
-          <span className="mt-1 shrink-0">
-            <Check size={16} color="#12FF80" strokeWidth={3} />
-          </span>
-          <span style={{ fontSize: "16px", color: "#1A1A1A" }}>{b}</span>
-        </li>
-      ))}
-    </ul>
+    <div style={{ borderBottom: `1px solid ${LINE}` }}>
+      {items.map((it, i) => {
+        const isOpen = open === i;
+        const Icon = it.icon;
+        return (
+          <div key={it.title} style={{ borderTop: `1px solid ${LINE}` }}>
+            <button
+              type="button"
+              onClick={() => setOpen(isOpen ? -1 : i)}
+              className="flex w-full items-center justify-between"
+              style={{ padding: "18px 2px", textAlign: "left" }}
+              aria-expanded={isOpen}
+            >
+              <span className="flex items-center gap-3">
+                <Icon size={18} color={isOpen ? DEEP : FAINT} />
+                <span className="font-semibold" style={{ fontSize: 17, color: INK }}>
+                  {it.title}
+                </span>
+              </span>
+              <ChevronDown size={18} color={FAINT} style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform .3s ease", flexShrink: 0 }} />
+            </button>
+            <div style={{ maxHeight: isOpen ? 220 : 0, overflow: "hidden", transition: "max-height .35s ease" }}>
+              <p style={{ fontSize: 15.5, color: MUT, lineHeight: 1.6, padding: "0 0 20px 30px", maxWidth: 440 }}>
+                {it.desc}
+              </p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
+/* ---------------- gradient panel ---------------- */
+
+function Panel({ bg, children }: { bg: string; children: React.ReactNode }) {
+  return (
+    <div className="relative overflow-hidden" style={{ borderRadius: 26, background: bg, minHeight: 470 }}>
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{ backgroundImage: "repeating-linear-gradient(135deg, rgba(10, 146, 0,0.05) 0 1px, transparent 1px 13px)" }}
+      />
+      {/* faint centre cross, echoing the reference's quadrant grid */}
+      <div aria-hidden className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(10, 146, 0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(10, 146, 0,0.06) 1px, transparent 1px)", backgroundSize: "50% 50%", backgroundPosition: "center" }} />
+      <div className="relative flex h-full items-center justify-center" style={{ padding: "34px" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Logo({ src, size = 22 }: { src: string; size?: number }) {
+  return <img src={src} alt="" width={size} height={size} style={{ width: size, height: size }} />;
+}
+
+/* ---------------- mocks ---------------- */
+
+function MockTreasury() {
+  return (
+    <div className="relative w-full" style={{ maxWidth: 356 }}>
+      {/* card peeking behind */}
+      <div className="absolute" style={{ top: -24, left: 18, right: 18, background: "#FFFFFF", borderRadius: 16, border: "1px solid rgba(14,26,20,0.08)", padding: "11px 15px", boxShadow: "0 18px 36px -26px rgba(14,26,20,0.4)" }}>
+        <div className="flex items-center justify-between">
+          <Logo src="/logos/stellar.svg" size={22} />
+          <span className="flex items-center gap-2" style={{ fontSize: 11, color: FAINT, letterSpacing: "0.06em" }}>
+            STELLAR <Landmark size={12} /> ·· 0130
+          </span>
+        </div>
+      </div>
+
+      {/* main card */}
+      <div style={{ position: "relative", marginTop: 6, background: "#FFFFFF", borderRadius: 18, border: "1px solid rgba(14,26,20,0.09)", boxShadow: "0 34px 66px -30px rgba(14,26,20,0.5)", padding: 18 }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+          <Logo src="/logos/usdc.svg" size={26} />
+          <span className="flex items-center gap-2" style={{ fontSize: 11, color: FAINT, letterSpacing: "0.06em" }}>
+            USDC <Landmark size={12} /> ·· 9593
+          </span>
+        </div>
+        <div className="flex items-baseline gap-1.5" style={{ marginBottom: 14 }}>
+          <span className="font-semibold" style={{ fontSize: 25, color: INK, letterSpacing: "-0.02em" }}>
+            148,320.00
+          </span>
+          <span style={{ fontSize: 14, color: FAINT }}>USDC</span>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(14,26,20,0.07)", paddingTop: 12 }}>
+          {[
+            ["Next payroll", "Feb 01, 2025"],
+            ["Contractors", "18 people"],
+            ["Network", "Stellar"],
+            ["Settlement", "~4 seconds"],
+          ].map(([k, v]) => (
+            <div key={k} className="flex items-center justify-between" style={{ padding: "6px 0" }}>
+              <span style={{ fontSize: 12.5, color: FAINT }}>{k}</span>
+              <span className="font-medium" style={{ fontSize: 12.5, color: INK }}>
+                {v}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 text-center font-medium uppercase" style={{ fontSize: 10, letterSpacing: "0.12em", color: "#B7C4BB", borderTop: "1px solid rgba(14,26,20,0.06)", paddingTop: 12 }}>
+          USDC treasury account
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MockWallet() {
+  return (
+    <div className="relative w-full" style={{ maxWidth: 340 }}>
+      {/* two wallet rows peeking behind */}
+      <div className="absolute" style={{ top: -26, left: 14, right: 14, background: "#FFFFFF", borderRadius: 14, border: "1px solid rgba(14,26,20,0.08)", padding: "10px 14px", boxShadow: "0 16px 32px -24px rgba(14,26,20,0.4)", zIndex: 1 }}>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <Logo src="/logos/usdc.svg" size={20} />
+            <span className="font-medium" style={{ fontSize: 12.5, color: INK }}>
+              USDC
+            </span>
+          </span>
+          <span style={{ fontSize: 10, color: FAINT, letterSpacing: "0.08em" }}>STELLAR WALLET</span>
+        </div>
+      </div>
+
+      {/* main wallet card */}
+      <div style={{ position: "relative", marginTop: 10, background: "#FFFFFF", borderRadius: 18, border: "1px solid rgba(14,26,20,0.09)", boxShadow: "0 34px 66px -30px rgba(14,26,20,0.5)", padding: 18, zIndex: 2 }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+          <span className="flex items-center gap-2">
+            <Logo src="/logos/usdc.svg" size={22} />
+            <span className="font-medium" style={{ fontSize: 13, color: INK }}>
+              USDC
+            </span>
+          </span>
+          <span style={{ fontSize: 10, color: FAINT, letterSpacing: "0.08em" }}>STELLAR WALLET</span>
+        </div>
+        <div className="font-semibold" style={{ fontSize: 24, color: INK, letterSpacing: "-0.02em" }}>
+          $2,480.00
+        </div>
+        <div style={{ borderTop: "1px solid rgba(14,26,20,0.07)", margin: "14px 0 10px", paddingTop: 12 }}>
+          <span className="block" style={{ fontSize: 11, color: FAINT }}>
+            Received this month
+          </span>
+          <span className="font-semibold" style={{ fontSize: 20, color: INK, letterSpacing: "-0.01em" }}>
+            $9,240.00
+          </span>
+        </div>
+        <div className="flex items-center gap-2" style={{ fontSize: 11, color: FAINT }}>
+          <Logo src="/logos/stellar.svg" size={14} />
+          GABC…3253
+          <Copy size={11} />
+          <span style={{ marginLeft: "auto", color: DEEP, fontWeight: 600 }}>+ Paid on time</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- block ---------------- */
+
+type Block = {
+  reverse?: boolean;
+  eyebrow: string;
+  eyebrowIcon: LucideIcon;
+  heading: string;
+  items: Item[];
+  panelBg: string;
+  mock: React.ReactNode;
+};
+
+function ServeBlock({ reverse, eyebrow, eyebrowIcon: EI, heading, items, panelBg, mock }: Block) {
+  return (
+    <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
+      {/* text side */}
+      <div className={reverse ? "md:order-2" : ""}>
+        <span className="flex items-center gap-2.5 font-semibold" style={{ fontSize: 15, color: INK }}>
+          <span className="flex items-center justify-center" style={{ width: 28, height: 28, borderRadius: 9, background: DEEP }}>
+            <EI size={15} color="#fff" />
+          </span>
+          {eyebrow}
+        </span>
+        <h2 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(28px, 3.4vw, 42px)", lineHeight: 1.08, letterSpacing: "-0.02em", color: INK, margin: "20px 0 22px", maxWidth: 460 }}>
+          {heading}
+        </h2>
+        <Accordion items={items} />
+        <div className="mt-8 flex items-center gap-6">
+          <a
+            href="#waitlist"
+            className="flex items-center font-semibold transition-transform hover:scale-[1.02]"
+            style={{ background: MINT, color: "#06231A", borderRadius: 10, height: 46, padding: "0 20px", fontSize: 15, boxShadow: "0 10px 26px -12px rgba(18, 255, 128,0.7)" }}
+          >
+            Join the waitlist
+          </a>
+          <a href="#how-it-works" className="flex items-center gap-1.5 font-semibold" style={{ fontSize: 15, color: INK }}>
+            How it works <ArrowRight size={15} />
+          </a>
+        </div>
+      </div>
+
+      {/* visual side */}
+      <div className={reverse ? "md:order-1" : ""}>
+        <FadeIn>
+          <Panel bg={panelBg}>{mock}</Panel>
+        </FadeIn>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- section ---------------- */
+
+const COMPANY_ITEMS: Item[] = [
+  {
+    icon: FileText,
+    title: "Contract-aware payroll runs",
+    desc: "The agent reads every contract, times the FX and pays your whole team on Stellar, with no spreadsheets and no manual runs.",
+  },
+  {
+    icon: EyeOff,
+    title: "Private by default",
+    desc: "Zero-knowledge proofs keep every salary amount off the public chain while still proving each payment is correct.",
+  },
+  {
+    icon: LayoutDashboard,
+    title: "One dashboard for everything",
+    desc: "Contracts, contractors, payouts and history live in a single view your accounting team can export any time.",
+  },
+];
+
+const CONTRACTOR_ITEMS: Item[] = [
+  {
+    icon: Zap,
+    title: "Paid the moment payroll runs",
+    desc: "Receive USDC on Stellar in seconds, with a plain-English record of what you were paid and exactly why.",
+  },
+  {
+    icon: ArrowLeftRight,
+    title: "Cash out in your currency",
+    desc: "Convert to naira, KES or ZAR through licensed partners where available, or simply hold your balance in USDC.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Your pay stays private",
+    desc: "Zero-knowledge proofs mean your salary is never exposed on-chain, to anyone.",
+  },
+];
+
 export default function WhoWeServeSection() {
   return (
-    <section
-      id="who-we-serve"
-      className="px-5 md:px-10"
-      style={{ background: "#F5F5F5", paddingTop: "96px", paddingBottom: "96px" }}
-    >
-      <div className="mx-auto max-w-container">
-        <FadeIn>
-          <SectionLabel>Who We Serve</SectionLabel>
-          <h2
-            className="mx-auto mt-4 text-center font-medium"
-            style={{
-              color: "#1A1A1A",
-              maxWidth: "640px",
-              fontSize: "clamp(28px, 5vw, 40px)",
-              lineHeight: 1.1,
-            }}
-          >
-            Built for how modern teams actually work.
-          </h2>
-        </FadeIn>
-
-        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Companies */}
-          <FadeIn>
-            <div
-              className="flex h-full flex-col"
-              style={{
-                borderRadius: "20px",
-                border: "2px solid #E8E8E8",
-                background: "#FFFFFF",
-                padding: "48px",
-              }}
-            >
-              <span
-                className="inline-block self-start font-medium"
-                style={{
-                  background: "#DEF6E9",
-                  color: "#0A9200",
-                  borderRadius: "20px",
-                  padding: "4px 12px",
-                  fontSize: "12px",
-                }}
-              >
-                For Companies
-              </span>
-              <h3
-                className="font-medium"
-                style={{ fontSize: "24px", color: "#1A1A1A", marginTop: "16px" }}
-              >
-                You hire the talent. We handle the payroll.
-              </h3>
-              <p style={{ fontSize: "16px", color: "#8A8F98", marginTop: "12px" }}>
-                Startup in San Francisco, scale-up in Berlin, growing team in
-                Lagos. If you hire contractors abroad, Disburs saves you time
-                and money every month.
-              </p>
-              <div
-                style={{
-                  borderTop: "1px solid #E8E8E8",
-                  margin: "24px 0",
-                }}
-              />
-              <BulletList items={COMPANY_BULLETS} />
-              <div className="mt-8">
-                <a
-                  href="#waitlist"
-                  className="inline-flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
-                  style={{
-                    height: "48px",
-                    padding: "12px 24px",
-                    borderRadius: "4px",
-                    background: "#12FF80",
-                    color: "#1A1A1A",
-                    fontSize: "16px",
-                    boxShadow: "rgba(0,0,0,0.06) 0px 4px 4px 0px",
-                  }}
-                >
-                  Join the waitlist →
-                </a>
-              </div>
-            </div>
-          </FadeIn>
-
-          {/* Contractors */}
-          <FadeIn delay={0.1}>
-            <div
-              className="flex h-full flex-col"
-              style={{
-                borderRadius: "20px",
-                border: "2px solid #DEF6E9",
-                background: "#FFFFFF",
-                padding: "48px",
-              }}
-            >
-              <span
-                className="inline-block self-start font-medium"
-                style={{
-                  background: "#F5F5F5",
-                  color: "#1A1A1A",
-                  borderRadius: "20px",
-                  padding: "4px 12px",
-                  fontSize: "12px",
-                }}
-              >
-                For Contractors
-              </span>
-              <h3
-                className="font-medium"
-                style={{ fontSize: "24px", color: "#1A1A1A", marginTop: "16px" }}
-              >
-                Get paid faster. In any currency.
-              </h3>
-              <p style={{ fontSize: "16px", color: "#8A8F98", marginTop: "12px" }}>
-                No more waiting 5 days for a wire. No more PayPal restrictions. No
-                more losing 4% to fees. Your employer runs Disburs, you just get
-                paid.
-              </p>
-              <div
-                style={{
-                  borderTop: "1px solid #E8E8E8",
-                  margin: "24px 0",
-                }}
-              />
-              <BulletList items={CONTRACTOR_BULLETS} />
-              <div className="mt-8">
-                <a
-                  href="#waitlist"
-                  className="inline-flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
-                  style={{
-                    height: "48px",
-                    padding: "12px 24px",
-                    borderRadius: "4px",
-                    background: "transparent",
-                    color: "#1A1A1A",
-                    border: "1px solid #E8E8E8",
-                    fontSize: "16px",
-                  }}
-                >
-                  Invite your employer →
-                </a>
-              </div>
-            </div>
-          </FadeIn>
-        </div>
+    <section id="who-we-serve" className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
+      <div className="mx-auto flex max-w-container flex-col" style={{ gap: 96 }}>
+        <ServeBlock
+          eyebrow="For companies"
+          eyebrowIcon={Building2}
+          heading="Global payroll, run by one agent"
+          items={COMPANY_ITEMS}
+          panelBg="radial-gradient(120% 120% at 80% 12%, #E7FAEE 0%, #F3FBF6 55%, #FBFEFD 100%)"
+          mock={<MockTreasury />}
+        />
+        <ServeBlock
+          reverse
+          eyebrow="For contractors"
+          eyebrowIcon={Users}
+          heading="Get paid in USDC, cash out in your currency"
+          items={CONTRACTOR_ITEMS}
+          panelBg="radial-gradient(120% 120% at 20% 12%, #E1F5EE 0%, #ECF8F3 55%, #FBFEFD 100%)"
+          mock={<MockWallet />}
+        />
       </div>
     </section>
   );
