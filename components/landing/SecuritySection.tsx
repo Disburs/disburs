@@ -81,7 +81,7 @@ export default function SecuritySection() {
         <FadeIn>
           <h2
             className="mx-auto text-center"
-            style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(28px, 4.4vw, 44px)", lineHeight: 1.14, letterSpacing: "-0.02em", color: INK, maxWidth: 760 }}
+            style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(1.65rem, 3.1vw, 2.2rem)", lineHeight: 1.14, letterSpacing: "-0.02em", color: INK, maxWidth: 760 }}
           >
             Autonomous where it helps,{" "}
             <span className="font-bold" style={{ color: DEEP }}>

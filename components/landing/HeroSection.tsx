@@ -127,7 +127,7 @@ export default function HeroSection() {
               fontFamily: DISPLAY,
               fontWeight: 700,
               color: "#FFFFFF",
-              fontSize: "clamp(2.9rem, 6.6vw, 5.6rem)",
+              fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
               lineHeight: 1.05,
               letterSpacing: "-0.015em",
             }}

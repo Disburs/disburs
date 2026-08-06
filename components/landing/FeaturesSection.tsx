@@ -280,7 +280,7 @@ export default function FeaturesSection() {
           <span className="block text-center font-semibold uppercase" style={{ fontSize: "13px", color: DEEP, letterSpacing: "0.12em" }}>
             Product Suite
           </span>
-          <h2 className="mx-auto mt-4 text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: "820px", fontSize: "clamp(30px, 5vw, 46px)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
+          <h2 className="mx-auto mt-4 text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: "820px", fontSize: "clamp(1.7rem, 3.2vw, 2.3rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
             The autonomous payroll platform for global teams.
           </h2>
           <p className="mx-auto mt-5 text-center" style={{ maxWidth: "560px", fontSize: "18px", lineHeight: 1.55, color: MUTED }}>

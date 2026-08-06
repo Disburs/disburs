@@ -215,7 +215,7 @@ function ServeBlock({ reverse, eyebrow, eyebrowIcon: EI, heading, items, panelBg
           </span>
           {eyebrow}
         </span>
-        <h2 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(28px, 3.4vw, 42px)", lineHeight: 1.08, letterSpacing: "-0.02em", color: INK, margin: "20px 0 22px", maxWidth: 460 }}>
+        <h2 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(1.55rem, 2.8vw, 2.05rem)", lineHeight: 1.08, letterSpacing: "-0.02em", color: INK, margin: "20px 0 22px", maxWidth: 460 }}>
           {heading}
         </h2>
         <Accordion items={items} />
