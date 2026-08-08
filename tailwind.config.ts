@@ -21,7 +21,7 @@ const config: Config = {
         sans: ["var(--font-primary)"],
       },
       maxWidth: {
-        container: "1440px",
+        container: "1280px",
       },
       boxShadow: {
         button: "rgba(0,0,0,0.06) 0px 4px 4px 0px",

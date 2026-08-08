@@ -26,7 +26,7 @@ function Logo({ src, label }: { src: string; label: string }) {
 export default function BuiltOnStrip() {
   return (
     <section
-      className="bg-white px-5 md:px-10"
+      className="bg-white px-6 md:px-12"
       style={{ paddingTop: "32px", paddingBottom: "40px" }}
     >
       <div className="mx-auto flex max-w-container flex-col items-center gap-6">

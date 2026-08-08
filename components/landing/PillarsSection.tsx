@@ -138,7 +138,7 @@ function PillarCard({
   return (
     <div className="flex h-full flex-col" style={{ background: tint, borderRadius: 28, padding: "44px 44px 44px" }}>
       <div className="flex flex-wrap items-center gap-3">
-        <h3 className="font-bold" style={{ fontFamily: DISPLAY, fontSize: "clamp(1.55rem, 2.8vw, 2.05rem)", color: INK, letterSpacing: "-0.025em", lineHeight: 1 }}>
+        <h3 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(1.4rem, 2.5vw, 1.85rem)", color: INK, letterSpacing: "-0.02em", lineHeight: 1.05 }}>
           {title}
         </h3>
         {soon && (
@@ -164,10 +164,10 @@ function PillarCard({
 
 export default function PillarsSection() {
   return (
-    <section className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
+    <section className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
       <div className="mx-auto max-w-container">
         <FadeIn>
-          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, fontSize: "clamp(1.65rem, 3.1vw, 2.2rem)", lineHeight: 1.08, letterSpacing: "-0.02em", maxWidth: 760 }}>
+          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.08, letterSpacing: "-0.02em", maxWidth: 760 }}>
             It runs your payroll. It keeps it private.
           </h2>
           <p className="mx-auto mt-5 text-center" style={{ fontSize: 18, color: MUT, maxWidth: 520, lineHeight: 1.55 }}>

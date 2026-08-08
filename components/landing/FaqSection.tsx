@@ -75,11 +75,11 @@ export default function FaqSection() {
   const items = CATEGORIES[cat].items;
 
   return (
-    <section id="faq" className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
+    <section id="faq" className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
       <div className="mx-auto max-w-container">
         {/* Centered header, matching the other sections */}
         <FadeIn>
-          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: 720, fontSize: "clamp(1.65rem, 3.1vw, 2.2rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
+          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: 720, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
             Have a question?
           </h2>
           <p className="mx-auto mt-5 text-center" style={{ color: MUT, fontSize: 18, maxWidth: 560, lineHeight: 1.55 }}>

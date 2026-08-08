@@ -274,7 +274,7 @@ function VerticalCard({ card }: { card: Card }) {
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
+    <section id="features" className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
       <div className="mx-auto max-w-container">
         <FadeIn>
           <span className="block text-center font-semibold uppercase" style={{ fontSize: "13px", color: DEEP, letterSpacing: "0.12em" }}>

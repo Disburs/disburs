@@ -28,7 +28,7 @@ export default function CtaSection() {
   return (
     <section
       id="waitlist"
-      className="relative overflow-hidden px-5 md:px-10"
+      className="relative overflow-hidden px-6 md:px-12"
       style={{ background: "#1A1A1A", paddingTop: "96px", paddingBottom: "96px" }}
     >
       {/* mint glow */}

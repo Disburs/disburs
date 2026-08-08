@@ -13,7 +13,7 @@ const EXAMPLES = [
 export default function ChatSection() {
   return (
     <section
-      className="bg-white px-5 md:px-10"
+      className="bg-white px-6 md:px-12"
       style={{ paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
