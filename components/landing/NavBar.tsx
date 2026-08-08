@@ -49,7 +49,7 @@ export default function NavBar() {
       }}
     >
       <div
-        className="mx-auto flex max-w-container items-center justify-between px-5 md:px-10"
+        className="mx-auto flex max-w-container items-center justify-between px-6 md:px-12"
         style={{
           height: scrolled ? "62px" : "81px",
           background: scrolled ? "rgba(255,255,255,0.82)" : "transparent",
@@ -68,7 +68,7 @@ export default function NavBar() {
       >
         {/* Left: wordmark */}
         <a href="#top" aria-label="Disburs home">
-          <Wordmark dark={!scrolled} />
+          <Wordmark dark={false} />
         </a>
 
         {/* Center: nav links (desktop) */}
@@ -78,7 +78,7 @@ export default function NavBar() {
               key={link.href}
               href={link.href}
               className="font-normal transition-colors hover:text-mint"
-              style={{ fontSize: "15px", color: scrolled ? "#1A1A1A" : "#C9CFCC" }}
+              style={{ fontSize: "15px", color: "#1A1A1A" }}
             >
               {link.label}
             </a>
@@ -110,7 +110,7 @@ export default function NavBar() {
           aria-label="Open menu"
           onClick={() => setOpen(true)}
         >
-          <Menu size={24} color={scrolled ? "#1A1A1A" : "#F4F6F4"} />
+          <Menu size={24} color="#1A1A1A" />
         </button>
       </div>
 
