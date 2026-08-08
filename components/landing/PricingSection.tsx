@@ -25,8 +25,8 @@ const PLANS: Plan[] = [
     price: "$29",
     tagline: "For small teams paying up to 10 contractors.",
     features: [
-      "Access to the payroll agent",
-      "Stellar batch payments",
+      "Core zero-knowledge privacy",
+      "Stellar batch payouts",
       "Cash-out in 2 countries",
       "Basic reporting",
       "Email support",
@@ -52,7 +52,7 @@ const PLANS: Plan[] = [
     tagline: "For teams paying 50+ contractors.",
     everythingIn: "Growth",
     features: [
-      "Agent-to-agent payment APIs",
+      "Platform integration APIs",
       "Custom approval workflows",
       "Cash-out in all countries",
       "Zero-knowledge private payroll",
@@ -187,7 +187,7 @@ export default function PricingSection() {
             A plan for every team
           </h2>
           <p className="mx-auto mt-5 text-center" style={{ color: MUT, fontSize: 18, maxWidth: 560, lineHeight: 1.55 }}>
-            Every plan includes the Disburs agent and a flat 0.5% fee per payroll run. Waitlist companies lock these rates.
+            Every plan includes the autonomous agent, zero-knowledge verification, and a flat 0.5% fee per payroll run. Waitlist companies lock these rates.
           </p>
         </FadeIn>
 

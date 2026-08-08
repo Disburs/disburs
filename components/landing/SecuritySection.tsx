@@ -83,15 +83,15 @@ export default function SecuritySection() {
             className="mx-auto text-center"
             style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.14, letterSpacing: "-0.02em", color: INK, maxWidth: 760 }}
           >
-            Autonomous where it helps,{" "}
+            Autonomous where it matters.{" "}
             <span className="font-bold" style={{ color: DEEP }}>
-              never unchecked
-            </span>{" "}
-            where it counts
+              Bounded where it counts.
+            </span>
           </h2>
-          <p className="mx-auto mt-5 text-center" style={{ fontSize: "18px", color: MUT, maxWidth: 560, lineHeight: 1.55 }}>
-            The agent is powerful, but bounded. It only ever does what you allow, on
-            funds it never holds, with every decision on the record.
+          <p className="mx-auto mt-5 text-center" style={{ fontSize: "18px", color: MUT, maxWidth: 580, lineHeight: 1.55 }}>
+            The agent runs your contractor payroll end to end, inside strict
+            non-custodial guardrails: funds it never holds, caps it can never
+            exceed, and human approval on every major payout.
           </p>
         </FadeIn>
 

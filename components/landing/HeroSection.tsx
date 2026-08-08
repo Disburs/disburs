@@ -86,9 +86,9 @@ export default function HeroSection() {
               letterSpacing: "-0.02em",
             }}
           >
-            Payroll that runs itself,
+            Payroll with privacy.
             <br />
-            and stays private
+            Complete autonomy.
           </motion.h1>
 
           <motion.p
@@ -98,10 +98,10 @@ export default function HeroSection() {
             className="mx-auto"
             style={{ fontSize: "19px", lineHeight: 1.6, color: "#5B6B62", marginTop: "22px", maxWidth: "600px" }}
           >
-            Disburs is private payroll for teams paying contractors across
-            Africa. It reads contracts, times the FX, resolves disputes and
-            settles on Stellar on its own, while zero-knowledge proofs keep
-            every salary private.
+            Disburs is the autonomous payroll platform for teams paying
+            contractors across Africa. Zero-knowledge cryptography keeps your
+            salary data confidential while an intelligent agent reads your
+            contracts, times the FX, and settles instantly on Stellar.
           </motion.p>
 
           <motion.div
@@ -125,7 +125,7 @@ export default function HeroSection() {
             >
               Join the waitlist
             </a>
-            <a href="#how-it-works" className="group inline-flex items-center gap-3">
+            <a href="#security" className="group inline-flex items-center gap-3">
               <span
                 className="flex items-center justify-center transition-transform group-hover:scale-105"
                 style={{ width: "56px", height: "56px", borderRadius: "9999px", background: "#FFFFFF", border: "1px solid #E2E7E3", boxShadow: "0 8px 20px -10px rgba(14,26,20,0.2)" }}
@@ -133,7 +133,7 @@ export default function HeroSection() {
                 <Play size={19} color="#0A9200" fill="#0A9200" style={{ marginLeft: "2px" }} />
               </span>
               <span className="font-medium" style={{ fontSize: "16px", color: "#0E1A14" }}>
-                See how it works
+                Explore ZK privacy
               </span>
             </a>
           </motion.div>
