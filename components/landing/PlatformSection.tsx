@@ -1,4 +1,4 @@
-import { Code2, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import FadeIn from "./FadeIn";
 
 const DISPLAY = "var(--font-display)";
@@ -25,7 +25,7 @@ function CodeMock() {
   const punc = { color: "#8FA398" };
 
   return (
-    <div className="overflow-hidden" style={{ background: "#0B1512", borderRadius: 16, border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 40px 80px -40px rgba(6,35,26,0.6)" }}>
+    <div className="overflow-hidden" style={{ background: "#0B1512", borderRadius: 20, border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 40px 80px -40px rgba(6,35,26,0.6)" }}>
       <div className="flex items-center gap-2" style={{ padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
         <span style={{ width: 11, height: 11, borderRadius: 999, background: "#FF5F57" }} />
         <span style={{ width: 11, height: 11, borderRadius: 999, background: "#FEBC2E" }} />
@@ -51,50 +51,46 @@ function CodeMock() {
 export default function PlatformSection() {
   return (
     <section id="platform" className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
-      <div className="mx-auto grid max-w-container items-center gap-12 lg:grid-cols-2 lg:gap-16">
-        {/* left: copy */}
+      <div className="mx-auto max-w-container">
         <FadeIn>
-          <div>
-            <span className="flex items-center gap-2.5 font-semibold" style={{ fontSize: 14, color: INK }}>
-              <span className="flex items-center justify-center" style={{ width: 28, height: 28, borderRadius: 9, background: DEEP }}>
-                <Code2 size={15} color="#fff" />
+          <span className="block text-center font-semibold uppercase" style={{ color: DEEP, fontSize: 13, letterSpacing: "0.12em" }}>
+            Platform &amp; APIs
+          </span>
+          <h2 className="mx-auto mt-4 text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: 720, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
+            Embedded payroll for modern platforms
+          </h2>
+          <p className="mx-auto mt-5 text-center" style={{ color: MUT, fontSize: 18, maxWidth: 620, lineHeight: 1.55 }}>
+            Disburs is modular payroll infrastructure. Fintech platforms, HR
+            portals and contractor systems can embed our autonomous settlement
+            and zero-knowledge verification engine straight into their own
+            workflows, without building the crypto and compliance plumbing from
+            scratch.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {AUDIENCES.map((a) => (
+              <span key={a} className="font-medium" style={{ fontSize: 13, color: DEEP, background: "#DEF6E9", borderRadius: 999, padding: "6px 13px" }}>
+                {a}
               </span>
-              Platform &amp; APIs
-            </span>
+            ))}
+          </div>
+        </FadeIn>
 
-            <h2 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.12, letterSpacing: "-0.02em", color: INK, margin: "20px 0 18px", maxWidth: 440 }}>
-              Embedded payroll for modern platforms
-            </h2>
+        <FadeIn delay={0.1}>
+          <div className="mx-auto mt-12" style={{ maxWidth: 820 }}>
+            <CodeMock />
+          </div>
+        </FadeIn>
 
-            <p style={{ fontSize: 17, color: MUT, lineHeight: 1.6, maxWidth: 480 }}>
-              Disburs is more than a dashboard. It is modular payroll
-              infrastructure: fintech platforms, HR portals and contractor
-              systems can embed our autonomous settlement and zero-knowledge
-              verification engine straight into their own workflows, without
-              building the crypto and compliance plumbing from scratch.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {AUDIENCES.map((a) => (
-                <span key={a} className="font-medium" style={{ fontSize: 13, color: DEEP, background: "#DEF6E9", borderRadius: 999, padding: "6px 13px" }}>
-                  {a}
-                </span>
-              ))}
-            </div>
-
+        <FadeIn>
+          <div className="mt-8 flex justify-center">
             <a
               href="#"
-              className="mt-8 inline-flex items-center gap-2 font-semibold transition-transform hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 font-semibold transition-transform hover:scale-[1.02]"
               style={{ background: MINT, color: "#06231A", borderRadius: 11, height: 48, padding: "0 22px", fontSize: 15, boxShadow: "0 12px 28px -12px rgba(18,255,128,0.6)" }}
             >
               Explore developer APIs <ArrowRight size={16} />
             </a>
           </div>
-        </FadeIn>
-
-        {/* right: code mock */}
-        <FadeIn delay={0.1}>
-          <CodeMock />
         </FadeIn>
       </div>
     </section>
