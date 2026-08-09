@@ -1,6 +1,6 @@
 "use client";
 
-import { Twitter, Github, Linkedin } from "lucide-react";
+import { Twitter, Github, ArrowRight } from "lucide-react";
 import { DemoOnly } from "@/components/DemoGate";
 
 const MINT = "#12FF80";
@@ -14,34 +14,17 @@ const COLUMNS: { header: string; links: Link[] }[] = [
     links: [
       { label: "How it works", href: "#how-it-works" },
       { label: "Features", href: "#features" },
+      { label: "Platform & APIs", href: "#platform" },
       { label: "Pricing", href: "#pricing" },
-      { label: "Security", href: "#security" },
-    ],
-  },
-  {
-    header: "Learn",
-    links: [
       { label: "FAQ", href: "#faq" },
-      { label: "Blog", href: "#" },
-      { label: "Docs", href: "#" },
-      { label: "Roadmap", href: "#" },
     ],
   },
   {
     header: "Company",
     links: [
-      { label: "About", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
-      { label: "Press", href: "#" },
-    ],
-  },
-  {
-    header: "Legal",
-    links: [
+      { label: "Contact", href: "mailto:hello@disburs.io" },
       { label: "Privacy", href: "#" },
       { label: "Terms", href: "#" },
-      { label: "Cookies", href: "#" },
     ],
   },
 ];
@@ -60,7 +43,7 @@ export default function Footer() {
       style={{
         background:
           "radial-gradient(60% 120% at 50% -8%, rgba(18,255,128,0.10) 0%, rgba(18,255,128,0) 46%), #06130D",
-        paddingTop: "128px",
+        paddingTop: "120px",
         paddingBottom: "40px",
       }}
     >
@@ -87,21 +70,28 @@ export default function Footer() {
 
       <div className="relative mx-auto max-w-container" style={{ zIndex: 1 }}>
         <div className="flex flex-col gap-14 md:flex-row md:justify-between">
-          {/* Brand */}
-          <div>
+          {/* Brand + CTA */}
+          <div style={{ maxWidth: 340 }}>
             <span className="font-medium" style={{ fontSize: "22px", color: "#FFFFFF" }}>
               disburs<span style={{ color: MINT }}>.</span>
             </span>
-            <p style={{ fontSize: "14px", color: LINK, marginTop: "12px", maxWidth: 240, lineHeight: 1.5 }}>
-              The autonomous payroll agent for global teams.
+            <p style={{ fontSize: "15px", color: LINK, marginTop: "12px", lineHeight: 1.55 }}>
+              Private, autonomous payroll for teams paying contractors across Africa. Settled on Stellar.
             </p>
+            <a
+              href="#waitlist"
+              className="mt-6 inline-flex items-center gap-2 font-semibold transition-transform hover:scale-[1.02]"
+              style={{ background: MINT, color: "#06231A", borderRadius: 999, height: 44, padding: "0 20px", fontSize: 14.5, boxShadow: "0 12px 28px -12px rgba(18,255,128,0.6)" }}
+            >
+              Join the waitlist <ArrowRight size={16} />
+            </a>
           </div>
 
           {/* Link columns */}
-          <div className="grid grid-cols-2 gap-x-12 gap-y-10 sm:grid-cols-4 md:gap-x-16">
+          <div className="grid grid-cols-2 gap-x-14 gap-y-10 sm:gap-x-24">
             {COLUMNS.map((col) => (
               <div key={col.header}>
-                <h4 className="font-semibold" style={{ fontSize: "15px", color: HEAD, marginBottom: "18px" }}>
+                <h4 className="font-semibold" style={{ fontSize: "14px", color: HEAD, marginBottom: "16px" }}>
                   {col.header}
                 </h4>
                 <ul className="flex flex-col gap-3.5">
@@ -119,7 +109,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom row */}
-        <div className="mt-20 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+        <div className="mt-16 flex flex-col items-start justify-between gap-5 border-t sm:flex-row sm:items-center" style={{ borderColor: "rgba(255,255,255,0.08)", paddingTop: "24px" }}>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span style={{ fontSize: "14px", color: "rgba(233,244,238,0.5)" }}>© 2026 Disburs Ltd.</span>
             <DemoOnly>
@@ -132,12 +122,13 @@ export default function Footer() {
             </DemoOnly>
           </div>
 
-          <div className="flex items-center gap-5">
-            {[Twitter, Github, Linkedin].map((Icon, i) => (
-              <a key={i} href="#" aria-label="Social link" className="transition-colors" style={{ color: LINK }} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
-                <Icon size={19} />
-              </a>
-            ))}
+          <div className="flex items-center gap-4">
+            <a href="#" aria-label="Disburs on X" className="transition-colors" style={{ color: LINK }} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+              <Twitter size={19} />
+            </a>
+            <a href="#" aria-label="Disburs on GitHub" className="transition-colors" style={{ color: LINK }} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+              <Github size={19} />
+            </a>
           </div>
         </div>
       </div>
