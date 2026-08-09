@@ -3,7 +3,6 @@ import HeroSection from "@/components/landing/HeroSection";
 import BuiltOnStrip from "@/components/landing/BuiltOnStrip";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import WhoWeServeSection from "@/components/landing/WhoWeServeSection";
-import PillarsSection from "@/components/landing/PillarsSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import PlatformSection from "@/components/landing/PlatformSection";
 import SecuritySection from "@/components/landing/SecuritySection";
@@ -19,7 +18,6 @@ export default function Home() {
       <BuiltOnStrip />
       <HowItWorksSection />
       <WhoWeServeSection />
-      <PillarsSection />
       <FeaturesSection />
       <PlatformSection />
       <SecuritySection />
