@@ -72,7 +72,7 @@ function Accordion({ items }: { items: Item[] }) {
 
 function Panel({ bg, children }: { bg: string; children: React.ReactNode }) {
   return (
-    <div className="relative overflow-hidden" style={{ borderRadius: 26, background: bg, minHeight: 470 }}>
+    <div className="relative overflow-hidden" style={{ borderRadius: 20, background: bg, minHeight: 470 }}>
       <div
         aria-hidden
         className="absolute inset-0"
@@ -284,7 +284,20 @@ const CONTRACTOR_ITEMS: Item[] = [
 export default function WhoWeServeSection() {
   return (
     <section id="who-we-serve" className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
-      <div className="mx-auto flex max-w-container flex-col" style={{ gap: 96 }}>
+      <div className="mx-auto max-w-container">
+        <FadeIn>
+          <span className="block text-center font-semibold uppercase" style={{ color: DEEP, fontSize: 13, letterSpacing: "0.12em" }}>
+            Who we serve
+          </span>
+          <h2 className="mx-auto mt-4 text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: 720, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
+            Built for both sides of payroll
+          </h2>
+          <p className="mx-auto mt-5 text-center" style={{ color: MUT, fontSize: 18, maxWidth: 560, lineHeight: 1.55 }}>
+            Whether you run payroll or receive it, Disburs works the way you do.
+          </p>
+        </FadeIn>
+
+        <div className="mt-16 flex flex-col" style={{ gap: 96 }}>
         <ServeBlock
           eyebrow="For companies"
           eyebrowIcon={Building2}
@@ -302,6 +315,7 @@ export default function WhoWeServeSection() {
           panelBg="radial-gradient(120% 120% at 20% 12%, #E1F5EE 0%, #ECF8F3 55%, #FBFEFD 100%)"
           mock={<MockWallet />}
         />
+        </div>
       </div>
     </section>
   );
