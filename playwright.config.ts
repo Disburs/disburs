@@ -30,8 +30,11 @@ export default defineConfig({
   // the animation-heavy landing page). If you already have a server on :3000
   // (e.g. `npm run dev`), it's reused instead. NEXT_PUBLIC_API_URL is pinned to
   // the app's origin so the mocked waitlist request is same-origin.
+  //
+  // In CI the build runs as its own workflow step (clearer failures, no double
+  // build), so here we only need to serve it.
   webServer: {
-    command: "npm run build && npm run start",
+    command: process.env.CI ? "npm run start" : "npm run build && npm run start",
     url: "http://localhost:3000",
     env: { NEXT_PUBLIC_API_URL: "http://localhost:3000" },
     reuseExistingServer: !process.env.CI,

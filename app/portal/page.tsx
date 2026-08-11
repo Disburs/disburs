@@ -15,7 +15,7 @@ import {
   AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
-import { Card, Badge, Button, statusVariant, Avatar } from "@/components/portal/ui";
+import { Card, Badge, Button, statusVariant } from "@/components/portal/ui";
 import {
   activityFeed,
   nextPayroll,
