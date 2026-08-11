@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Play,
   Search,
@@ -23,13 +23,11 @@ import {
 const DISPLAY = "var(--font-display)";
 const MINT = "#12FF80";
 
-/* ---------------- Typewriter ---------------- */
+/* ---------------- Cycling word (fade up) ---------------- */
 const WORDS = ["thinks", "reasons", "protects", "resolves", "pays"];
 
-function useTypewriter() {
-  const [text, setText] = useState("thinks");
+function useWordCycle(interval = 2100) {
   const [i, setI] = useState(0);
-  const [deleting, setDeleting] = useState(false);
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
@@ -38,23 +36,11 @@ function useTypewriter() {
 
   useEffect(() => {
     if (reduced) return;
-    const word = WORDS[i];
-    let t: number;
-    if (!deleting && text === word) {
-      t = window.setTimeout(() => setDeleting(true), 1500);
-    } else if (deleting && text === "") {
-      setDeleting(false);
-      setI((p) => (p + 1) % WORDS.length);
-    } else {
-      t = window.setTimeout(
-        () => setText(deleting ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1)),
-        deleting ? 45 : 90
-      );
-    }
-    return () => window.clearTimeout(t);
-  }, [text, deleting, i, reduced]);
+    const id = window.setInterval(() => setI((p) => (p + 1) % WORDS.length), interval);
+    return () => window.clearInterval(id);
+  }, [reduced, interval]);
 
-  return { text, reduced };
+  return { word: WORDS[i], reduced };
 }
 
 /* ---------------- Floating coins ---------------- */
@@ -94,7 +80,7 @@ function Coins() {
             style={{
               width: c.size,
               height: c.size,
-              filter: "drop-shadow(0 14px 22px rgba(0,0,0,0.45)) drop-shadow(0 0 18px rgba(18,255,128,0.18))",
+              filter: "drop-shadow(0 14px 22px rgba(0,0,0,0.45)) drop-shadow(0 0 18px rgba(18, 255, 128,0.18))",
             }}
           />
         </div>
@@ -104,7 +90,7 @@ function Coins() {
 }
 
 export default function HeroSection() {
-  const { text, reduced } = useTypewriter();
+  const { word, reduced } = useWordCycle();
   return (
     <section
       id="top"
@@ -152,12 +138,31 @@ export default function HeroSection() {
                 color: MINT,
                 display: "inline-block",
                 minWidth: "6em",
+                height: "1.12em",
+                lineHeight: "1.12em",
                 textAlign: "center",
                 whiteSpace: "nowrap",
+                overflow: "hidden",
+                verticalAlign: "bottom",
+                position: "relative",
               }}
             >
-              {text}
-              {!reduced && <span className="caret" style={{ height: "0.82em" }} />}
+              {reduced ? (
+                word
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={word}
+                    initial={{ y: "110%", opacity: 0 }}
+                    animate={{ y: "0%", opacity: 1 }}
+                    exit={{ y: "-110%", opacity: 0 }}
+                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ display: "inline-block" }}
+                  >
+                    {word}
+                  </motion.span>
+                </AnimatePresence>
+              )}
             </span>
           </motion.h1>
 
@@ -187,9 +192,9 @@ export default function HeroSection() {
                 padding: "0 38px",
                 borderRadius: "9999px",
                 background: MINT,
-                color: "#06120C",
+                color: "#06231A",
                 fontSize: "16px",
-                boxShadow: "0 16px 36px -12px rgba(18,255,128,0.6)",
+                boxShadow: "0 16px 36px -12px rgba(18, 255, 128,0.6)",
               }}
             >
               Join the waitlist
@@ -327,7 +332,7 @@ function DisbursDashboard() {
                   <div style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: "19px", color: "#15181C" }}>~4s</div>
                 </div>
               </div>
-              <button className="mt-4 inline-flex items-center gap-1.5 font-medium" style={{ height: "36px", padding: "0 15px", borderRadius: "9px", background: MINT, color: "#06120C", fontSize: "13px" }}>
+              <button className="mt-4 inline-flex items-center gap-1.5 font-medium" style={{ height: "36px", padding: "0 15px", borderRadius: "9px", background: MINT, color: "#06231A", fontSize: "13px" }}>
                 Review payroll <ArrowRight size={14} />
               </button>
             </div>

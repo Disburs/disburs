@@ -114,7 +114,7 @@ a {
   display: inline-block;
   width: 3px;
   border-radius: 2px;
-  background: #12ff80;
+  background: #12FF80;
   animation: caret 1s step-start infinite;
   margin-left: 4px;
   vertical-align: baseline;
@@ -129,11 +129,16 @@ a {
   }
 }
 
+/* Gradient-stroked lucide icons (brand mint -> deep green) */
+.icon-grad {
+  stroke: url(#disburs-icon-grad);
+}
+
 /* Soft mint wash for bento feature tiles */
 .bento-gradient {
   background: radial-gradient(
     130% 130% at 100% 0%,
-    #def6e9 0%,
+    #DEF6E9 0%,
     #ffffff 55%
   );
 }
