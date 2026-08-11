@@ -27,9 +27,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
       # `next build` type-checks and fails on type errors, so this doubles as
-      # our compile check. NEXT_PUBLIC_API_URL is inlined at build time; pin it
-      # to the app origin so the mocked waitlist call is same-origin under e2e.
+      # our compile check (ESLint runs in the Lint step above, not here). Note
+      # NEXT_PUBLIC_API_URL is inlined at build time; pin it to the app origin so
+      # the mocked waitlist call is same-origin under e2e.
       - name: Build
         run: npm run build
         env:
