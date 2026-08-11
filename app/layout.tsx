@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import WaitlistModal from "@/components/WaitlistModal";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://disburs.io"),
@@ -38,7 +39,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <WaitlistModal />
+      </body>
     </html>
   );
 }

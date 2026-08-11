@@ -1,15 +1,13 @@
 import NavBar from "@/components/landing/NavBar";
 import HeroSection from "@/components/landing/HeroSection";
 import BuiltOnStrip from "@/components/landing/BuiltOnStrip";
-import PillarsSection from "@/components/landing/PillarsSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import AgentDemoSection from "@/components/landing/AgentDemoSection";
-import FeaturesSection from "@/components/landing/FeaturesSection";
 import WhoWeServeSection from "@/components/landing/WhoWeServeSection";
-import PricingSection from "@/components/landing/PricingSection";
+import PillarsSection from "@/components/landing/PillarsSection";
+import FeaturesSection from "@/components/landing/FeaturesSection";
 import SecuritySection from "@/components/landing/SecuritySection";
+import PricingSection from "@/components/landing/PricingSection";
 import FaqSection from "@/components/landing/FaqSection";
-import CtaSection from "@/components/landing/CtaSection";
 import Footer from "@/components/landing/Footer";
 
 export default function Home() {
@@ -18,15 +16,13 @@ export default function Home() {
       <NavBar />
       <HeroSection />
       <BuiltOnStrip />
-      <PillarsSection />
       <HowItWorksSection />
-      <AgentDemoSection />
+      <WhoWeServeSection />
+      <PillarsSection />
       <FeaturesSection />
       <SecuritySection />
-      <WhoWeServeSection />
       <PricingSection />
       <FaqSection />
-      <CtaSection />
       <Footer />
     </main>
   );
