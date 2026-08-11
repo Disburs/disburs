@@ -40,7 +40,6 @@ const ITEMS: Item[] = [
     icon: EyeOff,
     title: "Private by default",
     desc: "Zero-knowledge proofs keep every amount off the public chain.",
-    soon: true,
   },
   {
     icon: ScrollText,
