@@ -81,7 +81,7 @@ function Card({ plan }: { plan: Plan }) {
       className="relative flex h-full flex-col overflow-hidden"
       style={{
         background: "#FFFFFF",
-        borderRadius: 18,
+        borderRadius: 20,
         border: `1px solid ${featured ? "#DBF3E5" : LINE}`,
         boxShadow: featured
           ? "0 44px 90px -44px rgba(14,26,20,0.45)"

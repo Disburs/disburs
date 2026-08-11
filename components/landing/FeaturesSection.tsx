@@ -252,7 +252,7 @@ function VerticalCard({ card }: { card: Card }) {
   return (
     <div
       className="relative flex h-full flex-col overflow-hidden"
-      style={{ background: card.tint, borderRadius: "24px", padding: isIllo ? "30px" : "30px 30px 0", minHeight: 470 }}
+      style={{ background: card.tint, borderRadius: "20px", padding: isIllo ? "30px" : "30px 30px 0", minHeight: 470 }}
     >
       <CategoryLabel Icon={card.Icon} label={card.label} />
       <h3 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "23px", lineHeight: 1.14, color: INK, margin: "14px 0 16px" }}>
@@ -304,7 +304,7 @@ export default function FeaturesSection() {
           ))}
 
           <FadeIn delay={0.05} className="h-full md:col-span-2">
-            <div className="relative flex h-full flex-col overflow-hidden md:flex-row md:items-center" style={{ background: "#E7F7EE", borderRadius: "24px", padding: "30px", gap: "26px" }}>
+            <div className="relative flex h-full flex-col overflow-hidden md:flex-row md:items-center" style={{ background: "#E7F7EE", borderRadius: "20px", padding: "30px", gap: "26px" }}>
               <div className="md:max-w-[300px]">
                 <CategoryLabel Icon={BarChart3} label="Insights" />
                 <h3 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "23px", lineHeight: 1.14, color: INK, margin: "14px 0 16px" }}>

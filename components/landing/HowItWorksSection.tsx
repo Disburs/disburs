@@ -276,7 +276,7 @@ export default function HowItWorksSection() {
         <div className="mx-auto mt-12 grid max-w-[980px] grid-cols-1 gap-6 md:grid-cols-2">
           {CARDS.map((c, i) => (
             <FadeIn key={c.title} delay={(i % 2) * 0.06} className="h-full">
-              <div className="flex h-full flex-col" style={{ background: "#F8FAF9", border: "1px solid rgba(14,26,20,0.07)", borderRadius: "22px", padding: "26px" }}>
+              <div className="flex h-full flex-col" style={{ background: "#F8FAF9", border: "1px solid rgba(14,26,20,0.07)", borderRadius: "20px", padding: "26px" }}>
                 <h3 className="font-semibold" style={{ fontFamily: DISPLAY, fontSize: "20px", color: INK, lineHeight: 1.2 }}>
                   {c.title}
                 </h3>
