@@ -5,6 +5,7 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import WhoWeServeSection from "@/components/landing/WhoWeServeSection";
 import PillarsSection from "@/components/landing/PillarsSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
+import PlatformSection from "@/components/landing/PlatformSection";
 import SecuritySection from "@/components/landing/SecuritySection";
 import PricingSection from "@/components/landing/PricingSection";
 import FaqSection from "@/components/landing/FaqSection";
@@ -20,6 +21,7 @@ export default function Home() {
       <WhoWeServeSection />
       <PillarsSection />
       <FeaturesSection />
+      <PlatformSection />
       <SecuritySection />
       <PricingSection />
       <FaqSection />

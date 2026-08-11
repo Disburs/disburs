@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const NAV_LINKS = [
   { label: "How it Works", href: "#how-it-works" },
   { label: "Features", href: "#features" },
+  { label: "Platform & APIs", href: "#platform" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Who We Serve", href: "#who-we-serve" },
-  { label: "Waitlist", href: "#waitlist" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 function Wordmark({ dark = false }: { dark?: boolean }) {
@@ -86,7 +86,14 @@ export default function NavBar() {
         </nav>
 
         {/* Right: actions (desktop) */}
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-4 lg:flex">
+          <a
+            href="#"
+            className="font-medium transition-colors hover:text-mint"
+            style={{ fontSize: "14px", color: "#1A1A1A" }}
+          >
+            Sign In
+          </a>
           <a
             href="#waitlist"
             className="flex items-center justify-center font-medium transition-transform hover:scale-[1.02]"
