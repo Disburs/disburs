@@ -56,7 +56,7 @@ function hoverOut(e: React.MouseEvent<HTMLElement>) {
 export default function Footer() {
   return (
     <footer
-      className="relative overflow-hidden px-5 md:px-10"
+      className="relative overflow-hidden px-6 md:px-12"
       style={{
         background:
           "radial-gradient(60% 120% at 50% -8%, rgba(18,255,128,0.10) 0%, rgba(18,255,128,0) 46%), #06130D",
@@ -130,7 +130,6 @@ export default function Footer() {
                 Contractor demo →
               </a>
             </DemoOnly>
-            <span style={{ fontSize: "14px", color: "rgba(233,244,238,0.4)" }}>Built on Stellar · Powered by Claude</span>
           </div>
 
           <div className="flex items-center gap-5">
