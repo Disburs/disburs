@@ -324,7 +324,7 @@ export default function AgentDemoSection() {
     <section className="px-5 md:px-10" style={{ background: "linear-gradient(180deg, #E7FAEE 0px, #F1F7F3 300px, #F6F8F6 520px)", paddingTop: "96px", paddingBottom: "96px" }}>
       <div className="mx-auto max-w-container">
         <FadeIn>
-          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(30px, 5vw, 46px)", lineHeight: 1.06, letterSpacing: "-0.02em", color: INK, maxWidth: 720 }}>
+          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, fontSize: "clamp(1.7rem, 3.2vw, 2.3rem)", lineHeight: 1.06, letterSpacing: "-0.02em", color: INK, maxWidth: 720 }}>
             What true autonomy looks like
           </h2>
           <p className="mx-auto mt-4 text-center" style={{ fontSize: "18px", color: MUT, maxWidth: 560, lineHeight: 1.55 }}>

@@ -49,7 +49,7 @@ export default function CtaSection() {
             className="font-medium"
             style={{
               color: "#FFFFFF",
-              fontSize: "clamp(32px, 6vw, 56px)",
+              fontSize: "clamp(1.75rem, 3.6vw, 2.4rem)",
               lineHeight: 1.1,
             }}
           >

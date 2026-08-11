@@ -265,7 +265,7 @@ export default function HowItWorksSection() {
     <section id="how-it-works" className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "80px" }}>
       <div className="mx-auto max-w-container">
         <FadeIn>
-          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: "760px", fontSize: "clamp(28px, 4.6vw, 42px)", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+          <h2 className="mx-auto text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: "760px", fontSize: "clamp(1.65rem, 3.1vw, 2.2rem)", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
             Fund your treasury. Your agent handles the rest.
           </h2>
           <p className="mx-auto mt-4 text-center" style={{ fontSize: "18px", color: MUTED, maxWidth: "560px" }}>

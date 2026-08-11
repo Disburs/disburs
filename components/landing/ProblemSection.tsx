@@ -65,7 +65,7 @@ export default function ProblemSection() {
             style={{
               color: "#1A1A1A",
               maxWidth: "560px",
-              fontSize: "clamp(28px, 5vw, 40px)",
+              fontSize: "clamp(1.6rem, 3vw, 2.1rem)",
               lineHeight: 1.1,
             }}
           >

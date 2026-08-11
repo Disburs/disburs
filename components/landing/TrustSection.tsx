@@ -33,7 +33,7 @@ export default function TrustSection() {
             className="text-center font-medium"
             style={{
               color: "#1A1A1A",
-              fontSize: "clamp(28px, 5vw, 40px)",
+              fontSize: "clamp(1.6rem, 3vw, 2.1rem)",
               lineHeight: 1.1,
             }}
           >
