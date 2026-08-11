@@ -177,13 +177,13 @@ function Card({ plan }: { plan: Plan }) {
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "104px" }}>
+    <section id="pricing" className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "104px" }}>
       <div className="mx-auto max-w-container">
         <FadeIn>
           <span className="block text-center font-semibold uppercase" style={{ color: DEEP, fontSize: 13, letterSpacing: "0.12em" }}>
             Pricing
           </span>
-          <h2 className="mx-auto mt-4 text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: 720, fontSize: "clamp(1.65rem, 3.1vw, 2.2rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
+          <h2 className="mx-auto mt-4 text-center font-semibold" style={{ fontFamily: DISPLAY, color: INK, maxWidth: 720, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.08, letterSpacing: "-0.02em" }}>
             A plan for every team
           </h2>
           <p className="mx-auto mt-5 text-center" style={{ color: MUT, fontSize: 18, maxWidth: 560, lineHeight: 1.55 }}>

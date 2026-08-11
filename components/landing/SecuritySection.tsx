@@ -66,7 +66,7 @@ const ITEMS: Item[] = [
 
 export default function SecuritySection() {
   return (
-    <section id="security" className="bg-white px-5 md:px-10" style={{ paddingTop: "100px", paddingBottom: "104px" }}>
+    <section id="security" className="bg-white px-6 md:px-12" style={{ paddingTop: "100px", paddingBottom: "104px" }}>
       {/* Gradient definition for the icon strokes */}
       <svg width="0" height="0" aria-hidden style={{ position: "absolute" }}>
         <defs>
@@ -81,7 +81,7 @@ export default function SecuritySection() {
         <FadeIn>
           <h2
             className="mx-auto text-center"
-            style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(1.65rem, 3.1vw, 2.2rem)", lineHeight: 1.14, letterSpacing: "-0.02em", color: INK, maxWidth: 760 }}
+            style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(1.6rem, 3vw, 2.25rem)", lineHeight: 1.14, letterSpacing: "-0.02em", color: INK, maxWidth: 760 }}
           >
             Autonomous where it helps,{" "}
             <span className="font-bold" style={{ color: DEEP }}>

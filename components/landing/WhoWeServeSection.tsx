@@ -283,7 +283,7 @@ const CONTRACTOR_ITEMS: Item[] = [
 
 export default function WhoWeServeSection() {
   return (
-    <section id="who-we-serve" className="bg-white px-5 md:px-10" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
+    <section id="who-we-serve" className="bg-white px-6 md:px-12" style={{ paddingTop: "96px", paddingBottom: "100px" }}>
       <div className="mx-auto flex max-w-container flex-col" style={{ gap: 96 }}>
         <ServeBlock
           eyebrow="For companies"

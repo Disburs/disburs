@@ -54,7 +54,7 @@ const PAINS: Pain[] = [
 export default function ProblemSection() {
   return (
     <section
-      className="px-5 md:px-10"
+      className="px-6 md:px-12"
       style={{ background: "#F5F5F5", paddingTop: "96px", paddingBottom: "96px" }}
     >
       <div className="mx-auto max-w-container">
