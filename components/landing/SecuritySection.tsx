@@ -23,8 +23,8 @@ type Item = { icon: LucideIcon; title: string; desc: string; soon?: boolean };
 const ITEMS: Item[] = [
   {
     icon: Wallet,
-    title: "Non-custodial funds",
-    desc: "Money moves wallet-to-wallet on Stellar. Disburs never holds it.",
+    title: "Encrypted key custody",
+    desc: "Wallet keys are encrypted at rest and only ever used to sign your own payments.",
   },
   {
     icon: ShieldCheck,
@@ -89,8 +89,8 @@ export default function SecuritySection() {
           </h2>
           <p className="mx-auto mt-5 text-center" style={{ fontSize: "18px", color: MUT, maxWidth: 580, lineHeight: 1.55 }}>
             The agent runs your contractor payroll end to end, inside strict
-            non-custodial guardrails: funds it never holds, caps it can never
-            exceed, and human approval on every major payout.
+            guardrails: spending caps it can never exceed, and human approval on
+            every major payout.
           </p>
         </FadeIn>
 

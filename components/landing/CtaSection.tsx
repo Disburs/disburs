@@ -141,8 +141,7 @@ export default function CtaSection() {
               className="mt-6"
               style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)" }}
             >
-              No credit card required · Non-custodial, we never hold your funds ·
-              Built on Stellar
+              No credit card required · Encrypted end to end · Built on Stellar
             </p>
           </div>
         </FadeIn>

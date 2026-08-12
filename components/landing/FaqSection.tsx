@@ -53,16 +53,12 @@ const CATEGORIES: Category[] = [
     name: "Privacy & security",
     items: [
       {
-        q: "Does Disburs ever hold our money?",
-        a: "No. Disburs is non-custodial. Funds move directly from your wallet to your contractors on Stellar. We never take custody of your money.",
-      },
-      {
         q: "Can anyone see our payroll on the blockchain?",
         a: "Stellar is a public network, so records are visible. We are bringing zero-knowledge proofs to Disburs so payroll amounts stay private while the network still verifies every payment is valid.",
       },
       {
         q: "Is it secure?",
-        a: "Funds are non-custodial, data is encrypted in transit and at rest, and every agent decision is logged in plain English for a full audit trail.",
+        a: "Data is encrypted in transit and at rest, and every agent decision is logged in plain English for a full audit trail.",
       },
     ],
   },
