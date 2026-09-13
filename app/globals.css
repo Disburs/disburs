@@ -1,25 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Poppins', 'Inter', -apple-system, sans-serif;
+  --font-primary: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'General Sans', 'Geist', 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Design system colors */
-  --mint: #12FF80;
-  --mint-hover: #0A9200;
-  --ink: #1A1A1A;
-  --ink-deep: #15171C;
-  --muted: #8A8F98;
-  --light-bg: #F5F5F5;
-  --paper: #F6F5F0;
-  --card-border: #E8E8E8;
-  --link: #0550AE;
-  --mint-soft: #DEF6E9;
+  /* Semantic tokens (mirrored in tailwind.config.ts) */
+  --ink: #0e1a14;
+  --ink-deep: #08110d;
+  --paper: #fafaf7;
+  --line: #e7ece8;
+  --muted: #5b6b62;
+  --mint: #12ff80;
+  --accent: #07751a;
+
+  /* kept for the waitlist modal */
+  --mint-hover: #0a9200;
+  --mint-soft: #def6e9;
 }
 
 * {
@@ -30,9 +32,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Offset anchor targets so they clear the 81px sticky navbar */
+/* Anchor targets clear the sticky navbar. */
 [id] {
-  scroll-margin-top: 96px;
+  scroll-margin-top: 88px;
 }
 
 html,
@@ -41,15 +43,16 @@ body {
   margin: 0;
   font-family: var(--font-primary);
   color: var(--ink);
-  background: #ffffff;
+  background: var(--paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   font-size: 16px;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 1.6;
 }
 
 a {
@@ -57,141 +60,64 @@ a {
   text-decoration: none;
 }
 
-/* Blinking typing cursor for hero agent chat */
-@keyframes blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
+button {
+  font: inherit;
 }
 
-.typing-cursor {
-  display: inline-block;
-  width: 1px;
-  margin-left: 1px;
-  animation: blink 1s step-start infinite;
+/* Visible, on-brand focus for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.on-dark :focus-visible {
+  outline-color: var(--mint);
 }
 
-/* Hide scrollbar on mobile drawer when open */
+/* Lock body scroll while the mobile drawer / modal is open. */
 .no-scroll {
   overflow: hidden;
 }
 
-/* Floating crypto assets on the hero */
-@keyframes floaty {
-  0%,
-  100% {
-    transform: translateY(0) rotate(var(--rot, 0deg));
-  }
-  50% {
-    transform: translateY(-16px) rotate(var(--rot, 0deg));
-  }
+/* Tabular figures for amounts and stats so columns never jitter. */
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
-.floaty {
-  animation: floaty var(--dur, 7s) ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-  will-change: transform;
-}
-
-/* Blinking caret for the typewriter headline */
-@keyframes caret {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-.caret {
-  display: inline-block;
-  width: 3px;
-  border-radius: 2px;
-  background: #12ff80;
-  animation: caret 1s step-start infinite;
-  margin-left: 4px;
-  vertical-align: baseline;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .floaty {
-    animation: none;
-  }
-  .caret {
-    animation: none;
-  }
-}
-
-/* Soft mint wash for bento feature tiles */
-.bento-gradient {
-  background: radial-gradient(
-    130% 130% at 100% 0%,
-    #def6e9 0%,
-    #ffffff 55%
-  );
-}
-
-/* Soft mint radial glow blob (decorative, behind content) */
-.mint-glow {
-  background: radial-gradient(
-    circle,
-    rgba(18, 255, 128, 0.22) 0%,
-    rgba(18, 255, 128, 0) 70%
-  );
-  pointer-events: none;
-}
-
-/* Per-character reveal for the cycling hero word */
-@keyframes char-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.45em);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-char-in {
-  display: inline-block;
+/*
+ * Scroll reveal. The hidden state is scoped to `.js` (added by an inline
+ * script on the landing page), so server HTML and no-JS clients render
+ * everything visible. Reduced-motion users never see the hidden state.
+ */
+.js .reveal {
   opacity: 0;
-  animation: char-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translateY(18px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
-
-/* Seamless horizontal marquee (two copies, translate -50%) */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.marquee {
-  animation: marquee 34s linear infinite;
-  will-change: transform;
-}
-
-/* Reverse direction: content travels left to right */
-.marquee--ltr {
-  animation-direction: reverse;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-char-in {
-    animation: none;
-    opacity: 1;
+  html {
+    scroll-behavior: auto;
   }
-  .marquee {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
