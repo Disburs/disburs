@@ -5,10 +5,10 @@ test.describe("Landing page", () => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Disburs/i);
     await expect(
-      page.getByRole("heading", { name: /Payroll with privacy/i }),
+      page.getByRole("heading", { name: /keeps every salary private/i }),
     ).toBeVisible();
     await expect(
-      page.getByText(/Disburs is the autonomous payroll platform/i),
+      page.getByText(/Disburs is autonomous payroll infrastructure/i),
     ).toBeVisible();
   });
 

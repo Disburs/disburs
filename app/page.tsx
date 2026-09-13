@@ -1,28 +1,37 @@
-import NavBar from "@/components/landing/NavBar";
-import HeroSection from "@/components/landing/HeroSection";
-import BuiltOnStrip from "@/components/landing/BuiltOnStrip";
-import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import WhoWeServeSection from "@/components/landing/WhoWeServeSection";
-import FeaturesSection from "@/components/landing/FeaturesSection";
-import PlatformSection from "@/components/landing/PlatformSection";
-import SecuritySection from "@/components/landing/SecuritySection";
-import PricingSection from "@/components/landing/PricingSection";
-import FaqSection from "@/components/landing/FaqSection";
+import Nav from "@/components/landing/Nav";
+import Hero from "@/components/landing/Hero";
+import BuiltOn from "@/components/landing/BuiltOn";
+import Problem from "@/components/landing/Problem";
+import HowItWorks from "@/components/landing/HowItWorks";
+import Pillars from "@/components/landing/Pillars";
+import Audience from "@/components/landing/Audience";
+import Security from "@/components/landing/Security";
+import Pricing from "@/components/landing/Pricing";
+import Faq from "@/components/landing/Faq";
+import FinalCta from "@/components/landing/FinalCta";
 import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <main className="overflow-x-clip">
-      <NavBar />
-      <HeroSection />
-      <BuiltOnStrip />
-      <HowItWorksSection />
-      <WhoWeServeSection />
-      <FeaturesSection />
-      <PlatformSection />
-      <SecuritySection />
-      <PricingSection />
-      <FaqSection />
+    <main id="top" className="overflow-x-clip">
+      {/* Marks JS as available before any content below paints, so `.reveal`
+          only hides content when it can actually be revealed again. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: "document.currentScript.parentElement.classList.add('js')",
+        }}
+      />
+      <Nav />
+      <Hero />
+      <BuiltOn />
+      <Problem />
+      <HowItWorks />
+      <Pillars />
+      <Audience />
+      <Security />
+      <Pricing />
+      <Faq />
+      <FinalCta />
       <Footer />
     </main>
   );
