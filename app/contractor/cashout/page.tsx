@@ -1,17 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import {
-  ArrowDown,
-  Check,
-  Loader2,
-  Building2,
-  Smartphone,
-  Plus,
-  Clock,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowDown, Check, Loader2, Plus, Clock, ArrowRight } from "lucide-react";
+import { Button, PageTitle } from "@/components/portal/ui";
 import { contractor, destinations, ngn } from "@/lib/contractor";
 
 export default function CashoutPage() {
@@ -30,144 +21,100 @@ export default function CashoutPage() {
   if (phase === "done") {
     const d = destinations.find((x) => x.id === dest)!;
     return (
-      <div className="mx-auto flex flex-col items-center text-center" style={{ maxWidth: "440px", paddingTop: "40px" }}>
-        <span
-          className="flex items-center justify-center"
-          style={{ width: "64px", height: "64px", borderRadius: "9999px", background: "#DEF6E9" }}
-        >
-          <Check size={32} color="#0A9200" />
+      <div className="mx-auto flex max-w-[440px] flex-col items-center pt-10 text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink-deep">
+          <Check size={26} strokeWidth={2.5} />
         </span>
-        <h1 className="mt-5 font-medium" style={{ fontSize: "24px", color: "#1A1A1A" }}>
+        <h1 className="mt-7 font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[44px]">
           Cash-out started
         </h1>
-        <p className="mt-2" style={{ fontSize: "15px", color: "#5C6068", lineHeight: 1.5, maxWidth: "300px" }}>
-          <strong style={{ color: "#1A1A1A" }}>₦{ngn(receive)}</strong> is on its way to{" "}
+        <p className="mt-4 max-w-[320px] text-[16px] leading-[1.5] text-muted">
+          <strong className="tabular font-medium text-ink">₦{ngn(receive)}</strong> is on its way to{" "}
           {d.label} {d.detail}.
         </p>
-        <div
-          className="mt-4 flex items-center gap-2"
-          style={{ background: "#FFFFFF", border: "1px solid #ECEDEF", borderRadius: "12px", padding: "12px 16px" }}
-        >
-          <Clock size={16} color="#8A8F98" />
-          <span style={{ fontSize: "13.5px", color: "#5C6068" }}>
-            Funds typically arrive within 2–4 hours
-          </span>
+        <div className="mt-6 flex items-center gap-2 text-[13.5px] text-muted">
+          <Clock size={15} />
+          <span>Funds typically arrive within 2–4 hours</span>
         </div>
-        <Link
-          href="/contractor"
-          className="mt-6 flex items-center justify-center gap-2 font-medium"
-          style={{ height: "48px", width: "100%", borderRadius: "12px", background: "#12FF80", color: "#1A1A1A", fontSize: "15px" }}
-        >
-          Back to home <ArrowRight size={16} />
-        </Link>
+        <div className="mt-8 w-full">
+          <Button href="/contractor" variant="ink" size="lg" full>
+            Back to home <ArrowRight size={16} />
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex flex-col gap-4" style={{ maxWidth: "520px" }}>
-      <div>
-        <h1 className="font-medium" style={{ fontSize: "22px", color: "#1A1A1A" }}>
-          Cash out
-        </h1>
-        <p style={{ fontSize: "13.5px", color: "#8A8F98", marginTop: "2px" }}>
-          Convert your USDC to {contractor.currency} and send it home.
-        </p>
-      </div>
+    <div className="mx-auto flex max-w-[520px] flex-col gap-4">
+      <PageTitle sub={<>Convert your USDC to {contractor.currency} and send it home.</>}>Cash out</PageTitle>
 
       {/* Amount */}
-      <div style={{ background: "#FFFFFF", border: "1px solid #ECEDEF", borderRadius: "16px", padding: "16px" }}>
+      <div className="rounded-[24px] border border-line bg-canvas p-5">
         <div className="flex items-center justify-between">
-          <span style={{ fontSize: "13px", color: "#8A8F98" }}>You convert</span>
-          <button
-            onClick={() => setAmount(String(contractor.balance))}
-            className="font-medium"
-            style={{ fontSize: "12px", color: "#0A9200" }}
-          >
+          <span className="text-[13px] text-muted">You convert</span>
+          <button type="button" onClick={() => setAmount(String(contractor.balance))} className="tabular text-[13px] font-medium text-accent hover:underline">
             Max ${ngn(contractor.balance)}
           </button>
         </div>
         <div className="mt-2 flex items-center gap-2">
-          <span className="font-medium" style={{ fontSize: "28px", color: "#1A1A1A" }}>
-            $
-          </span>
+          <span className="font-display text-[34px] font-semibold tracking-[-0.03em] text-ink">$</span>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full bg-transparent font-medium outline-none"
-            style={{ fontSize: "28px", color: "#1A1A1A" }}
+            aria-label="Amount in USDC"
+            className="tabular w-full min-w-0 bg-transparent font-display text-[34px] font-semibold tracking-[-0.03em] text-ink outline-none"
           />
-          <span className="font-medium" style={{ fontSize: "16px", color: "#8A8F98" }}>
-            USDC
-          </span>
+          <span className="text-[15px] text-muted">USDC</span>
         </div>
       </div>
 
       {/* arrow */}
-      <div className="flex justify-center" style={{ marginTop: "-8px", marginBottom: "-8px" }}>
-        <span
-          className="flex items-center justify-center"
-          style={{ width: "34px", height: "34px", borderRadius: "9999px", background: "#DEF6E9", border: "3px solid #F7F8F9" }}
-        >
-          <ArrowDown size={16} color="#0A9200" />
-        </span>
+      <div className="-my-2 flex justify-center text-muted">
+        <ArrowDown size={18} />
       </div>
 
       {/* Receive */}
-      <div style={{ background: "#FFFFFF", border: "1px solid #ECEDEF", borderRadius: "16px", padding: "16px" }}>
-        <span style={{ fontSize: "13px", color: "#8A8F98" }}>They receive</span>
-        <div className="mt-2 font-medium" style={{ fontSize: "28px", color: "#1A1A1A" }}>
-          ₦{ngn(receive)}
-        </div>
-        <div
-          className="mt-2 inline-flex items-center gap-1.5"
-          style={{ background: "#F7FBF8", borderRadius: "8px", padding: "5px 10px", fontSize: "12.5px", color: "#0A7A1E" }}
-        >
-          <span className="inline-block rounded-full" style={{ width: "6px", height: "6px", background: "#12FF80" }} />
+      <div className="rounded-[24px] border border-line bg-subtle p-5">
+        <span className="text-[13px] text-muted">They receive</span>
+        <div className="tabular mt-2 font-display text-[34px] font-semibold leading-none tracking-[-0.03em] text-ink">
+            <span className="font-sans font-medium">₦</span>
+            {ngn(receive)}
+          </div>
+        <div className="tabular mt-3 text-[13px] text-accent">
           1 USDC = {ngn(contractor.rate)} {contractor.currency} right now
         </div>
       </div>
 
       {/* Destination */}
-      <div style={{ background: "#FFFFFF", border: "1px solid #ECEDEF", borderRadius: "16px", padding: "16px" }}>
-        <div className="mb-2 flex items-center justify-between">
-          <span className="font-medium" style={{ fontSize: "14px", color: "#1A1A1A" }}>
-            Send to
-          </span>
-          <button className="flex items-center gap-1" style={{ fontSize: "12.5px", color: "#0A9200" }}>
+      <div className="rounded-[24px] border border-line bg-canvas p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-[16px] font-medium text-ink">Send to</span>
+          <button type="button" className="flex items-center gap-1 text-[13px] font-medium text-accent hover:underline">
             <Plus size={13} /> Add new
           </button>
         </div>
         <div className="flex flex-col gap-2">
           {destinations.map((d) => {
             const active = dest === d.id;
-            const Icon = d.type === "Bank account" ? Building2 : Smartphone;
             return (
               <button
                 key={d.id}
+                type="button"
                 onClick={() => setDest(d.id)}
-                className="flex items-center gap-3"
-                style={{
-                  borderRadius: "12px",
-                  border: "1.5px solid " + (active ? "#12FF80" : "#ECEDEF"),
-                  background: active ? "#F7FBF8" : "#FFFFFF",
-                  padding: "12px 14px",
-                }}
+                aria-pressed={active}
+                className={`flex items-center gap-3 rounded-[16px] border px-4 py-3.5 text-left transition-colors ${
+                  active ? "border-ink bg-subtle" : "border-line bg-canvas hover:border-ink"
+                }`}
               >
-                <span
-                  className="flex items-center justify-center"
-                  style={{ width: "38px", height: "38px", borderRadius: "10px", background: "#F0F1F3" }}
-                >
-                  <Icon size={18} color="#5C6068" />
-                </span>
-                <div className="flex-1 text-left">
-                  <div style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                    {d.label} <span style={{ color: "#8A8F98" }}>{d.detail}</span>
+                <div className="flex-1">
+                  <div className="text-[14.5px] text-ink">
+                    {d.label} <span className="text-muted">{d.detail}</span>
                   </div>
-                  <div style={{ fontSize: "12px", color: "#8A8F98" }}>{d.type}</div>
+                  <div className="text-[13px] text-muted">{d.type}</div>
                 </div>
-                {active && <Check size={18} color="#0A9200" />}
+                {active && <Check size={18} className="text-accent" />}
               </button>
             );
           })}
@@ -175,31 +122,19 @@ export default function CashoutPage() {
       </div>
 
       {/* Arrival + confirm */}
-      <div className="flex items-center gap-2" style={{ fontSize: "13px", color: "#8A8F98", padding: "0 2px" }}>
+      <div className="flex items-center gap-2 px-1 text-[13px] text-muted">
         <Clock size={15} /> Funds typically arrive within 2–4 hours
       </div>
 
-      <button
-        onClick={confirm}
-        disabled={parsed <= 0 || phase === "sending"}
-        className="flex items-center justify-center gap-2 font-medium active:scale-[0.99]"
-        style={{
-          height: "50px",
-          borderRadius: "13px",
-          background: "#12FF80",
-          color: "#1A1A1A",
-          fontSize: "15px",
-          opacity: parsed <= 0 ? 0.5 : 1,
-        }}
-      >
+      <Button onClick={confirm} disabled={parsed <= 0 || phase === "sending"} size="lg" full>
         {phase === "sending" ? (
           <>
             <Loader2 size={18} className="animate-spin" /> Converting…
           </>
         ) : (
-          <>Confirm cash-out of ₦{ngn(receive)}</>
+          <span className="tabular">Confirm cash-out of ₦{ngn(receive)}</span>
         )}
-      </button>
+      </Button>
     </div>
   );
 }
