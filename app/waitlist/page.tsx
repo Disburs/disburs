@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 
 export default function WaitlistPage() {
   const [email, setEmail] = useState("");
@@ -27,99 +27,77 @@ export default function WaitlistPage() {
   }
 
   return (
-    <main
-      className="flex min-h-screen flex-col items-center justify-center px-5"
-      style={{ background: "#FFFFFF" }}
-    >
-      <div className="w-full text-center" style={{ maxWidth: "480px" }}>
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-2 transition-colors hover:text-ink"
-          style={{ fontSize: "14px", color: "#8A8F98" }}
-        >
+    <main className="flex min-h-screen flex-col bg-canvas">
+      <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
+        <Link href="/" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
+          Disburs
+        </Link>
+        <Link href="/" className="inline-flex items-center gap-2 text-[14px] text-muted transition-colors hover:text-ink">
           <ArrowLeft size={16} /> Back to home
         </Link>
+      </header>
 
-        <div className="mb-6">
-          <span className="font-medium" style={{ fontSize: "24px", color: "#1A1A1A" }}>
-            disburs<span style={{ color: "#12FF80" }}>.</span>
-          </span>
-        </div>
-
-        <h1
-          className="font-medium"
-          style={{ fontSize: "clamp(28px, 6vw, 40px)", color: "#1A1A1A", lineHeight: 1.1 }}
-        >
-          Join the waitlist
-        </h1>
-        <p className="mx-auto mt-4" style={{ fontSize: "18px", color: "#8A8F98" }}>
-          First 20 companies get 3 months free. Be one of them.
-        </p>
-
-        <div className="mt-10">
+      <div className="flex flex-1 items-center justify-center px-5 py-16">
+        <div className="w-full max-w-[520px]">
           {status === "done" ? (
-            <div
-              className="flex items-center justify-center font-medium"
-              style={{
-                minHeight: "48px",
-                borderRadius: "4px",
-                background: "#DEF6E9",
-                color: "#0A9200",
-                padding: "12px 16px",
-                fontSize: "16px",
-              }}
-            >
-              You&rsquo;re on the list. We&rsquo;ll be in touch. ✓
+            <div>
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink-deep">
+                <Check size={26} strokeWidth={2.5} />
+              </span>
+              <h1 className="mt-7 font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[44px]">
+                You&rsquo;re on the list.
+              </h1>
+              <p className="mt-5 text-[17px] leading-[1.5] text-muted">
+                You&rsquo;re on the list. We&rsquo;ll be in touch at{" "}
+                <b className="font-medium text-ink">{email}</b> the moment it&rsquo;s your turn.
+              </p>
+              <Link
+                href="/"
+                className="mt-8 inline-flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.98]"
+              >
+                Back to home
+              </Link>
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@company.com"
-                className="w-full flex-1 outline-none transition-colors"
-                style={{
-                  background: "#FFFFFF",
-                  border: "1px solid #E8E8E8",
-                  borderRadius: "4px",
-                  height: "48px",
-                  padding: "12px 16px",
-                  color: "#1A1A1A",
-                  fontSize: "16px",
-                }}
-                onFocus={(e) => (e.currentTarget.style.border = "1px solid #12FF80")}
-                onBlur={(e) => (e.currentTarget.style.border = "1px solid #E8E8E8")}
-              />
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="flex shrink-0 items-center justify-center font-medium transition-transform hover:scale-[1.02] disabled:opacity-70"
-                style={{
-                  height: "48px",
-                  padding: "12px 24px",
-                  borderRadius: "4px",
-                  background: "#12FF80",
-                  color: "#1A1A1A",
-                  fontSize: "16px",
-                  boxShadow: "rgba(0,0,0,0.06) 0px 4px 4px 0px",
-                }}
-              >
-                {status === "loading" ? "Joining..." : "Join the Waitlist"}
-              </button>
-            </form>
-          )}
+            <>
+              <h1 className="max-w-[10ch] font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[44px]">
+                Join the <em className="font-medium italic">waitlist.</em>
+              </h1>
+              <p className="mt-4 text-[16px] leading-[1.5] text-muted md:text-[17px]">
+                First 20 companies get 3 months free. Be one of them.
+              </p>
 
-          {status === "error" && (
-            <p className="mt-3" style={{ fontSize: "14px", color: "#D14343" }}>
-              Something went wrong. Please try again.
-            </p>
-          )}
+              <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-6">
+                <label className="block">
+                  <span className="mb-3 block text-[15px] font-medium text-ink">Work email</span>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@company.com"
+                    className="h-14 w-full rounded-none border border-line bg-canvas px-4 text-[16px] text-ink placeholder:text-faint focus:border-ink focus:outline-none"
+                  />
+                </label>
 
-          <p className="mt-6" style={{ fontSize: "14px", color: "#8A8F98" }}>
-            No credit card required · Cancel anytime · Built on Stellar
-          </p>
+                {status === "error" && (
+                  <p className="text-[14px] text-[#A32D1C]">Something went wrong. Please try again.</p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-mint text-[17px] font-medium text-ink-deep transition-[opacity,transform] duration-150 enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {status === "loading" ? <Loader2 size={20} className="animate-spin" /> : "Join the waitlist"}
+                </button>
+              </form>
+
+              <p className="mt-5 text-[13.5px] text-muted">
+                No credit card required · Cancel anytime · Built on Stellar
+              </p>
+            </>
+          )}
         </div>
       </div>
     </main>

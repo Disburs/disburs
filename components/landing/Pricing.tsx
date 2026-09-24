@@ -19,7 +19,7 @@ const PLANS: Plan[] = [
     tagline: "For growing teams of 11 to 50 contractors.",
     everythingIn: "Starter",
     featured: true,
-    features: ["Contract reading & interpretation", "Autonomous dispute resolution", "FX rate optimization", "Cash-out in 4 countries", "Priority support"],
+    features: ["Contract reading & interpretation", "Routine exception handling", "FX rate optimization", "Cash-out in 4 countries", "Priority support"],
   },
   {
     name: "Scale",

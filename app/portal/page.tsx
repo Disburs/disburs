@@ -15,14 +15,8 @@ import {
   AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
-import { Card, Badge, Button, statusVariant } from "@/components/portal/ui";
-import {
-  activityFeed,
-  nextPayroll,
-  payrollRuns,
-  company,
-  type Activity,
-} from "@/lib/mock";
+import { Card, Badge, Button, PageTitle, StatTile, statusVariant } from "@/components/portal/ui";
+import { activityFeed, nextPayroll, payrollRuns, company, type Activity } from "@/lib/mock";
 
 const ICONS: Record<Activity["icon"], LucideIcon> = {
   check: CheckCircle2,
@@ -42,36 +36,25 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-5">
       {/* Greeting */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="font-medium" style={{ fontSize: "22px", color: "#1A1A1A" }}>
-            Good morning, {company.contact.split(" ")[0]}.
-          </h2>
-          <p style={{ fontSize: "14px", color: "#8A8F98", marginTop: "2px" }}>
-            Here&rsquo;s what your agent has been doing.
-          </p>
-        </div>
-        <Button href="/portal/chat" variant="secondary">
-          <Sparkles size={16} color="#0A9200" /> Talk to agent
-        </Button>
-      </div>
+      <PageTitle
+        sub={<>Here&rsquo;s what your agent has been doing.</>}
+        action={
+          <Button href="/portal/chat" variant="secondary">
+            <Sparkles size={16} className="text-accent" /> Talk to agent
+          </Button>
+        }
+      >
+        Good morning, {company.contact.split(" ")[0]}.
+      </PageTitle>
 
       {/* Alert banner */}
-      <div
-        className="flex flex-wrap items-center justify-between gap-3"
-        style={{
-          background: "#FBEFD6",
-          border: "1px solid #F2DDA8",
-          borderRadius: "12px",
-          padding: "14px 18px",
-        }}
-      >
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-[#FBF1DC] px-5 py-4 text-[#8A5A00]">
         <div className="flex items-center gap-3">
-          <AlertTriangle size={18} color="#A66A00" />
-          <span style={{ fontSize: "14px", color: "#7A5200" }}>
-            Balance is <strong>${fmt(company.balance)}</strong>. The Dec 1 run
-            needs <strong>${fmt(nextPayroll.total)}</strong>. Top up{" "}
-            <strong>$2,600</strong> to stay covered.
+          <AlertTriangle size={18} className="shrink-0" />
+          <span className="text-[14.5px]">
+            Balance is <strong className="font-semibold">${fmt(company.balance)}</strong>. The Dec 1 run
+            needs <strong className="font-semibold">${fmt(nextPayroll.total)}</strong>. Top up{" "}
+            <strong className="font-semibold">$2,600</strong> to stay covered.
           </span>
         </div>
         <Button href="/portal/wallet" size="sm">
@@ -84,64 +67,28 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-5 lg:col-span-2">
           {/* Next payroll */}
           <Card padding={0}>
-            <div
-              className="flex flex-wrap items-center justify-between gap-3"
-              style={{ padding: "20px 24px", borderBottom: "1px solid #F0F1F3" }}
-            >
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-5">
               <div>
-                <div style={{ fontSize: "13px", color: "#8A8F98" }}>
-                  Next payroll
-                </div>
-                <div
-                  className="mt-1 font-medium"
-                  style={{ fontSize: "20px", color: "#1A1A1A" }}
-                >
-                  {nextPayroll.date}
-                </div>
+                <div className="text-[13px] text-muted">Next payroll</div>
+                <div className="mt-1 text-[20px] font-medium text-ink">{nextPayroll.date}</div>
               </div>
               <Badge variant={statusVariant(nextPayroll.status)} dot>
                 {nextPayroll.status}
               </Badge>
             </div>
-            <div className="grid grid-cols-3" style={{ padding: "20px 24px" }}>
-              <div>
-                <div style={{ fontSize: "12px", color: "#8A8F98" }}>
-                  Estimated total
+            <div className="grid grid-cols-1 gap-5 px-6 py-5 sm:grid-cols-3 sm:gap-0">
+              {[
+                ["Estimated total", `$${fmt(nextPayroll.total)}`],
+                ["Contractors", String(nextPayroll.count)],
+                ["Settles in", "~4s"],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <div className="text-[13px] text-muted">{label}</div>
+                  <div className="tabular mt-2 font-display text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink">{value}</div>
                 </div>
-                <div
-                  className="mt-1 font-medium"
-                  style={{ fontSize: "22px", color: "#1A1A1A" }}
-                >
-                  ${fmt(nextPayroll.total)}
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: "12px", color: "#8A8F98" }}>
-                  Contractors
-                </div>
-                <div
-                  className="mt-1 font-medium"
-                  style={{ fontSize: "22px", color: "#1A1A1A" }}
-                >
-                  {nextPayroll.count}
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: "12px", color: "#8A8F98" }}>
-                  Settles in
-                </div>
-                <div
-                  className="mt-1 font-medium"
-                  style={{ fontSize: "22px", color: "#1A1A1A" }}
-                >
-                  ~4s
-                </div>
-              </div>
+              ))}
             </div>
-            <div
-              className="flex items-center gap-3"
-              style={{ padding: "0 24px 20px" }}
-            >
+            <div className="flex flex-wrap items-center gap-3 px-6 pb-5">
               <Button href="/portal/payroll">
                 Review payroll <ArrowRight size={16} />
               </Button>
@@ -158,140 +105,60 @@ export default function DashboardPage() {
               { label: "Paid this month", value: "$7,180", sub: "7 contractors" },
               { label: "Avg. FX achieved", value: "1,618", sub: "NGN / USDC" },
             ].map((s) => (
-              <Card key={s.label}>
-                <div style={{ fontSize: "13px", color: "#8A8F98" }}>
-                  {s.label}
-                </div>
-                <div
-                  className="mt-2 font-medium"
-                  style={{ fontSize: "26px", color: "#1A1A1A" }}
-                >
-                  {s.value}
-                </div>
-                <div style={{ fontSize: "12px", color: "#8A8F98", marginTop: "2px" }}>
-                  {s.sub}
-                </div>
-              </Card>
+              <StatTile key={s.label} label={s.label} value={s.value} sub={s.sub} />
             ))}
           </div>
 
           {/* Recent runs */}
           <Card padding={0}>
-            <div
-              className="flex items-center justify-between"
-              style={{ padding: "18px 24px", borderBottom: "1px solid #F0F1F3" }}
-            >
-              <h3
-                className="font-medium"
-                style={{ fontSize: "15px", color: "#1A1A1A" }}
-              >
-                Recent payroll runs
-              </h3>
-              <Link
-                href="/portal/history"
-                className="flex items-center gap-1"
-                style={{ fontSize: "13px", color: "#0550AE" }}
-              >
+            <div className="flex items-center justify-between border-b border-line px-6 py-4">
+              <h3 className="text-[16px] font-medium text-ink">Recent payroll runs</h3>
+              <Link href="/portal/history" className="flex items-center gap-1 text-[13px] font-medium text-accent">
                 View all <ArrowUpRight size={14} />
               </Link>
             </div>
-            <div>
-              {payrollRuns.slice(0, 3).map((run, i) => (
-                <div
-                  key={run.id}
-                  className="flex items-center justify-between"
-                  style={{
-                    padding: "14px 24px",
-                    borderBottom:
-                      i < 2 ? "1px solid #F0F1F3" : "none",
-                  }}
-                >
+            <ul className="divide-y divide-line">
+              {payrollRuns.slice(0, 3).map((run) => (
+                <li key={run.id} className="flex items-center justify-between gap-4 px-6 py-4">
                   <div>
-                    <div style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                      {run.date}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#8A8F98" }}>
+                    <div className="text-[14.5px] text-ink">{run.date}</div>
+                    <div className="text-[13px] text-muted">
                       {run.count} contractors · tx {run.tx}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span
-                      className="font-medium"
-                      style={{ fontSize: "14px", color: "#1A1A1A" }}
-                    >
-                      ${fmt(run.total)}
-                    </span>
-                    <Badge variant={statusVariant(run.status)}>
-                      {run.status}
-                    </Badge>
+                    <span className="tabular text-[14.5px] font-medium text-ink">${fmt(run.total)}</span>
+                    <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </Card>
         </div>
 
         {/* Right: agent activity feed */}
         <div className="lg:col-span-1">
-          <Card padding={0} style={{ height: "100%" }}>
-            <div
-              className="flex items-center gap-2"
-              style={{ padding: "18px 22px", borderBottom: "1px solid #F0F1F3" }}
-            >
-              <Sparkles size={16} color="#0A9200" />
-              <h3
-                className="font-medium"
-                style={{ fontSize: "15px", color: "#1A1A1A" }}
-              >
-                Agent activity
-              </h3>
+          <Card padding={0} className="h-full">
+            <div className="flex items-center gap-2 border-b border-line px-6 py-4">
+              <Sparkles size={16} className="text-accent" />
+              <h3 className="text-[16px] font-medium text-ink">Agent activity</h3>
             </div>
-            <div style={{ padding: "8px 22px 18px" }}>
-              {activityFeed.map((a, i) => {
-                const Icon = ICONS[a.icon];
-                return (
-                  <div key={i} className="flex gap-3" style={{ padding: "12px 0" }}>
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="flex items-center justify-center"
-                        style={{
-                          width: "30px",
-                          height: "30px",
-                          borderRadius: "9999px",
-                          background: "#DEF6E9",
-                        }}
-                      >
-                        <Icon size={15} color="#0A9200" />
-                      </span>
-                      {i < activityFeed.length - 1 && (
-                        <span
-                          style={{
-                            flex: 1,
-                            width: 0,
-                            borderLeft: "1px solid #E8E8E8",
-                            marginTop: "4px",
-                          }}
-                        />
-                      )}
-                    </div>
-                    <div className="pb-1">
-                      <div
-                        style={{ fontSize: "13.5px", color: "#1A1A1A", lineHeight: 1.5 }}
-                      >
-                        {a.text}
+            <div className="px-6 pb-5">
+              <ul className="divide-y divide-line">
+                {activityFeed.map((a, i) => {
+                  const Icon = ICONS[a.icon];
+                  return (
+                    <li key={i} className="flex gap-3 py-4">
+                      <Icon size={16} className="mt-0.5 shrink-0 text-accent" />
+                      <div>
+                        <div className="text-[14px] leading-[1.5] text-ink">{a.text}</div>
+                        <div className="mt-0.5 text-[13px] text-muted">{a.time}</div>
                       </div>
-                      <div style={{ fontSize: "12px", color: "#8A8F98", marginTop: "2px" }}>
-                        {a.time}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              <Link
-                href="/portal/chat"
-                className="mt-2 flex items-center gap-1 font-medium"
-                style={{ fontSize: "13px", color: "#0550AE" }}
-              >
+                    </li>
+                  );
+                })}
+              </ul>
+              <Link href="/portal/chat" className="mt-2 flex items-center gap-1 text-[13px] font-medium text-accent">
                 Open agent chat <ArrowRight size={14} />
               </Link>
             </div>

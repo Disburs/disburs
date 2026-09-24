@@ -11,51 +11,12 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
-import { Card, Button } from "@/components/portal/ui";
+import { Card, Button, Field, PageTitle, SectionHeading, inputClass } from "@/components/portal/ui";
 
 const COUNTRIES = ["Nigeria", "Kenya", "Ghana", "South Africa"];
 const TIMESHEETS = ["Google Sheets", "Notion", "CSV upload", "Manual"];
 const RATE_TYPES = ["Monthly flat", "Hourly", "Milestone-based"];
 const CHANNELS = ["Contractor portal", "Email", "WhatsApp"];
-
-function Field({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: React.ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label className="block">
-      <span
-        className="mb-1.5 block font-medium"
-        style={{ fontSize: "13px", color: "#1A1A1A" }}
-      >
-        {label}
-      </span>
-      {children}
-      {hint && (
-        <span className="mt-1 block" style={{ fontSize: "12px", color: "#8A8F98" }}>
-          {hint}
-        </span>
-      )}
-    </label>
-  );
-}
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  height: "42px",
-  borderRadius: "8px",
-  border: "1px solid #E8E8E8",
-  padding: "0 12px",
-  fontSize: "14px",
-  color: "#1A1A1A",
-  background: "#FFFFFF",
-  outline: "none",
-};
 
 export default function AddContractorPage() {
   const [rateType, setRateType] = useState(RATE_TYPES[0]);
@@ -72,21 +33,17 @@ export default function AddContractorPage() {
   };
 
   return (
-    <div className="mx-auto" style={{ maxWidth: "820px" }}>
+    <div className="mx-auto max-w-[820px]">
       <Link
         href="/portal/contractors"
-        className="mb-4 inline-flex items-center gap-1.5"
-        style={{ fontSize: "13px", color: "#8A8F98" }}
+        className="mb-6 inline-flex items-center gap-1.5 text-[14px] text-muted hover:text-ink"
       >
         <ArrowLeft size={15} /> Back to contractors
       </Link>
 
-      <h2 className="font-medium" style={{ fontSize: "20px", color: "#1A1A1A" }}>
+      <PageTitle sub="The agent will read the contract and work out the terms for you.">
         Add contractor
-      </h2>
-      <p style={{ fontSize: "13px", color: "#8A8F98", marginTop: "2px" }}>
-        The agent will read the contract and work out the terms for you.
-      </p>
+      </PageTitle>
 
       <form
         onSubmit={(e) => {
@@ -94,49 +51,39 @@ export default function AddContractorPage() {
           setSaved(true);
           window.setTimeout(() => setSaved(false), 2500);
         }}
-        className="mt-6 flex flex-col gap-5"
+        className="flex flex-col gap-5"
       >
         {/* Identity */}
         <Card>
-          <h3
-            className="mb-4 font-medium"
-            style={{ fontSize: "15px", color: "#1A1A1A" }}
-          >
-            Details
-          </h3>
+          <SectionHeading title="Details" />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Full name">
-              <input style={inputStyle} placeholder="Laycon Okonkwo" />
+              <input className={inputClass} placeholder="Laycon Okonkwo" />
             </Field>
             <Field label="Email">
-              <input style={inputStyle} type="email" placeholder="Laycon@company.com" />
+              <input className={inputClass} type="email" placeholder="Laycon@company.com" />
             </Field>
             <Field label="Country">
-              <select style={inputStyle} defaultValue="Nigeria">
+              <select className={inputClass} defaultValue="Nigeria">
                 {COUNTRIES.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
               </select>
             </Field>
             <Field label="Role / title">
-              <input style={inputStyle} placeholder="Product Designer" />
+              <input className={inputClass} placeholder="Product Designer" />
             </Field>
           </div>
         </Card>
 
         {/* Wallet */}
         <Card>
-          <h3
-            className="mb-4 font-medium"
-            style={{ fontSize: "15px", color: "#1A1A1A" }}
-          >
-            Payout wallet
-          </h3>
+          <SectionHeading title="Payout wallet" />
           <Field
             label="Stellar wallet address"
             hint="New to crypto? Invite them to create a wallet and the agent walks them through it."
           >
-            <input style={inputStyle} placeholder="G…" className="font-mono" />
+            <input className={`${inputClass} font-mono`} placeholder="G…" />
           </Field>
           <div className="mt-3">
             <Button variant="secondary" size="sm">
@@ -147,47 +94,33 @@ export default function AddContractorPage() {
 
         {/* Pay */}
         <Card>
-          <h3
-            className="mb-4 font-medium"
-            style={{ fontSize: "15px", color: "#1A1A1A" }}
-          >
-            Payment
-          </h3>
+          <SectionHeading title="Payment" />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Rate type">
               <div className="flex flex-wrap gap-2">
                 {RATE_TYPES.map((t) => (
-                  <button
+                  <Button
                     key={t}
-                    type="button"
+                    size="sm"
+                    variant={rateType === t ? "ink" : "secondary"}
                     onClick={() => setRateType(t)}
-                    style={{
-                      borderRadius: "8px",
-                      padding: "8px 12px",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      background: rateType === t ? "#DEF6E9" : "#FFFFFF",
-                      color: rateType === t ? "#0A7A1E" : "#5C6068",
-                      border:
-                        "1px solid " + (rateType === t ? "#BFEBD0" : "#E8E8E8"),
-                    }}
                   >
                     {t}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </Field>
             <Field label={rateType === "Hourly" ? "Hourly rate (USD)" : "Amount (USD)"}>
-              <input style={inputStyle} placeholder={rateType === "Hourly" ? "32" : "900"} />
+              <input className={inputClass} placeholder={rateType === "Hourly" ? "32" : "900"} />
             </Field>
             <Field label="Payout currency">
-              <select style={inputStyle} defaultValue="USDC → Local">
+              <select className={inputClass} defaultValue="USDC → Local">
                 <option>USDC → Local currency</option>
                 <option>USDC (hold)</option>
               </select>
             </Field>
             <Field label="Offramp preference">
-              <select style={inputStyle}>
+              <select className={inputClass}>
                 <option>Auto (best rate)</option>
                 <option>Cowrie</option>
                 <option>Bank transfer</option>
@@ -198,76 +131,42 @@ export default function AddContractorPage() {
 
         {/* Contract + agent interpretation */}
         <Card>
-          <h3
-            className="mb-4 font-medium"
-            style={{ fontSize: "15px", color: "#1A1A1A" }}
-          >
-            Contract
-          </h3>
+          <SectionHeading title="Contract" />
 
           {contractState === "empty" && (
             <button
               type="button"
               onClick={uploadContract}
-              className="flex w-full flex-col items-center justify-center gap-2"
-              style={{
-                border: "1.5px dashed #D0D4D9",
-                borderRadius: "12px",
-                padding: "28px",
-                background: "#FBFCFC",
-              }}
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-[20px] border border-dashed border-line bg-subtle px-6 py-8 transition-colors hover:border-ink"
             >
-              <Upload size={22} color="#8A8F98" />
-              <span style={{ fontSize: "14px", color: "#1A1A1A" }}>
+              <Upload size={22} className="text-muted" />
+              <span className="text-[14.5px] text-ink">
                 Upload PDF, Word, or paste a Google Drive / Notion link
               </span>
-              <span style={{ fontSize: "12px", color: "#8A8F98" }}>
+              <span className="text-[13px] text-muted">
                 The agent reads it and extracts the terms
               </span>
             </button>
           )}
 
           {contractState !== "empty" && (
-            <div
-              className="flex items-center gap-3"
-              style={{
-                border: "1px solid #E8E8E8",
-                borderRadius: "10px",
-                padding: "12px 14px",
-              }}
-            >
-              <FileText size={18} color="#0A9200" />
-              <span style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                Laycon-okonkwo-contract.pdf
-              </span>
+            <div className="flex items-center gap-3 rounded-[20px] border border-line bg-canvas px-4 py-3">
+              <FileText size={18} className="text-accent" />
+              <span className="text-[14.5px] text-ink">Laycon-okonkwo-contract.pdf</span>
             </div>
           )}
 
           {contractState === "reading" && (
-            <div
-              className="mt-3 flex items-center gap-2"
-              style={{ fontSize: "13px", color: "#0A9200" }}
-            >
+            <div className="mt-3 flex items-center gap-2 text-[13px] text-accent">
               <Loader2 size={15} className="animate-spin" /> Agent is reading the
               contract…
             </div>
           )}
 
           {contractState === "done" && (
-            <div
-              className="mt-3"
-              style={{
-                background: "#F7FBF8",
-                border: "1px solid #DEF6E9",
-                borderRadius: "12px",
-                padding: "16px",
-              }}
-            >
-              <div
-                className="mb-2 flex items-center gap-1.5 font-medium"
-                style={{ fontSize: "13px", color: "#0A7A1E" }}
-              >
-                <Sparkles size={14} color="#0A9200" /> I found the following terms
+            <div className="mt-3 rounded-[20px] bg-accent-soft p-5">
+              <div className="mb-2 flex items-center gap-1.5 text-[13.5px] font-medium text-accent">
+                <Sparkles size={14} /> I found the following terms
               </div>
               <ul className="flex flex-col gap-1.5">
                 {[
@@ -276,18 +175,14 @@ export default function AddContractorPage() {
                   "Overtime billed at 1.25× above 40 hrs/week",
                   "30-day notice period",
                 ].map((t) => (
-                  <li
-                    key={t}
-                    className="flex items-start gap-2"
-                    style={{ fontSize: "13.5px", color: "#1A1A1A" }}
-                  >
-                    <Check size={15} color="#0A9200" className="mt-0.5 shrink-0" />
+                  <li key={t} className="flex items-start gap-2 text-[14px] text-ink">
+                    <Check size={15} className="mt-0.5 shrink-0 text-accent" />
                     {t}
                   </li>
                 ))}
               </ul>
-              <div className="mt-3 flex gap-2">
-                <Button size="sm">
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button size="sm" variant="ink">
                   <Check size={14} /> Confirm terms
                 </Button>
                 <Button size="sm" variant="ghost">
@@ -304,29 +199,20 @@ export default function AddContractorPage() {
             <Field label="Timesheet source">
               <div className="flex flex-wrap gap-2">
                 {TIMESHEETS.map((t) => (
-                  <button
+                  <Button
                     key={t}
-                    type="button"
+                    size="sm"
+                    variant={timesheet === t ? "ink" : "secondary"}
                     onClick={() => setTimesheet(t)}
-                    style={{
-                      borderRadius: "8px",
-                      padding: "8px 12px",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      background: timesheet === t ? "#1A1A1A" : "#FFFFFF",
-                      color: timesheet === t ? "#FFFFFF" : "#5C6068",
-                      border:
-                        "1px solid " + (timesheet === t ? "#1A1A1A" : "#E8E8E8"),
-                    }}
                   >
                     {t}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </Field>
             <Field label="Dispute contact channel">
               <select
-                style={inputStyle}
+                className={inputClass}
                 value={channel}
                 onChange={(e) => setChannel(e.target.value)}
               >
@@ -352,7 +238,7 @@ export default function AddContractorPage() {
           <Button variant="secondary">Save &amp; add another</Button>
           <Link
             href="/portal/contractors"
-            style={{ fontSize: "14px", color: "#8A8F98" }}
+            className="text-[14.5px] text-muted hover:text-ink"
           >
             Cancel
           </Link>

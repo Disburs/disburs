@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Paperclip, Send, Sparkles, Check, X } from "lucide-react";
+import { Button } from "@/components/portal/ui";
 
 type Action = { label: string; total?: string } | null;
 type Msg = {
@@ -70,6 +71,14 @@ function reply(input: string): Msg {
   };
 }
 
+function AgentLabel() {
+  return (
+    <div className="mb-1.5 flex items-center gap-1.5 text-[12.5px] text-muted">
+      <Sparkles size={12} className="text-accent" /> Agent
+    </div>
+  );
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<Msg[]>(INTRO);
   const [input, setInput] = useState("");
@@ -120,156 +129,61 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col" style={{ height: "calc(100vh - 68px - 92px)", minHeight: "520px" }}>
+    <div className="flex h-[calc(100dvh-184px)] min-h-[520px] flex-col md:h-[calc(100dvh-192px)]">
       {/* Messages */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto"
-        style={{ paddingRight: "4px" }}
-      >
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 pb-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pr-1">
+        <div className="mx-auto flex max-w-3xl flex-col gap-5 pb-4">
           {messages.map((m) =>
             m.role === "user" ? (
               <div key={m.id} className="flex justify-end">
-                <div
-                  style={{
-                    background: "#1A1A1A",
-                    color: "#FFFFFF",
-                    borderRadius: "16px 16px 4px 16px",
-                    padding: "11px 15px",
-                    fontSize: "14.5px",
-                    maxWidth: "78%",
-                    lineHeight: 1.5,
-                  }}
-                >
+                <div className="max-w-[78%] rounded-[20px] bg-ink-deep px-4 py-3 text-[14.5px] leading-[1.5] text-white">
                   {m.text}
                 </div>
               </div>
             ) : (
-              <div key={m.id} className="flex gap-3">
-                <span
-                  className="flex shrink-0 items-center justify-center"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "9999px",
-                    background: "#DEF6E9",
-                  }}
-                >
-                  <Sparkles size={16} color="#0A9200" />
-                </span>
-                <div style={{ maxWidth: "82%" }}>
-                  <div
-                    style={{
-                      background: "#FFFFFF",
-                      border: "1px solid #E8E8E8",
-                      color: "#1A1A1A",
-                      borderRadius: "4px 16px 16px 16px",
-                      padding: "12px 16px",
-                      fontSize: "14.5px",
-                      lineHeight: 1.55,
-                    }}
-                  >
-                    {m.text}
-                  </div>
-                  {m.action && (
-                    <div
-                      className="mt-2"
-                      style={{
-                        background: "#F7FBF8",
-                        border: "1px solid #DEF6E9",
-                        borderRadius: "12px",
-                        padding: "14px 16px",
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span style={{ fontSize: "13px", color: "#8A8F98" }}>
-                          December payroll
-                        </span>
-                        <span
-                          className="font-medium"
-                          style={{ fontSize: "15px", color: "#1A1A1A" }}
-                        >
-                          {m.action.total}
-                        </span>
-                      </div>
-                      {m.done ? (
-                        <div
-                          className="mt-3 flex items-center gap-2 font-medium"
-                          style={{ fontSize: "13px", color: "#0A9200" }}
-                        >
-                          <Check size={15} /> Handled
-                        </div>
-                      ) : (
-                        <div className="mt-3 flex gap-2">
-                          <button
-                            onClick={() => resolveAction(m.id, true)}
-                            className="flex items-center gap-1.5 font-medium active:scale-[0.99]"
-                            style={{
-                              background: "#12FF80",
-                              color: "#1A1A1A",
-                              borderRadius: "8px",
-                              padding: "8px 14px",
-                              fontSize: "13px",
-                            }}
-                          >
-                            <Check size={15} /> {m.action.label}
-                          </button>
-                          <button
-                            onClick={() => resolveAction(m.id, false)}
-                            className="flex items-center gap-1.5 font-medium active:scale-[0.99]"
-                            style={{
-                              background: "#FFFFFF",
-                              color: "#5C6068",
-                              border: "1px solid #E8E8E8",
-                              borderRadius: "8px",
-                              padding: "8px 14px",
-                              fontSize: "13px",
-                            }}
-                          >
-                            <X size={15} /> Cancel
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+              <div key={m.id} className="max-w-[82%]">
+                <AgentLabel />
+                <div className="rounded-[20px] border border-line bg-subtle px-4 py-3 text-[14.5px] leading-[1.55] text-ink">
+                  {m.text}
                 </div>
+                {m.action && (
+                  <div className="mt-2 rounded-[20px] border border-line bg-canvas p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[13px] text-muted">December payroll</span>
+                      <span className="tabular font-display text-[22px] font-semibold leading-none tracking-[-0.03em] text-ink">
+                        {m.action.total}
+                      </span>
+                    </div>
+                    {m.done ? (
+                      <div className="mt-4 flex items-center gap-2 text-[13.5px] font-medium text-accent">
+                        <Check size={15} /> Handled
+                      </div>
+                    ) : (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <Button size="sm" onClick={() => resolveAction(m.id, true)}>
+                          <Check size={15} /> {m.action.label}
+                        </Button>
+                        <Button size="sm" variant="secondary" onClick={() => resolveAction(m.id, false)}>
+                          <X size={15} /> Cancel
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )
           )}
 
           {typing && (
-            <div className="flex gap-3">
-              <span
-                className="flex shrink-0 items-center justify-center"
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "9999px",
-                  background: "#DEF6E9",
-                }}
-              >
-                <Sparkles size={16} color="#0A9200" />
-              </span>
-              <div
-                className="flex items-center gap-1"
-                style={{
-                  background: "#FFFFFF",
-                  border: "1px solid #E8E8E8",
-                  borderRadius: "4px 16px 16px 16px",
-                  padding: "14px 16px",
-                }}
-              >
+            <div className="max-w-[82%]">
+              <AgentLabel />
+              <div className="inline-flex items-center gap-1 rounded-[20px] border border-line bg-subtle px-4 py-4">
                 {[0, 1, 2].map((d) => (
                   <span
                     key={d}
-                    className="inline-block rounded-full"
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      background: "#C2C6CC",
-                      animation: `blink 1s ${d * 0.15}s infinite`,
-                    }}
+                    className={`inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-faint ${
+                      d === 1 ? "[animation-delay:150ms]" : d === 2 ? "[animation-delay:300ms]" : ""
+                    }`}
                   />
                 ))}
               </div>
@@ -282,21 +196,9 @@ export default function ChatPage() {
       <div className="mx-auto w-full max-w-3xl">
         <div className="mb-3 flex flex-wrap gap-2">
           {CHIPS.map((c) => (
-            <button
-              key={c}
-              onClick={() => send(c)}
-              style={{
-                background: "#FFFFFF",
-                border: "1px solid #E8E8E8",
-                borderRadius: "9999px",
-                padding: "7px 14px",
-                fontSize: "13px",
-                color: "#5C6068",
-              }}
-              className="hover:border-[#12FF80]"
-            >
+            <Button key={c} size="sm" variant="secondary" onClick={() => send(c)}>
               {c}
-            </button>
+            </Button>
           ))}
         </div>
         <form
@@ -304,36 +206,28 @@ export default function ChatPage() {
             e.preventDefault();
             send(input);
           }}
-          className="flex items-center gap-2"
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E8E8E8",
-            borderRadius: "14px",
-            padding: "8px 8px 8px 14px",
-          }}
+          className="flex h-14 items-center gap-2 rounded-full border border-line bg-canvas py-2 pl-4 pr-2 focus-within:border-ink"
         >
-          <button type="button" aria-label="Attach file" title="Attach contract or timesheet">
-            <Paperclip size={20} color="#8A8F98" />
+          <button
+            type="button"
+            aria-label="Attach file"
+            title="Attach contract or timesheet"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted hover:text-ink"
+          >
+            <Paperclip size={20} />
           </button>
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Message your agent…"
-            className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: "14.5px", color: "#1A1A1A" }}
+            className="min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-faint"
           />
           <button
             type="submit"
             aria-label="Send"
-            className="flex items-center justify-center active:scale-95"
-            style={{
-              width: "38px",
-              height: "38px",
-              borderRadius: "10px",
-              background: "#12FF80",
-            }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mint text-ink-deep active:scale-95"
           >
-            <Send size={17} color="#1A1A1A" />
+            <Send size={17} />
           </button>
         </form>
       </div>

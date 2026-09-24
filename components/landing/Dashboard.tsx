@@ -30,12 +30,9 @@ export default function Dashboard() {
           </div>
         </aside>
         <div className="min-w-0 p-5 md:p-8">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <Kicker>Dashboard</Kicker>
-              <h3 className="mt-1.5 text-[22px] font-semibold tracking-[-0.02em] text-ink">Here&apos;s where payroll stands.</h3>
-            </div>
-            <MockButton tone="ghost">Talk to the agent</MockButton>
+          <div>
+            <Kicker>Dashboard</Kicker>
+            <h3 className="mt-1.5 text-[22px] font-semibold tracking-[-0.02em] text-ink">Here&apos;s where payroll stands.</h3>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             <Panel>

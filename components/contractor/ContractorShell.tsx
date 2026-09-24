@@ -15,77 +15,53 @@ const NAV: { label: string; href: string; icon: LucideIcon }[] = [
 
 function Wordmark() {
   return (
-    <span className="font-medium" style={{ fontSize: "19px", color: "#1A1A1A" }}>
-      disburs<span style={{ color: "#12FF80" }}>.</span>
-    </span>
+    <Link href="/contractor" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
+      Disburs
+    </Link>
   );
 }
 
-export default function ContractorShell({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ContractorShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isOnboarding = pathname?.startsWith("/contractor/onboarding");
 
-  // Onboarding: minimal chrome (logo + skip), centered web layout.
+  const isActive = (href: string) => pathname === href || (href !== "/contractor" && pathname?.startsWith(href));
+
   if (isOnboarding) {
     return (
-      <div style={{ background: "#F7F8F9", minHeight: "100vh" }}>
-        <header
-          className="flex items-center justify-between"
-          style={{ height: "64px", padding: "0 24px", background: "#FFFFFF", borderBottom: "1px solid #ECEDEF" }}
-        >
+      <div className="min-h-screen bg-canvas">
+        <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
           <Wordmark />
-          <a href="/contractor" style={{ fontSize: "13px", color: "#8A8F98" }}>
+          <a href="/contractor" className="text-[14px] text-muted hover:text-ink">
             Skip setup
           </a>
         </header>
-        <div className="mx-auto" style={{ maxWidth: "640px", padding: "40px 20px 80px" }}>
-          {children}
-        </div>
+        <div className="mx-auto max-w-[680px] px-5 pb-24 pt-12">{children}</div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#F7F8F9", minHeight: "100vh" }}>
-      {/* Top nav */}
-      <header
-        className="sticky top-0 z-30"
-        style={{ background: "#FFFFFF", borderBottom: "1px solid #ECEDEF" }}
-      >
-        <div
-          className="mx-auto flex items-center justify-between gap-4"
-          style={{ maxWidth: "1120px", height: "64px", padding: "0 24px" }}
-        >
-          <div className="flex items-center gap-8">
-            <Link href="/contractor" className="flex items-center gap-2">
-              <Wordmark />
-            </Link>
-            <nav className="hidden items-center gap-1 md:flex">
+    <div className="min-h-screen bg-canvas">
+      <header className="sticky top-0 z-30 border-b border-line bg-canvas">
+        <div className="mx-auto flex h-[72px] max-w-[1120px] items-center justify-between gap-4 px-5 md:px-8">
+          <div className="flex items-center gap-10">
+            <Wordmark />
+            <nav className="hidden items-center gap-1 md:flex" aria-label="Contractor">
               {NAV.map((item) => {
                 const Icon = item.icon;
-                const active =
-                  pathname === item.href ||
-                  (item.href !== "/contractor" && pathname?.startsWith(item.href));
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-2 transition-colors"
-                    style={{
-                      padding: "8px 14px",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontWeight: active ? 500 : 400,
-                      background: active ? "#DEF6E9" : "transparent",
-                      color: active ? "#0A7A1E" : "#5C6068",
-                    }}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex h-10 items-center gap-2 rounded-full px-4 text-[14.5px] transition-colors ${
+                      active ? "border border-line bg-subtle font-medium text-ink" : "text-muted hover:text-ink"
+                    }`}
                   >
-                    <Icon size={16} color={active ? "#0A9200" : "#8A8F98"} />
+                    <Icon size={16} className={active ? "text-accent" : "text-faint"} />
                     {item.label}
                   </Link>
                 );
@@ -94,62 +70,36 @@ export default function ContractorShell({
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/contractor/cashout"
-              className="hidden items-center gap-2 sm:flex"
-              style={{
-                background: "#F7F8F9",
-                border: "1px solid #ECEDEF",
-                borderRadius: "9px",
-                padding: "7px 12px",
-              }}
-            >
-              <span style={{ fontSize: "12px", color: "#8A8F98" }}>Balance</span>
-              <span className="font-medium" style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                ${ngn(contractor.balance)}
-              </span>
+            <Link href="/contractor/cashout" className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 sm:flex">
+              <span className="text-[12.5px] text-muted">Balance</span>
+              <span className="tabular text-[14px] font-medium text-ink">${ngn(contractor.balance)}</span>
             </Link>
-            <div className="flex items-center gap-2">
-              <Avatar initials={contractor.initials} size={34} flag={contractor.flag} />
+            <div className="flex items-center gap-2.5">
+              <Avatar initials={contractor.initials} size={36} flag={contractor.flag} />
               <div className="hidden lg:block">
-                <div className="font-medium" style={{ fontSize: "13px", color: "#1A1A1A", lineHeight: 1.2 }}>
-                  {contractor.firstName}
-                </div>
-                <div style={{ fontSize: "11px", color: "#8A8F98" }}>
-                  via {contractor.employer}
-                </div>
+                <div className="text-[13.5px] font-medium leading-tight text-ink">{contractor.firstName}</div>
+                <div className="text-[12px] text-muted">via {contractor.employer}</div>
               </div>
             </div>
-            <button className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-              {open ? <X size={22} color="#1A1A1A" /> : <Menu size={22} color="#1A1A1A" />}
+            <button type="button" className="flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu" aria-expanded={open}>
+              {open ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
-        {/* mobile nav */}
         {open && (
-          <nav className="flex flex-col gap-1 md:hidden" style={{ padding: "8px 16px 16px", borderTop: "1px solid #ECEDEF" }}>
+          <nav className="flex flex-col border-t border-line px-5 py-3 md:hidden" aria-label="Contractor">
             {NAV.map((item) => {
               const Icon = item.icon;
-              const active =
-                pathname === item.href ||
-                (item.href !== "/contractor" && pathname?.startsWith(item.href));
+              const active = isActive(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3"
-                  style={{
-                    padding: "11px 12px",
-                    borderRadius: "8px",
-                    fontSize: "15px",
-                    fontWeight: active ? 500 : 400,
-                    background: active ? "#DEF6E9" : "transparent",
-                    color: active ? "#0A7A1E" : "#5C6068",
-                  }}
+                  className={`flex h-12 items-center gap-3 border-b border-line text-[15px] last:border-0 ${active ? "font-medium text-ink" : "text-muted"}`}
                 >
-                  <Icon size={18} color={active ? "#0A9200" : "#8A8F98"} />
+                  <Icon size={18} className={active ? "text-accent" : "text-faint"} />
                   {item.label}
                 </Link>
               );
@@ -158,9 +108,7 @@ export default function ContractorShell({
         )}
       </header>
 
-      <main className="mx-auto" style={{ maxWidth: "1120px", padding: "28px 24px 64px" }}>
-        {children}
-      </main>
+      <main className="mx-auto max-w-[1120px] px-5 pb-20 pt-8 md:px-8 md:pt-10">{children}</main>
     </div>
   );
 }

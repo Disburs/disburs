@@ -9,7 +9,7 @@ import {
   Sparkles,
   MessageCircle,
 } from "lucide-react";
-import { Card, Badge, Button, Avatar, statusVariant } from "@/components/portal/ui";
+import { Card, Badge, Button, Avatar, PageTitle, statusVariant } from "@/components/portal/ui";
 import { payrollRuns, payrollLines } from "@/lib/mock";
 
 function fmt(n: number) {
@@ -45,114 +45,107 @@ export default function HistoryPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1" style={{ background: "#F0F1F3", borderRadius: "10px", padding: "4px" }}>
-          {(["runs", "disputes"] as const).map((t) => (
+      <PageTitle
+        sub="Every run and every dispute, with the transaction behind it."
+        action={
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm">
+              <Download size={14} /> Export CSV
+            </Button>
+            <Button variant="secondary" size="sm">
+              <FileText size={14} /> PDF
+            </Button>
+          </div>
+        }
+      >
+        History
+      </PageTitle>
+
+      <div className="flex flex-wrap gap-2">
+        {(["runs", "disputes"] as const).map((t) => {
+          const active = tab === t;
+          return (
             <button
               key={t}
+              type="button"
               onClick={() => setTab(t)}
-              style={{
-                borderRadius: "8px",
-                padding: "7px 16px",
-                fontSize: "13px",
-                fontWeight: 500,
-                background: tab === t ? "#FFFFFF" : "transparent",
-                color: tab === t ? "#1A1A1A" : "#8A8F98",
-                boxShadow: tab === t ? "rgba(0,0,0,0.05) 0px 1px 2px" : "none",
-              }}
+              aria-pressed={active}
+              className={`inline-flex h-9 items-center rounded-full border px-4 text-[13.5px] font-medium transition-colors ${
+                active
+                  ? "border-ink-deep bg-ink-deep text-white"
+                  : "border-line bg-canvas text-muted hover:border-ink hover:text-ink"
+              }`}
             >
               {t === "runs" ? "Payroll runs" : "Dispute history"}
             </button>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="secondary" size="sm">
-            <Download size={14} /> Export CSV
-          </Button>
-          <Button variant="secondary" size="sm">
-            <FileText size={14} /> PDF
-          </Button>
-        </div>
+          );
+        })}
       </div>
 
       {tab === "runs" && (
         <Card padding={0}>
-          <div
-            className="hidden items-center md:flex"
-            style={{ padding: "12px 20px", borderBottom: "1px solid #F0F1F3", fontSize: "12px", color: "#8A8F98" }}
-          >
-            <div style={{ flex: "1.2 1 0" }}>Run date</div>
-            <div style={{ flex: "1 1 0" }}>Contractors</div>
-            <div style={{ flex: "1.4 1 0" }}>Transaction</div>
-            <div style={{ flex: "1 1 0" }}>Status</div>
-            <div style={{ flex: "1 1 0", textAlign: "right" }}>Total</div>
-            <div style={{ width: "32px" }} />
+          <div className="hidden items-center border-b border-line px-5 py-3 text-[12.5px] font-medium text-muted md:flex">
+            <div className="flex-[1.2_1_0%]">Run date</div>
+            <div className="flex-[1_1_0%]">Contractors</div>
+            <div className="flex-[1.4_1_0%]">Transaction</div>
+            <div className="flex-[1_1_0%]">Status</div>
+            <div className="flex-[1_1_0%] text-right">Total</div>
+            <div className="w-8" />
           </div>
 
-          {payrollRuns.map((run, i) => {
-            const isOpen = open === run.id;
-            return (
-              <div key={run.id} style={{ borderBottom: i < payrollRuns.length - 1 ? "1px solid #F0F1F3" : "none" }}>
-                <button
-                  onClick={() => setOpen(isOpen ? null : run.id)}
-                  className="flex w-full flex-wrap items-center gap-y-1 text-left"
-                  style={{ padding: "14px 20px" }}
-                >
-                  <div style={{ flex: "1.2 1 120px", fontSize: "14px", color: "#1A1A1A" }}>
-                    {run.date}
-                  </div>
-                  <div style={{ flex: "1 1 0", fontSize: "14px", color: "#5C6068" }}>
-                    {run.count}
-                  </div>
-                  <div style={{ flex: "1.4 1 0" }} className="flex items-center gap-1.5">
-                    <span className="font-mono" style={{ fontSize: "13px", color: "#0550AE" }}>
-                      {run.tx}
-                    </span>
-                    <ExternalLink size={13} color="#0550AE" />
-                  </div>
-                  <div style={{ flex: "1 1 0" }}>
-                    <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
-                  </div>
-                  <div
-                    style={{ flex: "1 1 0", textAlign: "right", fontSize: "15px", color: "#1A1A1A" }}
-                    className="font-medium"
+          <div className="divide-y divide-line">
+            {payrollRuns.map((run) => {
+              const isOpen = open === run.id;
+              return (
+                <div key={run.id}>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? null : run.id)}
+                    aria-expanded={isOpen}
+                    className="flex w-full flex-wrap items-center gap-y-1 px-5 py-4 text-left"
                   >
-                    ${fmt(run.total)}
-                  </div>
-                  <span style={{ width: "32px" }} className="flex justify-end">
-                    <ChevronDown
-                      size={18}
-                      color="#8A8F98"
-                      style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 200ms" }}
-                    />
-                  </span>
-                </button>
+                    <div className="flex-[1.2_1_120px] text-[14.5px] text-ink">{run.date}</div>
+                    <div className="flex-[1_1_0%] text-[14.5px] text-muted">{run.count}</div>
+                    <div className="flex flex-[1.4_1_0%] items-center gap-1.5 text-accent">
+                      <span className="font-mono text-[13px]">{run.tx}</span>
+                      <ExternalLink size={13} />
+                    </div>
+                    <div className="flex-[1_1_0%]">
+                      <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
+                    </div>
+                    <div className="tabular flex-[1_1_0%] text-right text-[15px] font-medium text-ink">
+                      ${fmt(run.total)}
+                    </div>
+                    <span className="flex w-8 justify-end text-muted">
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                      />
+                    </span>
+                  </button>
 
-                {isOpen && (
-                  <div style={{ padding: "0 20px 16px", background: "#FBFCFC" }}>
-                    {payrollLines.slice(0, run.count).map((l) => (
-                      <div
-                        key={l.id}
-                        className="flex items-center justify-between"
-                        style={{ padding: "10px 0", borderBottom: "1px solid #F0F1F3" }}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar initials={l.initials} flag={l.flag} size={30} />
-                          <span style={{ fontSize: "13.5px", color: "#1A1A1A" }}>{l.name}</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span style={{ fontSize: "13px", color: "#8A8F98" }}>{l.country}</span>
-                          <span className="font-medium" style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                            ${fmt(l.amount)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  {isOpen && (
+                    <div className="bg-subtle px-5 pb-4">
+                      <ul className="divide-y divide-line">
+                        {payrollLines.slice(0, run.count).map((l) => (
+                          <li key={l.id} className="flex items-center justify-between gap-4 py-3">
+                            <div className="flex items-center gap-3">
+                              <Avatar initials={l.initials} flag={l.flag} size={30} />
+                              <span className="text-[14px] text-ink">{l.name}</span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <span className="text-[13px] text-muted">{l.country}</span>
+                              <span className="tabular text-[14.5px] font-medium text-ink">${fmt(l.amount)}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </Card>
       )}
 
@@ -164,26 +157,21 @@ export default function HistoryPage() {
                 <div className="flex items-center gap-3">
                   <Avatar initials={d.initials} flag={d.flag} />
                   <div>
-                    <div style={{ fontSize: "14px", color: "#1A1A1A" }}>{d.name}</div>
-                    <div style={{ fontSize: "12px", color: "#8A8F98" }}>{d.date}</div>
+                    <div className="text-[14.5px] text-ink">{d.name}</div>
+                    <div className="text-[13px] text-muted">{d.date}</div>
                   </div>
                 </div>
                 <Badge variant="success" dot>
                   Resolved
                 </Badge>
               </div>
-              <div className="mt-3 flex items-start gap-2" style={{ fontSize: "14px", color: "#1A1A1A" }}>
-                <MessageCircle size={16} color="#8A8F98" className="mt-0.5 shrink-0" />
+              <div className="mt-4 flex items-start gap-2 text-[14.5px] text-ink">
+                <MessageCircle size={16} className="mt-0.5 shrink-0 text-muted" />
                 {d.summary}
               </div>
-              <div
-                className="mt-3 flex gap-2"
-                style={{ background: "#F7FBF8", border: "1px solid #DEF6E9", borderRadius: "10px", padding: "12px 14px" }}
-              >
-                <Sparkles size={15} color="#0A9200" className="mt-0.5 shrink-0" />
-                <span style={{ fontSize: "13.5px", color: "#1A5028", lineHeight: 1.5 }}>
-                  {d.resolution}
-                </span>
+              <div className="mt-3 flex gap-2 rounded-[24px] bg-accent-soft px-4 py-3">
+                <Sparkles size={15} className="mt-0.5 shrink-0 text-accent" />
+                <span className="text-[14px] leading-[1.5] text-accent">{d.resolution}</span>
               </div>
             </Card>
           ))}
