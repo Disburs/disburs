@@ -21,8 +21,8 @@ export default function Agent() {
           <div>
             <Lead className="max-w-[40ch]">
               The agent reads the contracts, applies rate changes, picks the FX window and clears the
-              routine exceptions. Every decision is written down in plain English. Nothing moves
-              until you approve it.
+              routine exceptions. It proposes; it never holds the keys. Every decision is written
+              down in plain English, and nothing moves until you approve it.
             </Lead>
             <div className="mt-8">
               <LinkButton href="#waitlist" variant="ink">

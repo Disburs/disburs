@@ -25,7 +25,7 @@ const ROWS: Row[] = [
     body: "Every line is matched to its on-chain reference the moment it settles. Nothing to chase after payday, nothing to reconstruct at audit time.",
   },
   {
-    title: "The agent drafts it. You approve.",
+    title: "The agent proposes. You authorize.",
     body: "Contracts read, rates applied, exceptions cleared, every decision logged in plain English. Your only job on payday is a single approval.",
   },
 ];

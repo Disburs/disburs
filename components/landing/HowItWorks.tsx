@@ -4,8 +4,8 @@ import LinkButton from "./Button";
 
 const STEPS: [string, string, string][] = [
   ["01", "Fund your treasury", "Top up once in USDC. One balance covers every contractor, in every country."],
-  ["02", "The agent prepares the run", "Contracts read, rates applied, exceptions cleared. Every decision written down in plain English."],
-  ["03", "You approve. We settle.", "One approval. Every contractor paid in about four seconds, every salary kept private."],
+  ["02", "The agent proposes the run", "Contracts read, rates applied, exceptions cleared. Policy checks and a zero-knowledge proof validate every line before it reaches you."],
+  ["03", "You authorize. We settle.", "Nothing moves without your approval. Then every contractor is paid in about four seconds, every salary kept private."],
 ];
 
 export default function HowItWorks() {

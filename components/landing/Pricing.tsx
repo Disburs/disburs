@@ -79,7 +79,7 @@ export default function Pricing() {
             Simple plans. One flat fee.
           </Heading>
           <Lead className="max-w-[40ch]">
-            Every plan includes the autonomous agent, zero-knowledge verification, and a flat 0.5%
+            Every plan includes the payroll agent, policy checks, zero-knowledge verification, and a flat 0.5%
             fee per payroll run. Waitlist companies lock these rates.
           </Lead>
         </Reveal>
