@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Wordmark from "@/components/Wordmark";
 import Link from "next/link";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 
@@ -30,7 +31,7 @@ export default function WaitlistPage() {
     <main className="flex min-h-screen flex-col bg-canvas">
       <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
         <Link href="/" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
-          Disburs
+          <Wordmark />
         </Link>
         <Link href="/" className="inline-flex items-center gap-2 text-[14px] text-muted transition-colors hover:text-ink">
           <ArrowLeft size={16} /> Back to home

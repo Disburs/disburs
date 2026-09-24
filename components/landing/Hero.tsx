@@ -1,4 +1,5 @@
 import { Container, Em, Heading, Lead } from "./Section";
+import Wordmark from "@/components/Wordmark";
 import LinkButton from "./Button";
 import Reveal from "./Reveal";
 import Dashboard from "./Dashboard";
@@ -30,7 +31,7 @@ export default function Hero() {
           <div className="rounded-tile border border-line bg-subtle p-3 md:p-4">
             <div className="flex items-center justify-between px-3 pb-3 pt-1 md:px-4">
               <span className="text-[15px] font-medium text-ink">The product</span>
-              <span className="text-[15px] font-semibold text-ink">Disburs</span>
+              <Wordmark className="text-[15px] font-semibold text-ink" />
             </div>
             <Dashboard />
           </div>

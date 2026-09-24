@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Wordmark from "@/components/Wordmark";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Container } from "./Section";
@@ -16,7 +17,7 @@ const LINKS = [
 export function Logo({ tone = "light" }: { tone?: "dark" | "light" }) {
   return (
     <a href="#top" aria-label="Disburs home" className={`text-[24px] font-semibold tracking-[-0.03em] ${tone === "dark" ? "text-white" : "text-ink"}`}>
-      Disburs
+      <Wordmark />
     </a>
   );
 }

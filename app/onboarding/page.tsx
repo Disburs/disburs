@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Wordmark from "@/components/Wordmark";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -46,7 +47,7 @@ export default function OnboardingPage() {
     <main className="min-h-screen bg-canvas">
       {/* Top bar */}
       <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
-        <span className="text-[22px] font-semibold tracking-[-0.03em] text-ink">Disburs</span>
+        <Wordmark className="text-[22px] font-semibold tracking-[-0.03em] text-ink" />
         <a href="/portal" className="text-[14px] text-muted hover:text-ink">
           Skip setup
         </a>

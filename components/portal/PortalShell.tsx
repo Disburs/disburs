@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Brand from "@/components/Wordmark";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -37,7 +38,7 @@ function fmt(n: number) {
 function Wordmark() {
   return (
     <Link href="/portal" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
-      Disburs
+      <Brand />
     </Link>
   );
 }
@@ -127,7 +128,7 @@ export default function PortalShell({ children }: { children: React.ReactNode })
             <button type="button" className="flex h-10 w-10 items-center justify-center rounded-full text-ink lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
               <Menu size={22} />
             </button>
-            <span className="text-[20px] font-semibold tracking-[-0.03em] text-ink lg:hidden">Disburs</span>
+            <Brand className="text-[20px] font-semibold tracking-[-0.03em] text-ink lg:hidden" />
             <span className="hidden items-center gap-1.5 text-[13px] text-accent lg:inline-flex">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
               Agent active
