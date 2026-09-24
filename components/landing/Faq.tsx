@@ -40,7 +40,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "What if the exchange rate moves?",
-        a: "The agent monitors rates across anchor partners and executes at the best window of the day, so you never pay when it is most expensive.",
+        a: "The agent monitors rates across anchor partners and proposes the best window of the day. The rate is locked when you approve the run, so you never pay when it is most expensive.",
       },
     ],
   },
@@ -57,7 +57,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Can the agent move money without me?",
-        a: "No. The agent prepares each run and clears routine exceptions, but nothing settles until you approve it. You set spending limits and approval thresholds, and you can pause or revoke the agent in one action.",
+        a: "No. The agent only proposes. Each run passes a policy engine and a zero-knowledge proof, then waits for your authorization before payment infrastructure executes it. You set spending limits and approval thresholds, and you can pause the agent in one action.",
       },
     ],
   },

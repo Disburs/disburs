@@ -13,7 +13,7 @@ export default function Statement() {
             Payroll, <Em>without</Em> the payroll work.
           </Heading>
           <Lead className="mx-auto mt-8 max-w-[34ch]">
-            Private, agent-assisted payroll for global teams — settled in USDC on Stellar.
+            Private payroll for global teams, run by an agent inside the limits you set — settled in USDC on Stellar.
           </Lead>
           <div className="mt-10">
             <LinkButton href="#waitlist" variant="mint" size="lg">

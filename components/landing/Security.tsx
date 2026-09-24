@@ -2,14 +2,15 @@ import { Container, Heading, Lead } from "./Section";
 import Reveal from "./Reveal";
 
 const ITEMS: [string, string][] = [
+  ["Separation of duties", "The agent proposes. A policy engine validates. Zero-knowledge proofs verify. You authorize. Only then does payment infrastructure execute. The agent never holds keys or a balance."],
   ["Key custody", "Keys are envelope-encrypted at rest (AES-256-GCM) and only ever used to sign your own payments. A leaked database alone can't move money."],
-  ["Approval gates", "Anything above your threshold waits for a human sign-off before it moves."],
-  ["Spending limits", "Set limits the agent can never exceed on any run, in any currency."],
+  ["Approval gates", "You write the rules and the agent operates inside them. Runs above your threshold wait for a sign-off. A new wallet waits for contractor verification. A raise over 20% waits for a human."],
+  ["Spending limits", "Policy limits the agent can never propose past, on any run, in any currency."],
   ["Privacy", "Zero-knowledge proofs keep every amount off the public chain while proving each payment valid."],
   ["Encryption", "Contracts and payroll data are encrypted in transit and at rest."],
   ["Audit trail", "Every agent decision is logged in plain English, with the on-chain reference beside it."],
   ["Verifiable settlement", "Every payment settles on Stellar and can be independently checked."],
-  ["Revocation", "Pause or revoke the agent's authority in a single action."],
+  ["Revocation", "Pause the agent in a single action. Nothing in flight can settle without you."],
 ];
 
 export default function Security() {
