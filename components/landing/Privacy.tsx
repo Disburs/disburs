@@ -28,13 +28,13 @@ export default function Privacy() {
 
         <Reveal delay={0.08} className="mt-14 md:mt-20">
           <div className="grid overflow-hidden rounded-tile border border-line bg-accent-soft lg:grid-cols-2">
-            <div className="flex items-center justify-center p-10 md:p-16">
+            <div className="group flex items-center justify-center p-10 md:p-16">
               <Image
                 src="/illustrations/privacy.svg"
                 alt="A person walking past a padlock: salaries stay locked away from the public ledger"
                 width={854}
                 height={800}
-                className="h-auto w-full max-w-[380px]"
+                className="h-auto w-full max-w-[380px] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
               />
             </div>
             <div className="bg-canvas p-6 md:p-10">

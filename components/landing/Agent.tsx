@@ -56,13 +56,13 @@ export default function Agent() {
                 <MockButton tone="mint">Approve payroll</MockButton>
               </div>
             </div>
-            <div className="flex items-center justify-center bg-cream p-10 md:p-16">
+            <div className="group flex items-center justify-center bg-cream p-10 md:p-16">
               <Image
                 src="/illustrations/agent.svg"
                 alt="The Disburs agent reading contracts and preparing a payroll run"
                 width={800}
                 height={714}
-                className="h-auto w-full max-w-[380px]"
+                className="h-auto w-full max-w-[380px] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
               />
             </div>
           </div>

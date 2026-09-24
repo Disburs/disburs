@@ -97,6 +97,33 @@ button {
   transform: none;
 }
 
+/*
+ * Tiles: hidden until the parent reveal fires, then each rises into its tilt
+ * (--r) on its own delay (--d). Hover straightens and lifts.
+ */
+.tile-in {
+  opacity: 0;
+  transform: rotate(var(--r, 0deg));
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.in .tile-in {
+  opacity: 1;
+  animation: tile-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) backwards;
+}
+.tile-in:hover {
+  transform: rotate(0deg) scale(1.03);
+}
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96) rotate(var(--r, 0deg));
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--r, 0deg));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -104,6 +131,12 @@ button {
   .reveal {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+  .tile-in,
+  .reveal.in .tile-in {
+    opacity: 1;
+    animation: none;
     transition: none;
   }
   *,

@@ -22,8 +22,8 @@ export default function Home() {
       </noscript>
       <Nav />
       <Hero />
-      <Statement />
       <Privacy />
+      <Statement />
       <Agent />
       <Advantages />
       <Rails />
