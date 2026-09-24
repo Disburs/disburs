@@ -13,40 +13,24 @@ const LINKS = [
   { label: "FAQ", href: "#faq" },
 ];
 
-/** Wordmark only. */
-export function Logo({ tone }: { tone: "dark" | "light" }) {
+export function Logo({ tone = "light" }: { tone?: "dark" | "light" }) {
   return (
-    <a
-      href="#top"
-      aria-label="Disburs home"
-      className={`font-display text-[20px] font-semibold tracking-[-0.03em] ${
-        tone === "dark" ? "text-white" : "text-ink"
-      }`}
-    >
+    <a href="#top" aria-label="Disburs home" className={`text-[24px] font-semibold tracking-[-0.03em] ${tone === "dark" ? "text-white" : "text-ink"}`}>
       Disburs
     </a>
   );
 }
 
-/**
- * Sticky nav that adapts to the surface beneath it: transparent with white
- * text over the dark hero, then a frosted paper bar with ink text once the
- * hero scrolls away.
- */
 export default function Nav() {
-  const [overHero, setOverHero] = useState(true);
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const reduce = useReducedMotion();
 
   useEffect(() => {
-    const hero = document.getElementById("hero");
-    if (!hero) return;
-    const io = new IntersectionObserver(([e]) => setOverHero(e.isIntersecting), {
-      rootMargin: "-72px 0px 0px 0px",
-      threshold: 0,
-    });
-    io.observe(hero);
-    return () => io.disconnect();
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -60,40 +44,23 @@ export default function Nav() {
     };
   }, [open]);
 
-  const dark = overHero && !open;
-  const tone = dark ? "dark" : "light";
-
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 ${
-        dark ? "on-dark border-b border-transparent bg-transparent" : "border-b border-line bg-paper/90 backdrop-blur-md"
-      }`}
-    >
-      <Container className="flex h-[68px] items-center justify-between">
-        <Logo tone={tone} />
-
-        <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
+    <header className={`fixed inset-x-0 top-0 z-50 bg-canvas transition-[border-color] duration-200 ${scrolled || open ? "border-b border-line" : "border-b border-transparent"}`}>
+      <Container className="flex h-[88px] items-center justify-between">
+        <Logo />
+        <nav aria-label="Primary" className="hidden items-center gap-10 lg:flex">
           {LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className={`text-[14px] transition-colors duration-150 ${
-                dark ? "text-white/65 hover:text-white" : "text-muted hover:text-ink"
-              }`}
-            >
+            <a key={l.href} href={l.href} className="text-[17px] text-ink transition-opacity duration-150 hover:opacity-[0.84]">
               {l.label}
             </a>
           ))}
         </nav>
-
         <div className="flex items-center gap-3">
           <a
             href="#waitlist"
-            className={`hidden h-10 cursor-pointer items-center rounded-md px-4 text-[14px] font-medium transition-colors duration-150 sm:inline-flex ${
-              dark ? "bg-mint text-ink-deep hover:bg-[#3dff96]" : "bg-ink text-white hover:bg-[#1a2a22]"
-            }`}
+            className="hidden h-12 cursor-pointer items-center rounded-full bg-ink-deep px-7 text-[16px] font-medium text-white transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.98] sm:inline-flex"
           >
-            Join the waitlist
+            Join waitlist
           </a>
           <button
             type="button"
@@ -101,11 +68,9 @@ export default function Nav() {
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
-            className={`inline-flex h-11 w-11 cursor-pointer items-center justify-center lg:hidden ${
-              dark ? "text-white" : "text-ink"
-            }`}
+            className="inline-flex h-12 w-12 cursor-pointer items-center justify-center text-ink lg:hidden"
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </Container>
@@ -118,25 +83,16 @@ export default function Nav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="border-t border-line bg-paper lg:hidden"
+            className="border-t border-line bg-canvas lg:hidden"
           >
-            <Container className="flex flex-col py-3">
+            <Container className="flex flex-col py-4">
               {LINKS.map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className="flex h-12 items-center border-b border-line text-[16px] text-ink last:border-0"
-                >
+                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0">
                   {l.label}
                 </a>
               ))}
-              <a
-                href="#waitlist"
-                onClick={() => setOpen(false)}
-                className="mt-4 inline-flex h-12 items-center justify-center rounded-md bg-ink text-[15px] font-medium text-white"
-              >
-                Join the waitlist
+              <a href="#waitlist" onClick={() => setOpen(false)} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
+                Join waitlist
               </a>
             </Container>
           </motion.div>

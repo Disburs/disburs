@@ -1,37 +1,37 @@
 import Nav from "@/components/landing/Nav";
 import Hero from "@/components/landing/Hero";
-import BuiltOn from "@/components/landing/BuiltOn";
-import Problem from "@/components/landing/Problem";
-import HowItWorks from "@/components/landing/HowItWorks";
-import Pillars from "@/components/landing/Pillars";
+import Statement from "@/components/landing/Statement";
+import Privacy from "@/components/landing/Privacy";
+import Agent from "@/components/landing/Agent";
+import Advantages from "@/components/landing/Advantages";
+import Rails from "@/components/landing/Rails";
 import Audience from "@/components/landing/Audience";
+import HowItWorks from "@/components/landing/HowItWorks";
 import Security from "@/components/landing/Security";
 import Pricing from "@/components/landing/Pricing";
 import Faq from "@/components/landing/Faq";
-import FinalCta from "@/components/landing/FinalCta";
 import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
     <main id="top" className="overflow-x-clip">
-      {/* Marks JS as available before any content below paints, so `.reveal`
-          only hides content when it can actually be revealed again. */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: "document.currentScript.parentElement.classList.add('js')",
-        }}
-      />
+      {/* Scroll reveals are hidden by CSS until JS reveals them; without JS,
+          show everything. Pure CSS — no DOM mutation before hydration. */}
+      <noscript>
+        <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
+      </noscript>
       <Nav />
       <Hero />
-      <BuiltOn />
-      <Problem />
-      <HowItWorks />
-      <Pillars />
+      <Statement />
+      <Privacy />
+      <Agent />
+      <Advantages />
+      <Rails />
       <Audience />
+      <HowItWorks />
       <Security />
       <Pricing />
       <Faq />
-      <FinalCta />
       <Footer />
     </main>
   );

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Container, Eyebrow, Heading, Lead } from "./Section";
+import { Container, Heading, Lead } from "./Section";
 import Reveal from "./Reveal";
 
 type QA = { q: string; a: string };
@@ -65,15 +65,16 @@ export default function Faq() {
   const items = CATEGORIES[cat].items;
 
   return (
-    <section id="faq" className="border-t border-line bg-surface py-24 md:py-32">
+    <section id="faq" className="bg-subtle py-24 md:py-36">
       <Container>
-        <Reveal className="mx-auto max-w-[640px] text-center">
-          <Eyebrow>FAQ</Eyebrow>
-          <Heading className="mt-4">Questions, answered plainly.</Heading>
-          <Lead className="mt-5">Everything about how the agent runs, protects and pays out your payroll.</Lead>
+        <Reveal className="grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-16">
+          <Heading size="lg">
+            Questions, answered plainly.
+          </Heading>
+          <Lead className="max-w-[40ch]">Everything about how the agent runs, protects and pays out your payroll.</Lead>
         </Reveal>
 
-        <div role="tablist" aria-label="FAQ categories" className="mt-10 flex flex-wrap justify-center gap-2">
+        <div role="tablist" aria-label="FAQ categories" className="mt-12 flex flex-wrap gap-2 md:mt-16">
           {CATEGORIES.map((c, i) => {
             const on = i === cat;
             return (
@@ -86,8 +87,8 @@ export default function Faq() {
                   setCat(i);
                   setOpen(0);
                 }}
-                className={`h-10 cursor-pointer rounded-md px-4 text-[14px] font-medium transition-colors duration-150 ${
-                  on ? "bg-ink text-white" : "bg-paper text-muted hover:text-ink"
+                className={`h-12 cursor-pointer rounded-full px-6 text-[15px] font-medium transition-colors duration-150 ${
+                  on ? "bg-ink-deep text-white" : "border border-line bg-canvas text-ink hover:opacity-[0.84]"
                 }`}
               >
                 {c.name}
@@ -96,7 +97,7 @@ export default function Faq() {
           })}
         </div>
 
-        <div className="mx-auto mt-10 max-w-[760px] divide-y divide-line border-y border-line">
+        <div className="mt-8 divide-y divide-line border-y border-line">
           {items.map((it, i) => {
             const isOpen = open === i;
             const panelId = `faq-${cat}-${i}`;
@@ -107,16 +108,16 @@ export default function Faq() {
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left"
+                  className="flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left"
                 >
-                  <span className="font-display text-[18px] font-semibold tracking-[-0.01em] text-ink md:text-[20px]">
+                  <span className="font-display text-[22px] font-semibold tracking-[-0.015em] text-ink md:text-[28px]">
                     {it.q}
                   </span>
                   <Plus
-                    size={20}
+                    size={26}
                     aria-hidden
-                    className={`shrink-0 text-faint transition-transform duration-200 ease-out ${
-                      isOpen ? "rotate-45 text-accent" : ""
+                    className={`shrink-0 text-ink transition-transform duration-200 ease-out ${
+                      isOpen ? "rotate-45" : ""
                     }`}
                   />
                 </button>
@@ -127,7 +128,7 @@ export default function Faq() {
                   style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
                 >
                   <div className="overflow-hidden">
-                    <p className="max-w-[640px] pb-5 text-[15.5px] leading-relaxed text-muted">{it.a}</p>
+                    <p className="max-w-[64ch] pb-7 text-[17px] leading-[1.5] text-muted md:text-[19px]">{it.a}</p>
                   </div>
                 </div>
               </div>

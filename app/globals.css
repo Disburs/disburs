@@ -1,20 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Archivo:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-primary: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'General Sans', 'Geist', 'Inter', -apple-system, sans-serif;
+  --font-primary: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Semantic tokens (mirrored in tailwind.config.ts) */
   --ink: #0e1a14;
   --ink-deep: #08110d;
-  --paper: #fafaf7;
-  --line: #e7ece8;
+  --canvas: #ffffff;
+  --subtle: #fbfbfb;
+  --line: #e5e7e3;
   --muted: #5b6b62;
   --mint: #12ff80;
   --accent: #07751a;
@@ -32,9 +31,8 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Anchor targets clear the sticky navbar. */
 [id] {
-  scroll-margin-top: 88px;
+  scroll-margin-top: 96px;
 }
 
 html,
@@ -43,7 +41,7 @@ body {
   margin: 0;
   font-family: var(--font-primary);
   color: var(--ink);
-  background: var(--paper);
+  background: var(--canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -52,7 +50,7 @@ body {
 body {
   font-size: 16px;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 a {
@@ -64,54 +62,49 @@ button {
   font: inherit;
 }
 
-/* Visible, on-brand focus for keyboard users. */
+/* 3px focus outline, per the reference system. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 6px;
 }
 .on-dark :focus-visible {
   outline-color: var(--mint);
 }
 
-/* Lock body scroll while the mobile drawer / modal is open. */
 .no-scroll {
   overflow: hidden;
 }
 
-/* Tabular figures for amounts and stats so columns never jitter. */
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
 /*
- * Scroll reveal. The hidden state is scoped to `.js` (added by an inline
- * script on the landing page), so server HTML and no-JS clients render
- * everything visible. Reduced-motion users never see the hidden state.
+ * Scroll reveal. Hidden by default and revealed by JS (`.in`). No-JS clients
+ * get everything visible via a <noscript> override on the page, and
+ * reduced-motion users never see the hidden state.
  */
-.js .reveal {
+.reveal {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(16px);
   transition:
     opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
-.js .reveal.in {
+.reveal.in {
   opacity: 1;
   transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .js .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
   *,
   *::before,

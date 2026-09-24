@@ -1,64 +1,54 @@
-import Image from "next/image";
 import { Check, Lock } from "lucide-react";
-import { Container, Heading, Lead } from "./Section";
+import { Container, Em, Heading, Lead } from "./Section";
 import LinkButton from "./Button";
 import Reveal from "./Reveal";
-import { PEOPLE } from "./people";
+import { Avatar, Kicker, Pill, TEAM } from "./mock";
 
-/**
- * The one product moment in the hero: a payroll run the agent has drafted,
- * with every amount shielded. Decorative — not an interactive control.
- */
-function PayrollRun() {
+/** Four tilted tiles: the product, in fragments. */
+function Tiles() {
+  const tile = "aspect-square w-full overflow-hidden rounded-tile";
   return (
-    <div
-      aria-label="Example payroll run with salary amounts hidden"
-      className="rounded-card border border-white/12 bg-[#0D1913] shadow-card-lg"
-    >
-      <div className="flex items-start justify-between border-b border-white/[0.08] px-5 py-4">
+    <div className="mt-16 grid grid-cols-2 gap-4 md:mt-24 md:grid-cols-4 md:gap-6" aria-hidden>
+      {/* 1 — protected amount, on dark */}
+      <div className={`${tile} flex flex-col justify-between bg-ink-deep p-6 md:-rotate-6 md:p-8`}>
+        <span className="text-[13px] text-white/50">Salary</span>
         <div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/40">Run · March 2026</div>
-          <div className="mt-1 font-display text-[17px] font-semibold text-white">18 contractors · 3 countries</div>
+          <div className="flex items-center gap-3 text-white">
+            <Lock size={26} className="text-mint" />
+            <span className="font-mono text-[28px] tracking-[0.04em] md:text-[34px]">••••••</span>
+          </div>
+          <div className="mt-2 text-[14px] text-white/55">Verified by proof. Never revealed.</div>
         </div>
-        <span className="mt-0.5 inline-flex items-center gap-1.5 font-mono text-[11.5px] text-mint">
-          <span className="h-1.5 w-1.5 rounded-full bg-mint" aria-hidden />
-          ready for approval
+      </div>
+      {/* 2 — approve, on mint */}
+      <div className={`${tile} flex items-center justify-center bg-mint p-6 md:rotate-3`}>
+        <span className="inline-flex h-14 items-center gap-3 rounded-full bg-canvas px-6 text-[18px] font-medium text-ink md:text-[22px]">
+          <Check size={22} strokeWidth={2.5} className="text-accent" />
+          Approve payroll
         </span>
       </div>
-
-      <ul>
-        {PEOPLE.map((r, i) => (
-          <Reveal
-            as="li"
-            key={r.name}
-            immediate
-            delay={0.3 + i * 0.06}
-            className="flex items-center gap-3.5 border-b border-white/[0.06] px-5 py-3.5"
-          >
-            <Image src={r.avatar} alt="" width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[15px] text-white">{r.name}</div>
-              <div className="font-mono text-[11.5px] text-white/40">{r.place}</div>
+      {/* 3 — payees paid, on dark */}
+      <div className={`${tile} flex flex-col justify-center gap-3 bg-ink-deep p-6 md:-rotate-3 md:p-8`}>
+        {TEAM.slice(0, 3).map((m) => (
+          <div key={m.name} className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Avatar m={m} size={40} />
+              <span className="hidden text-[14px] text-white md:block">{m.name.split(" ")[0]}</span>
             </div>
-            <span className="tabular inline-flex items-center gap-1.5 font-mono text-[12.5px] text-white/70">
-              <Lock size={11} className="text-mint" aria-hidden />
-              <span aria-label="amount hidden">••••••.••</span>
-              <span className="text-white/35">USDC</span>
+            <span className="inline-flex h-9 items-center whitespace-nowrap rounded-full bg-canvas px-3 text-[13px] font-medium text-ink md:h-10 md:px-4 md:text-[15px]">
+              Paid <span className="ml-1 hidden md:inline">· 4s</span>
             </span>
-            <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full bg-mint/15 text-mint" aria-label="verified">
-              <Check size={11} strokeWidth={3} />
-            </span>
-          </Reveal>
+          </div>
         ))}
-      </ul>
-
-      <div className="flex items-center justify-between gap-4 px-5 py-4">
-        <div className="font-mono text-[11.5px] leading-relaxed text-white/40">
-          drafted 09:03 · 2 exceptions resolved · 0 need you
+      </div>
+      {/* 4 — run card, on subtle */}
+      <div className={`${tile} flex flex-col justify-between border border-line bg-subtle p-6 md:rotate-6 md:p-8`}>
+        <div>
+          <Kicker>March payroll</Kicker>
+          <div className="tabular mt-2 text-[32px] font-semibold leading-none tracking-[-0.03em] text-ink md:text-[40px]">$12,840</div>
+          <div className="mt-2 text-[14px] text-muted">18 contractors · 3 countries</div>
         </div>
-        <span className="inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-md bg-mint px-3.5 text-[13.5px] font-medium text-ink-deep">
-          Approve run
-        </span>
+        <Pill tone="accent">Ready for approval</Pill>
       </div>
     </div>
   );
@@ -66,44 +56,29 @@ function PayrollRun() {
 
 export default function Hero() {
   return (
-    <section id="hero" className="on-dark bg-ink-deep pb-20 pt-[140px] md:pb-28 md:pt-[168px]">
-      <Container className="grid items-end gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-        <div>
-          <Reveal immediate>
-            <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-white/45">
-              Private beta — settles on Stellar, paid in USDC
-            </p>
-          </Reveal>
-          <Reveal immediate delay={0.06}>
-            <Heading as="h1" tone="dark" size="lg" className="mt-6 max-w-[13ch]">
-              Global payroll that keeps every salary private.
-            </Heading>
-          </Reveal>
-          <Reveal immediate delay={0.12}>
-            <Lead tone="dark" className="mt-6 max-w-[52ch]">
-              Disburs is autonomous payroll infrastructure. It pays your contractors across
-              borders in seconds, runs the compliance workflow end to end, and keeps amounts off
-              the public ledger — proven correct with zero-knowledge proofs.
-            </Lead>
-          </Reveal>
-          <Reveal immediate delay={0.18} className="mt-8 flex flex-wrap items-center gap-3">
-            <LinkButton href="#waitlist" variant="mint" size="lg" arrow>
-              Join the waitlist
-            </LinkButton>
-            <LinkButton href="#how-it-works" variant="ghost-dark" size="lg">
-              How it works
-            </LinkButton>
-          </Reveal>
-          <Reveal immediate delay={0.24}>
-            <p className="mt-10 max-w-[52ch] border-t border-white/10 pt-5 font-mono text-[12.5px] leading-relaxed text-white/45">
-              ~4s to settle · under $0.01 network fee per payment · 0.5% flat per run · Kenya,
-              Ghana, South Africa today
-            </p>
-          </Reveal>
-        </div>
-
-        <Reveal immediate delay={0.16}>
-          <PayrollRun />
+    <section id="hero" className="bg-canvas pb-20 pt-[152px] md:pb-28 md:pt-[184px]">
+      <Container>
+        <Reveal immediate>
+          <Heading as="h1" size="xl" className="max-w-[14ch]">
+            Global payroll that keeps every salary <Em>private.</Em>
+          </Heading>
+        </Reveal>
+        <Reveal immediate delay={0.08}>
+          <Lead className="mt-8 max-w-[38ch]">
+            Disburs is autonomous payroll infrastructure. Fund a treasury in USDC, let the agent
+            prepare each run, approve it — and every contractor is paid in seconds.
+          </Lead>
+        </Reveal>
+        <Reveal immediate delay={0.14} className="mt-10 flex flex-wrap items-center gap-4">
+          <LinkButton href="#waitlist" variant="mint" size="lg">
+            Join the waitlist
+          </LinkButton>
+          <LinkButton href="#how-it-works" variant="outline" size="lg">
+            See how it works
+          </LinkButton>
+        </Reveal>
+        <Reveal immediate delay={0.22}>
+          <Tiles />
         </Reveal>
       </Container>
     </section>
