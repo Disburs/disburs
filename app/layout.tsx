@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://disburs.io"),
   title: "Disburs: Payroll That Thinks",
   description:
-    "Disburs is an autonomous AI agent that reads your contracts, settles disputes, and pays your contractors privately on Stellar with zero-knowledge proofs. Not a payout API. An agent.",
+    "Disburs is an autonomous AI agent that reads your contracts, clears routine exceptions, and pays your contractors privately on Stellar with zero-knowledge proofs. Not a payout API. An agent.",
   keywords: [
     "payroll",
     "African contractors",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Disburs: Payroll That Thinks",
     description:
-      "Not a payout API. An autonomous AI agent that reads contracts, resolves disputes, and keeps payroll private with zero-knowledge proofs.",
+      "Not a payout API. An autonomous AI agent that reads contracts, clears routine exceptions, and keeps payroll private with zero-knowledge proofs.",
     url: "https://disburs.io",
     siteName: "Disburs",
     type: "website",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Disburs: Payroll That Thinks",
     description:
-      "Not a payout API. An autonomous AI agent that reads contracts, resolves disputes, and keeps payroll private with zero-knowledge proofs.",
+      "Not a payout API. An autonomous AI agent that reads contracts, clears routine exceptions, and keeps payroll private with zero-knowledge proofs.",
   },
 };
 

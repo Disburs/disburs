@@ -5,7 +5,7 @@ import Reveal from "./Reveal";
 const POINTS: [string, string][] = [
   ["Stable value", "USDC is a fully reserved dollar stablecoin issued by Circle. What you send is what arrives, with no rate surprise between approval and settlement."],
   ["Four-second finality", "Stellar confirms payments in seconds and charges a fraction of a cent. Batch payouts to every contractor land at once."],
-  ["Local cash-out", "Contractors convert USDC to shillings, cedis or rand through Stellar anchor partners. Nothing to install, no crypto to understand."],
+  ["Local cash-out", "Contractors in Kenya, Ghana and South Africa convert USDC to shillings, cedis or rand through Stellar anchor partners, with more countries on the way. Nothing to install, no crypto to understand."],
   ["Verifiable settlement", "Every payment has an on-chain reference that can be independently checked, while the amount itself stays private."],
 ];
 

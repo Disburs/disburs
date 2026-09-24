@@ -55,6 +55,10 @@ const CATEGORIES: Category[] = [
         q: "Is it secure?",
         a: "Data is encrypted in transit and at rest, and every agent decision is logged in plain English for a full audit trail.",
       },
+      {
+        q: "Can the agent move money without me?",
+        a: "No. The agent prepares each run and clears routine exceptions, but nothing settles until you approve it. You set spending limits and approval thresholds, and you can pause or revoke the agent in one action.",
+      },
     ],
   },
 ];
