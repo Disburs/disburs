@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Wordmark from "@/components/Wordmark";
 import { Check, Lock } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -49,7 +50,7 @@ export function Frame({
       {chrome && (
         <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
           <div className="flex items-center gap-6">
-            <span className="text-[15px] font-semibold">Disburs</span>
+            <Wordmark className="text-[15px] font-semibold" />
             <span className="hidden items-center gap-4 text-[13px] sm:flex" aria-hidden>
               {["Payroll", "Contractors", "Treasury"].map((t) => (
                 <span key={t} className={t === active ? "font-medium text-ink" : "text-muted"}>

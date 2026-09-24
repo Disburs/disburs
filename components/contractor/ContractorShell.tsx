@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Brand from "@/components/Wordmark";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Home, ArrowLeftRight, MessageCircle, Menu, X, type LucideIcon } from "lucide-react";
@@ -16,7 +17,7 @@ const NAV: { label: string; href: string; icon: LucideIcon }[] = [
 function Wordmark() {
   return (
     <Link href="/contractor" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
-      Disburs
+      <Brand />
     </Link>
   );
 }
