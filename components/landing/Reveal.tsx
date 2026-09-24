@@ -6,11 +6,11 @@ import { useEffect, useRef, useState, type ElementType, type ReactNode } from "r
  * Fade-and-rise into view, once — driven by CSS transitions (see `.reveal` in
  * globals.css), not a JS animation library.
  *
- * Robust by construction: the hidden state only applies under `.js` (set by an
- * inline script on the page), so server HTML, no-JS clients and
- * prefers-reduced-motion users always see content. With JS, an
- * IntersectionObserver adds `.in` when the element scrolls into view;
- * `immediate` triggers on mount (used for the hero).
+ * Robust by construction: the hidden state is plain CSS (no DOM mutation
+ * before hydration), a <noscript> override on the page shows everything to
+ * no-JS clients, and prefers-reduced-motion users never see the hidden state.
+ * With JS, an IntersectionObserver adds `.in` when the element scrolls into
+ * view; `immediate` triggers on mount (used for the hero).
  */
 export default function Reveal({
   children,
@@ -42,7 +42,9 @@ export default function Reveal({
           io.disconnect();
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
+      // A huge top margin means anything already scrolled past counts as seen, so
+      // a fast scroll can never leave a section stuck invisible above the fold.
+      { rootMargin: "9999px 0px -8% 0px", threshold: 0.05 },
     );
     io.observe(el);
     return () => io.disconnect();

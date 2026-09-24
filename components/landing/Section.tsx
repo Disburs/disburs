@@ -1,64 +1,40 @@
 import type { ReactNode } from "react";
 
-/** Shared layout scaffolding so every section shares one rhythm. */
+/** Shared layout + type scaffolding. */
 
-export function Container({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return <div className={`mx-auto w-full max-w-container px-6 md:px-10 ${className}`}>{children}</div>;
+export function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`mx-auto w-full max-w-container px-4 md:px-8 ${className}`}>{children}</div>;
 }
 
-/** Small uppercase label above a heading. `tone` matches the surface it sits on. */
-export function Eyebrow({
-  children,
-  tone = "light",
-  className = "",
-}: {
-  children: ReactNode;
-  tone?: "light" | "dark";
-  className?: string;
-}) {
-  const color = tone === "dark" ? "text-mint" : "text-accent";
-  return (
-    <span
-      className={`inline-block font-mono text-[12px] font-medium uppercase tracking-[0.14em] ${color} ${className}`}
-    >
-      {children}
-    </span>
-  );
-}
-
+/** Serif display heading. `size`: xl (hero), lg (section), md (sub-section). */
 export function Heading({
   children,
   tone = "light",
-  size = "md",
+  size = "lg",
   className = "",
   as: Tag = "h2",
 }: {
   children: ReactNode;
   tone?: "light" | "dark";
-  size?: "md" | "lg";
+  size?: "xl" | "lg" | "md";
   className?: string;
   as?: "h1" | "h2" | "h3";
 }) {
   const color = tone === "dark" ? "text-white" : "text-ink";
-  const scale =
-    size === "lg"
-      ? "text-[2.75rem] leading-[1.02] md:text-[3.75rem] lg:text-[4.5rem]"
-      : "text-[2rem] leading-[1.08] md:text-[2.5rem] lg:text-[2.75rem]";
-  return (
-    <Tag
-      className={`font-display font-semibold tracking-[-0.03em] text-balance ${scale} ${color} ${className}`}
-    >
-      {children}
-    </Tag>
-  );
+  const scale = {
+    xl: "text-[56px] leading-[1.02] tracking-[-0.035em] md:text-[84px] lg:text-[100px]",
+    lg: "text-[44px] leading-[1.06] tracking-[-0.03em] md:text-[64px] lg:text-[80px]",
+    md: "text-[36px] leading-[1.1] tracking-[-0.02em] md:text-[48px]",
+  }[size];
+  return <Tag className={`font-display font-semibold text-balance ${scale} ${color} ${className}`}>{children}</Tag>;
 }
 
+/** Italic emphasis inside a serif heading. */
+export function Em({ children }: { children: ReactNode }) {
+  return <em className="font-medium italic">{children}</em>;
+}
+
+/** Large, light body copy under headings. */
 export function Lead({
   children,
   tone = "light",
@@ -68,10 +44,15 @@ export function Lead({
   tone?: "light" | "dark";
   className?: string;
 }) {
-  const color = tone === "dark" ? "text-white/70" : "text-muted";
+  const color = tone === "dark" ? "text-white/75" : "text-ink";
   return (
-    <p className={`text-[17px] leading-[1.6] md:text-[19px] text-pretty ${color} ${className}`}>
+    <p className={`text-[20px] font-light leading-[1.35] tracking-[-0.01em] text-pretty md:text-[26px] ${color} ${className}`}>
       {children}
     </p>
   );
+}
+
+/** Small label (kept for pricing/FAQ). */
+export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <span className={`inline-block text-[15px] font-medium text-muted ${className}`}>{children}</span>;
 }
