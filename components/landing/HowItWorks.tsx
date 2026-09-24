@@ -31,14 +31,14 @@ export default function HowItWorks() {
               </div>
             </div>
             <ol className="divide-y divide-white/10 border-t border-white/10 lg:border-t-0">
-              {STEPS.map(([n, t, d]) => (
-                <li key={n} className="grid grid-cols-[56px_1fr] gap-4 py-7 first:lg:pt-0">
+              {STEPS.map(([n, t, d], i) => (
+                <Reveal as="li" key={n} delay={0.15 + i * 0.1} className="grid grid-cols-[56px_1fr] gap-4 py-7 first:lg:pt-0">
                   <span className="font-mono text-[14px] text-mint">{n}</span>
                   <div>
                     <h3 className="font-display text-[26px] font-semibold leading-[1.15] tracking-[-0.02em] text-white md:text-[30px]">{t}</h3>
                     <p className="mt-3 text-[16px] leading-[1.5] text-white/65 md:text-[17px]">{d}</p>
                   </div>
-                </li>
+                </Reveal>
               ))}
             </ol>
           </div>

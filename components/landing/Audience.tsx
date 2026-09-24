@@ -30,7 +30,7 @@ export default function Audience() {
               <Reveal
                 key={s.title}
                 delay={i * 0.06}
-                className={`flex flex-col rounded-tile p-8 md:p-12 ${dark ? "on-dark bg-ink-deep text-white" : "bg-mint text-ink"}`}
+                className={`flex flex-col rounded-tile p-8 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 md:p-12 ${dark ? "on-dark bg-ink-deep text-white" : "bg-mint text-ink"}`}
               >
                 <h3 className="font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] md:text-[48px]">{s.title}</h3>
                 <ul className={`mt-8 divide-y border-y ${dark ? "divide-white/10 border-white/10" : "divide-ink/15 border-ink/15"}`}>

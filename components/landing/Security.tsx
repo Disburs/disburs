@@ -25,16 +25,14 @@ export default function Security() {
             our responsibility — here is how we carry it.
           </Lead>
         </Reveal>
-        <Reveal delay={0.06}>
-          <dl className="border-t border-line">
-            {ITEMS.map(([t, d]) => (
-              <div key={t} className="grid gap-2 border-b border-line py-6 md:grid-cols-[240px_1fr] md:gap-8">
-                <dt className="text-[19px] font-medium text-ink">{t}</dt>
-                <dd className="text-[16px] leading-[1.5] text-muted md:text-[17px]">{d}</dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
+        <dl className="border-t border-line">
+          {ITEMS.map(([t, d], i) => (
+            <Reveal key={t} delay={i * 0.05} className="grid gap-2 border-b border-line py-6 md:grid-cols-[240px_1fr] md:gap-8">
+              <dt className="text-[19px] font-medium text-ink">{t}</dt>
+              <dd className="text-[16px] leading-[1.5] text-muted md:text-[17px]">{d}</dd>
+            </Reveal>
+          ))}
+        </dl>
       </Container>
     </section>
   );

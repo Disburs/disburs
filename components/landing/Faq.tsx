@@ -108,9 +108,9 @@ export default function Faq() {
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left"
+                  className="group flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left"
                 >
-                  <span className="font-display text-[22px] font-semibold tracking-[-0.015em] text-ink md:text-[28px]">
+                  <span className="font-display text-[22px] font-semibold tracking-[-0.015em] text-ink transition-transform duration-300 ease-out group-hover:translate-x-1 md:text-[28px]">
                     {it.q}
                   </span>
                   <Plus

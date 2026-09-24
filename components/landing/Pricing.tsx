@@ -33,7 +33,7 @@ const PLANS: Plan[] = [
 function Card({ plan }: { plan: Plan }) {
   const f = plan.featured;
   return (
-    <div className={`flex flex-col rounded-tile p-8 md:p-10 ${f ? "on-dark bg-ink-deep text-white" : "bg-subtle text-ink"}`}>
+    <div className={`flex flex-col rounded-tile p-8 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 md:p-10 ${f ? "on-dark bg-ink-deep text-white" : "bg-subtle text-ink"}`}>
       <div className="flex items-center justify-between">
         <span className="text-[17px] font-medium">{plan.name}</span>
         {f && <span className="text-[14px] text-mint">Most popular</span>}

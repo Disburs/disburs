@@ -38,24 +38,24 @@ export default function Advantages() {
         <Reveal className="max-w-[820px]">
           <Heading size="lg">Why teams switch to Disburs.</Heading>
         </Reveal>
-        <Reveal delay={0.06} className="mt-12 md:mt-16">
+        <div className="mt-12 md:mt-16">
           <ul className="border-t border-line">
             {ROWS.map((r, i) => {
               const on = open === i;
               const id = `adv-${i}`;
               return (
-                <li key={r.title} className="border-b border-line">
+                <Reveal as="li" key={r.title} delay={i * 0.06} className="border-b border-line">
                   <button
                     type="button"
                     aria-expanded={on}
                     aria-controls={id}
                     onClick={() => setOpen(on ? -1 : i)}
-                    className="flex w-full cursor-pointer items-center gap-5 py-5 text-left md:gap-8 md:py-6"
+                    className="group flex w-full cursor-pointer items-center gap-5 py-5 text-left transition-colors duration-200 md:gap-8 md:py-6"
                   >
                     <span className="w-10 shrink-0 font-mono text-[14px] text-muted md:w-16" aria-hidden>
                       0{i + 1}
                     </span>
-                    <span className="flex-1 font-display text-[24px] font-semibold leading-[1.15] tracking-[-0.02em] text-ink md:text-[34px]">
+                    <span className="flex-1 font-display text-[24px] font-semibold leading-[1.15] tracking-[-0.02em] text-ink transition-transform duration-300 ease-out group-hover:translate-x-1 md:text-[34px]">
                       {r.title}
                     </span>
                     <Plus
@@ -69,11 +69,11 @@ export default function Advantages() {
                       <p className="max-w-[62ch] pb-7 pl-[60px] text-[17px] leading-[1.5] text-muted md:pl-[96px] md:text-[19px]">{r.body}</p>
                     </div>
                   </div>
-                </li>
+                </Reveal>
               );
             })}
           </ul>
-        </Reveal>
+        </div>
       </Container>
     </section>
   );

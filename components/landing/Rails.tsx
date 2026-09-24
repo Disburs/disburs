@@ -22,7 +22,7 @@ export default function Rails() {
 
         <Reveal delay={0.06} className="mt-12 grid gap-4 md:mt-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-6">
           {/* Currency card */}
-          <div className="flex flex-col justify-between rounded-tile bg-canvas p-8 md:p-10">
+          <div className="flex flex-col justify-between rounded-tile bg-canvas p-8 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 md:p-10">
             <div className="flex items-center gap-4">
               <Image src="/logos/usdc.svg" alt="USDC" width={64} height={64} className="h-16 w-16" />
               <div>
@@ -57,27 +57,25 @@ export default function Rails() {
           </div>
 
           {/* Illustration card */}
-          <div className="flex items-center justify-center rounded-tile bg-canvas p-8 md:p-14">
+          <div className="group flex items-center justify-center rounded-tile bg-canvas p-8 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 md:p-14">
             <Image
               src="/illustrations/fx.svg"
               alt="A dashboard converting between currencies, with USDC settling in the middle"
               width={960}
               height={743}
-              className="h-auto w-full max-w-[520px]"
+              className="h-auto w-full max-w-[520px] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             />
           </div>
         </Reveal>
 
-        <Reveal delay={0.08} className="mt-4 lg:mt-6">
-          <dl className="grid gap-x-10 border-t border-line md:grid-cols-2">
-            {POINTS.map(([t, d]) => (
-              <div key={t} className="border-b border-line py-7">
-                <dt className="text-[19px] font-medium text-ink">{t}</dt>
-                <dd className="mt-2 text-[16px] leading-[1.5] text-muted md:text-[17px]">{d}</dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
+        <dl className="mt-4 grid gap-x-10 border-t border-line md:grid-cols-2 lg:mt-6">
+          {POINTS.map(([t, d], i) => (
+            <Reveal key={t} delay={i * 0.06} className="border-b border-line py-7">
+              <dt className="text-[19px] font-medium text-ink">{t}</dt>
+              <dd className="mt-2 text-[16px] leading-[1.5] text-muted md:text-[17px]">{d}</dd>
+            </Reveal>
+          ))}
+        </dl>
       </Container>
     </section>
   );
