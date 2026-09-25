@@ -25,4 +25,22 @@ test.describe("Landing page", () => {
     await page.waitForLoadState("networkidle");
     expect(errors).toEqual([]);
   });
+
+  test("supports keyboard navigation for FAQ category tabs", async ({ page }) => {
+    await page.goto("/");
+
+    const general = page.getByRole("tab", { name: "General" });
+    await general.focus();
+    await page.keyboard.press("ArrowRight");
+
+    const payments = page.getByRole("tab", { name: "Payments" });
+    await expect(payments).toBeFocused();
+    await expect(payments).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tabpanel")).toHaveAttribute("aria-labelledby", "faq-tab-1");
+
+    await page.keyboard.press("End");
+    await expect(page.getByRole("tab", { name: "Privacy & security" })).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(general).toBeFocused();
+  });
 });
