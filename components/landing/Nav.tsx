@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Wordmark from "@/components/Wordmark";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
@@ -29,7 +29,21 @@ export default function Nav() {
   const cta = { label: "Sign in", href: "/sign-in" };
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+  const skipFocusOnClose = useRef(false);
   const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (!open && wasOpen.current && !skipFocusOnClose.current) {
+      menuButtonRef.current?.focus();
+    }
+
+    if (skipFocusOnClose.current) {
+      skipFocusOnClose.current = false;
+    }
+    wasOpen.current = open;
+  }, [open]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -73,6 +87,7 @@ export default function Nav() {
             {cta.label}
           </a>
           <button
+            ref={menuButtonRef}
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
@@ -100,11 +115,11 @@ export default function Nav() {
                 <ModeSwitch mode="payroll" />
               </div>
               {links.map((l) => (
-                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0">
+                <a key={l.href} href={l.href} onClick={() => { skipFocusOnClose.current = true; setOpen(false); }} className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0">
                   {l.label}
                 </a>
               ))}
-              <a href={cta.href} onClick={() => setOpen(false)} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
+              <a href={cta.href} onClick={() => { skipFocusOnClose.current = true; setOpen(false); }} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
                 {cta.label}
               </a>
             </Container>
