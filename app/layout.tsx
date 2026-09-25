@@ -5,9 +5,9 @@ import WaitlistModal from "@/components/WaitlistModal";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://disburs.io"),
-  title: "Disburs: Payroll That Thinks",
+  title: "Disburs: Private Global Payroll",
   description:
-    "Disburs is autonomous payroll infrastructure. An agent reads your contracts and proposes each run, policy checks and zero-knowledge proofs validate it, and nothing settles until you approve. Paid in USDC on Stellar.",
+    "Global payroll that keeps every salary private. Disburs prepares each run for your approval and pays contractors in USDC on Stellar.",
   keywords: [
     "payroll",
     "African contractors",
@@ -18,18 +18,18 @@ export const metadata: Metadata = {
     "remote payments",
   ],
   openGraph: {
-    title: "Disburs: Payroll That Thinks",
+    title: "Disburs: Private Global Payroll",
     description:
-      "An agent proposes each payroll run, policy checks and zero-knowledge proofs validate it, and you approve before anything settles. Private payroll in USDC on Stellar.",
+      "Global payroll that keeps every salary private. Approve each run and pay contractors in USDC on Stellar.",
     url: "https://disburs.io",
     siteName: "Disburs",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Disburs: Payroll That Thinks",
+    title: "Disburs: Private Global Payroll",
     description:
-      "An agent proposes each payroll run, policy checks and zero-knowledge proofs validate it, and you approve before anything settles. Private payroll in USDC on Stellar.",
+      "Global payroll that keeps every salary private. Approve each run and pay contractors in USDC on Stellar.",
   },
 };
 
