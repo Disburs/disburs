@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Loader2 } from "lucide-react";
 import { useJoinWaitlist } from "@/lib/hooks/useWaitlist";
@@ -18,6 +18,8 @@ export default function WaitlistModal() {
   const [role, setRole] = useState<AccountType | null>(null);
   const [done, setDone] = useState(false);
   const [alreadyJoined, setAlreadyJoined] = useState(false);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   const mutation = useJoinWaitlist();
 
@@ -25,11 +27,12 @@ export default function WaitlistModal() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      const trigger = target?.closest?.(
+      const trigger = target?.closest?.<HTMLElement>(
         'a[href="#waitlist"], a[href="/waitlist"], [data-waitlist]',
       );
       if (trigger) {
         e.preventDefault();
+        triggerRef.current = trigger;
         setOpen(true);
       }
     };
@@ -47,6 +50,17 @@ export default function WaitlistModal() {
       mutation.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Move focus into the modal when it opens and return it to the trigger when it closes.
+  useEffect(() => {
+    if (open) {
+      const frame = requestAnimationFrame(() => emailInputRef.current?.focus());
+      return () => cancelAnimationFrame(frame);
+    }
+
+    triggerRef.current?.focus();
+    triggerRef.current = null;
   }, [open]);
 
   // Escape to close + lock body scroll while open.
@@ -176,6 +190,7 @@ export default function WaitlistModal() {
                   <label className="block">
                     <span className="mb-3 block text-[15px] font-medium text-ink">Work email</span>
                     <input
+                      ref={emailInputRef}
                       type="email"
                       required
                       value={email}
