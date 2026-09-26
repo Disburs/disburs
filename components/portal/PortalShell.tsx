@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { company } from "@/lib/mock";
 import { authClient } from "@/lib/auth-client";
+import { useRequireProfile } from "@/lib/hooks/useMe";
 import { Avatar } from "./ui";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
@@ -132,6 +133,10 @@ function Sidebar({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
 
 export default function PortalShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  // Signed out → sign in. Signed in without an organization → employer onboarding.
+  const { ready } = useRequireProfile({ need: "organization", onboarding: "/onboarding" });
+
+  if (!ready) return <div className="min-h-screen bg-canvas" aria-busy="true" />;
 
   return (
     <div className="min-h-screen bg-canvas">
