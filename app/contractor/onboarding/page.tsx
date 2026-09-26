@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import WalletStep from "@/components/onboarding/WalletStep";
 import { Button, Field, inputClass } from "@/components/portal/ui";
-import { useOnboardContractor, useRequireProfile } from "@/lib/hooks/useMe";
+import { useOnboardContractor, useRequireProfile, useUpdateName } from "@/lib/hooks/useMe";
+import { joinName, splitName } from "@/lib/name";
 
 const STEPS = ["About you", "Wallet"];
 const COUNTRIES: { name: string; currency: "USDC" | "NGN" | "KES" | "GHS" | "ZAR" }[] = [
@@ -26,9 +27,11 @@ const headingClass = "font-display text-[36px] font-semibold leading-[1.05] trac
 export default function ContractorOnboarding() {
   const { me, ready } = useRequireProfile({});
   const onboard = useOnboardContractor();
+  const updateName = useUpdateName();
 
   const [type, setType] = useState<"INDIVIDUAL" | "BUSINESS">("INDIVIDUAL");
-  const [name, setName] = useState("");
+  const [first, setFirst] = useState("");
+  const [last, setLast] = useState("");
   const [country, setCountry] = useState("Kenya");
   const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("KES");
   const [companyLegalName, setCompanyLegalName] = useState("");
@@ -36,7 +39,15 @@ export default function ContractorOnboarding() {
 
   const step = me?.contractor ? 1 : 0;
   const business = type === "BUSINESS";
-  const valid = name.trim() && (!business || (companyLegalName.trim() && businessAddress.trim()));
+  const busy = onboard.isPending || updateName.isPending;
+  const valid = first.trim() && last.trim() && (!business || (companyLegalName.trim() && businessAddress.trim()));
+
+  useEffect(() => {
+    if (!me?.user.name) return;
+    const n = splitName(me.user.name);
+    setFirst((v) => v || n.first);
+    setLast((v) => v || n.last);
+  }, [me?.user.name]);
 
   const pickCountry = (c: string) => {
     setCountry(c);
@@ -44,11 +55,16 @@ export default function ContractorOnboarding() {
     if (match) setCurrency(match.currency);
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!valid || onboard.isPending) return;
+    if (!valid || busy) return;
+    const name = joinName(first, last);
+    if (name !== (me?.user.name ?? "")) {
+      const ok = await updateName.mutateAsync(name).catch(() => null);
+      if (ok === null) return;
+    }
     onboard.mutate({
-      name: name.trim(),
+      name,
       country,
       payoutCurrency: currency,
       type,
@@ -116,11 +132,12 @@ export default function ContractorOnboarding() {
             </fieldset>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <Field label="Full name">
-                  <input className={inputClass} required maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder="Kwabena Mensah" autoFocus />
-                </Field>
-              </div>
+              <Field label="First name">
+                <input className={inputClass} required maxLength={60} autoComplete="given-name" value={first} onChange={(e) => setFirst(e.target.value)} placeholder="Kwabena" autoFocus />
+              </Field>
+              <Field label="Last name">
+                <input className={inputClass} required maxLength={60} autoComplete="family-name" value={last} onChange={(e) => setLast(e.target.value)} placeholder="Mensah" />
+              </Field>
               <Field label="Country">
                 <select className={inputClass} value={country} onChange={(e) => pickCountry(e.target.value)}>
                   {COUNTRIES.map((c) => (
@@ -151,11 +168,13 @@ export default function ContractorOnboarding() {
               )}
             </div>
 
-            {onboard.isError && <p className="text-[14px] text-[#A32D1C]">{(onboard.error as Error).message}</p>}
+            {(onboard.isError || updateName.isError) && (
+              <p className="text-[14px] text-[#A32D1C]">{((onboard.error ?? updateName.error) as Error).message}</p>
+            )}
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={!valid || onboard.isPending}>
-                {onboard.isPending ? (
+              <Button type="submit" disabled={!valid || busy}>
+                {busy ? (
                   <>
                     <Loader2 size={16} className="animate-spin" /> Setting you up…
                   </>

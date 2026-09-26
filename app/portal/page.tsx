@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Card, Badge, Button, PageTitle, StatTile, statusVariant } from "@/components/portal/ui";
 import { activityFeed, nextPayroll, payrollRuns, company, type Activity } from "@/lib/mock";
+import { useMe } from "@/lib/hooks/useMe";
 
 const ICONS: Record<Activity["icon"], LucideIcon> = {
   check: CheckCircle2,
@@ -33,6 +34,8 @@ function fmt(n: number) {
 }
 
 export default function DashboardPage() {
+  const { data: me } = useMe();
+  const firstName = (me?.user.name || me?.user.email || "there").split(/[\s@]/)[0];
   return (
     <div className="flex flex-col gap-5">
       {/* Greeting */}
@@ -44,7 +47,7 @@ export default function DashboardPage() {
           </Button>
         }
       >
-        Good morning, {company.contact.split(" ")[0]}.
+        Good morning, {firstName}.
       </PageTitle>
 
       {/* Alert banner */}

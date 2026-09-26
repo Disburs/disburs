@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import Wordmark from "@/components/Wordmark";
 import WalletStep from "@/components/onboarding/WalletStep";
 import { Button, Card, Field, inputClass } from "@/components/portal/ui";
 import { authClient } from "@/lib/auth-client";
-import { useOnboardClient, useRequireProfile } from "@/lib/hooks/useMe";
+import { useOnboardClient, useRequireProfile, useUpdateName } from "@/lib/hooks/useMe";
+import { joinName, splitName } from "@/lib/name";
 
 const STEPS = ["Company", "Treasury"];
 const COUNTRIES = ["Kenya", "Ghana", "South Africa", "Nigeria", "United Kingdom", "United States", "Other"];
@@ -23,7 +24,10 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { me, ready } = useRequireProfile({});
   const onboard = useOnboardClient();
+  const updateName = useUpdateName();
 
+  const [first, setFirst] = useState("");
+  const [last, setLast] = useState("");
   const [company, setCompany] = useState("");
   const [country, setCountry] = useState("Kenya");
   const [teamSize, setTeamSize] = useState("");
@@ -31,9 +35,25 @@ export default function OnboardingPage() {
   const hasOrg = Boolean(me?.organization);
   const step = hasOrg ? 1 : 0;
 
-  const submit = (e: React.FormEvent) => {
+  // Prefill from the account (Google sign-in already carries a name).
+  useEffect(() => {
+    if (!me?.user.name) return;
+    const n = splitName(me.user.name);
+    setFirst((v) => v || n.first);
+    setLast((v) => v || n.last);
+  }, [me?.user.name]);
+
+  const busy = onboard.isPending || updateName.isPending;
+  const valid = first.trim() && last.trim() && company.trim();
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!company.trim() || onboard.isPending) return;
+    if (!valid || busy) return;
+    const name = joinName(first, last);
+    if (name !== (me?.user.name ?? "")) {
+      const ok = await updateName.mutateAsync(name).catch(() => null);
+      if (ok === null) return;
+    }
     onboard.mutate({
       company: company.trim(),
       country,
@@ -85,10 +105,22 @@ export default function OnboardingPage() {
               </p>
             </div>
             <Card>
+              <h3 className="mb-4 text-[16px] font-medium text-ink">About you</h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field label="First name">
+                  <input className={inputClass} required maxLength={60} autoComplete="given-name" value={first} onChange={(e) => setFirst(e.target.value)} placeholder="Ama" autoFocus />
+                </Field>
+                <Field label="Last name">
+                  <input className={inputClass} required maxLength={60} autoComplete="family-name" value={last} onChange={(e) => setLast(e.target.value)} placeholder="Serwaa" />
+                </Field>
+              </div>
+            </Card>
+            <Card>
+              <h3 className="mb-4 text-[16px] font-medium text-ink">Your company</h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <Field label="Company name">
-                    <input className={inputClass} required maxLength={120} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Northwind Studios" autoFocus />
+                    <input className={inputClass} required maxLength={120} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Northwind Studios" />
                   </Field>
                 </div>
                 <Field label="Country">
@@ -103,10 +135,12 @@ export default function OnboardingPage() {
                 </Field>
               </div>
             </Card>
-            {onboard.isError && <p className="text-[14px] text-[#A32D1C]">{(onboard.error as Error).message}</p>}
+            {(onboard.isError || updateName.isError) && (
+              <p className="text-[14px] text-[#A32D1C]">{((onboard.error ?? updateName.error) as Error).message}</p>
+            )}
             <div className="flex justify-end">
-              <Button type="submit" disabled={!company.trim() || onboard.isPending}>
-                {onboard.isPending ? (
+              <Button type="submit" disabled={!valid || busy}>
+                {busy ? (
                   <>
                     <Loader2 size={16} className="animate-spin" /> Creating your organization…
                   </>
