@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Brand from "@/components/Wordmark";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Home, ArrowLeftRight, MessageCircle, Menu, X, type LucideIcon } from "lucide-react";
 import { contractor, ngn } from "@/lib/contractor";
 import { Avatar } from "@/components/portal/ui";
+import { authClient } from "@/lib/auth-client";
+import { useRequireProfile } from "@/lib/hooks/useMe";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Home", href: "/contractor", icon: Home },
@@ -24,19 +26,34 @@ function Wordmark() {
 
 export default function ContractorShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const isOnboarding = pathname?.startsWith("/contractor/onboarding");
 
   const isActive = (href: string) => pathname === href || (href !== "/contractor" && pathname?.startsWith(href));
+  // Signed out → sign in. Signed in without a payee profile → contractor onboarding.
+  // The onboarding route itself only needs a session.
+  const { ready } = useRequireProfile(
+    isOnboarding ? {} : { need: "contractor", onboarding: "/contractor/onboarding" },
+  );
+
+  if (!ready) return <div className="min-h-screen bg-canvas" aria-busy="true" />;
 
   if (isOnboarding) {
     return (
       <div className="min-h-screen bg-canvas">
         <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
           <Wordmark />
-          <a href="/contractor" className="text-[14px] text-muted hover:text-ink">
-            Skip setup
-          </a>
+          <button
+            type="button"
+            onClick={async () => {
+              await authClient.signOut();
+              router.replace("/sign-in");
+            }}
+            className="text-[14px] text-muted hover:text-ink"
+          >
+            Log out
+          </button>
         </header>
         <div className="mx-auto max-w-[680px] px-5 pb-24 pt-12">{children}</div>
       </div>
