@@ -8,6 +8,7 @@ import { useMe } from "@/lib/hooks/useMe";
 import { useLedger } from "@/lib/hooks/usePayments";
 import { explorerUrl } from "@/lib/api";
 import { usdc, when } from "@/lib/format";
+import UsdcMark from "@/components/UsdcMark";
 
 export default function ContractorHome() {
   const { data: me } = useMe();
@@ -32,7 +33,9 @@ export default function ContractorHome() {
               <div className="text-[13px] text-white/60">Available balance</div>
               <div className="tabular mt-2 font-display text-[44px] font-semibold leading-none tracking-[-0.03em] text-white md:text-[56px]">
                 {balanceStr === null ? "—" : `$${usdc(balanceStr)}`}
-                <span className="ml-2 font-sans text-[18px] font-normal tracking-normal text-white/50">USDC</span>
+                <span className="ml-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 align-middle font-sans text-[14px] font-medium tracking-normal text-white">
+                  <UsdcMark size={18} /> USDC
+                </span>
               </div>
               <div className="mt-3 text-[15px] text-mint">Cashes out to {me?.contractor?.payoutCurrency ?? "—"}</div>
             </div>

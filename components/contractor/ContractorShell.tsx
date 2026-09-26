@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Home, ArrowLeftRight, MessageCircle, Menu, X, type LucideIcon } from "lucide-react";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
+import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "@/components/portal/ui";
 import { authClient } from "@/lib/auth-client";
 
@@ -97,6 +98,7 @@ export default function ContractorShell({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-3">
             <Link href="/contractor/cashout" className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 sm:flex">
+              <UsdcMark size={16} />
               <span className="text-[12.5px] text-muted">Balance</span>
               <span className="tabular text-[14px] font-medium text-ink">{payee?.wallet?.balances?.usdc == null ? "—" : `$${usdc(payee.wallet.balances.usdc)}`}</span>
             </Link>

@@ -7,6 +7,7 @@ import { useActivateWallets, useMe } from "@/lib/hooks/useMe";
 import { useFundWallet, useLedger } from "@/lib/hooks/usePayments";
 import { explorerUrl } from "@/lib/api";
 import { shortKey, usdc, when } from "@/lib/format";
+import UsdcMark from "@/components/UsdcMark";
 
 export default function WalletPage() {
   const { data: me, refetch, isFetching } = useMe();
@@ -45,11 +46,16 @@ export default function WalletPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card tone="dark" className="lg:col-span-2">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-[13.5px] text-white/60">USDC balance</div>
+            <div className="inline-flex items-center gap-2 text-[13.5px] text-white/60">
+              <UsdcMark size={22} /> USDC balance
+            </div>
             <span className="text-[12.5px] text-white/50">{network}</span>
           </div>
-          <div className="tabular mt-3 font-display text-[44px] font-semibold leading-none tracking-[-0.03em] text-white md:text-[56px]">
+          <div className="tabular mt-3 flex items-center gap-3 font-display text-[44px] font-semibold leading-none tracking-[-0.03em] text-white md:text-[56px]">
             {balance === null ? "—" : `$${usdc(balance)}`}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-sans text-[14px] font-medium tracking-normal text-white">
+              <UsdcMark size={18} /> USDC
+            </span>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-4">
             <div>
@@ -81,7 +87,9 @@ export default function WalletPage() {
           <h3 className="text-[16px] font-medium text-ink">Fund your treasury</h3>
         </div>
         <div className="px-6 py-5">
-          <div className="text-[13px] text-muted">Send USDC on Stellar from any exchange or wallet to this address:</div>
+          <div className="inline-flex items-center gap-2 text-[13px] text-muted">
+            <UsdcMark size={16} /> Send USDC on Stellar from any exchange or wallet to this address:
+          </div>
           <div className="mt-2 flex items-center justify-between gap-3 border border-line bg-subtle px-4 py-3">
             <span className="break-all font-mono text-[13px] text-ink">{wallet?.publicKey ?? "—"}</span>
             <button type="button" onClick={copy} className={`shrink-0 ${copied ? "text-accent" : "text-muted hover:text-ink"}`} aria-label="Copy address">

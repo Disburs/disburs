@@ -23,6 +23,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
+import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "./ui";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
@@ -78,7 +79,9 @@ function WalletMini() {
     <Link href="/portal/wallet" className="block rounded-[20px] border border-line bg-canvas p-4 transition-colors hover:border-ink">
       <div className="text-[12.5px] text-muted">Treasury</div>
       <div className="tabular mt-1.5 font-display text-[26px] font-semibold leading-none tracking-[-0.03em] text-ink">{bal == null ? "—" : `$${usdc(bal)}`}</div>
-      <div className="mt-1 text-[12px] text-muted">USDC · {me?.network ?? "testnet"}</div>
+      <div className="mt-1 inline-flex items-center gap-1.5 text-[12px] text-muted">
+        <UsdcMark size={14} /> USDC · {me?.network ?? "testnet"}
+      </div>
       {wallet && !wallet.isActivated && (
         <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#FBF1DC] px-2.5 py-1 text-[12px] font-medium text-[#8A5A00]">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
