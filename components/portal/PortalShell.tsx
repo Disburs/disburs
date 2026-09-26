@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Users,
   ReceiptText,
+  Send,
   History,
   Wallet,
   Settings,
@@ -19,24 +20,21 @@ import {
   Plus,
   type LucideIcon,
 } from "lucide-react";
-import { company } from "@/lib/mock";
 import { authClient } from "@/lib/auth-client";
-import { useRequireProfile } from "@/lib/hooks/useMe";
+import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
+import { usdc } from "@/lib/format";
 import { Avatar } from "./ui";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Dashboard", href: "/portal", icon: LayoutDashboard },
   { label: "Agent chat", href: "/portal/chat", icon: MessageSquare },
   { label: "Contractors", href: "/portal/contractors", icon: Users },
+  { label: "Pay", href: "/portal/pay", icon: Send },
   { label: "Payroll", href: "/portal/payroll", icon: ReceiptText },
   { label: "History", href: "/portal/history", icon: History },
   { label: "Wallet", href: "/portal/wallet", icon: Wallet },
   { label: "Settings", href: "/portal/settings", icon: Settings },
 ];
-
-function fmt(n: number) {
-  return n.toLocaleString("en-US");
-}
 
 function Wordmark() {
   return (
@@ -73,15 +71,20 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function WalletMini() {
+  const { data: me } = useMe();
+  const wallet = me?.organization?.treasuryWallet ?? null;
+  const bal = wallet?.balances?.usdc;
   return (
     <Link href="/portal/wallet" className="block rounded-[20px] border border-line bg-canvas p-4 transition-colors hover:border-ink">
       <div className="text-[12.5px] text-muted">Treasury</div>
-      <div className="tabular mt-1.5 font-display text-[26px] font-semibold leading-none tracking-[-0.03em] text-ink">${fmt(company.balance)}</div>
-      <div className="mt-1 text-[12px] text-muted">USDC</div>
-      <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#FBF1DC] px-2.5 py-1 text-[12px] font-medium text-[#8A5A00]">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
-        Top up before Dec 1
-      </div>
+      <div className="tabular mt-1.5 font-display text-[26px] font-semibold leading-none tracking-[-0.03em] text-ink">{bal == null ? "—" : `$${usdc(bal)}`}</div>
+      <div className="mt-1 text-[12px] text-muted">USDC · {me?.network ?? "testnet"}</div>
+      {wallet && !wallet.isActivated && (
+        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#FBF1DC] px-2.5 py-1 text-[12px] font-medium text-[#8A5A00]">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
+          Not activated
+        </div>
+      )}
     </Link>
   );
 }
@@ -135,6 +138,13 @@ export default function PortalShell({ children }: { children: React.ReactNode })
   const [open, setOpen] = useState(false);
   // Signed out → sign in. Signed in without an organization → employer onboarding.
   const { ready } = useRequireProfile({ need: "organization", onboarding: "/onboarding" });
+  const { data: me } = useMe();
+  const orgInitials = (me?.organization?.name ?? "?")
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   if (!ready) return <div className="min-h-screen bg-canvas" aria-busy="true" />;
 
@@ -172,10 +182,10 @@ export default function PortalShell({ children }: { children: React.ReactNode })
               <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-mint ring-2 ring-canvas" />
             </button>
             <div className="flex items-center gap-2.5">
-              <Avatar initials={company.initials} size={38} />
+              <Avatar initials={orgInitials} size={38} />
               <div className="hidden md:block">
-                <div className="text-[13.5px] font-medium leading-tight text-ink">{company.name}</div>
-                <div className="text-[12px] text-muted">{company.plan} plan</div>
+                <div className="text-[13.5px] font-medium leading-tight text-ink">{me?.organization?.name ?? "—"}</div>
+                <div className="text-[12px] text-muted">{me?.user.email ?? ""}</div>
               </div>
             </div>
           </div>

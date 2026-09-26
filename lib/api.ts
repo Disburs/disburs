@@ -112,3 +112,64 @@ export async function getAuthProviders(): Promise<AuthProviders> {
   if (error) throw toError(error);
   return data as unknown as AuthProviders;
 }
+
+/* ------------------------------ Payments ------------------------------ */
+export type LedgerStatus = "PENDING" | "SETTLED" | "FAILED";
+export interface LedgerEntry {
+  id: string;
+  type: "PAYOUT" | "SEND";
+  status: LedgerStatus;
+  amount: string;
+  assetCode: string;
+  source: string | null;
+  destination: string | null;
+  memo: string | null;
+  txHash: string | null;
+  error: string | null;
+  userId: string | null;
+  organizationId: string | null;
+  contractorId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function listLedger(): Promise<LedgerEntry[]> {
+  const { data, error } = await client.GET("/api/payments");
+  if (error) throw toError(error);
+  return (data ?? []) as unknown as LedgerEntry[];
+}
+
+export interface ContractorLookup {
+  id: string;
+  name: string;
+  country: string;
+  payoutCurrency: string;
+  type: "INDIVIDUAL" | "BUSINESS";
+  walletActivated: boolean;
+}
+
+export async function lookupContractor(email: string): Promise<ContractorLookup> {
+  const { data, error } = await client.GET("/api/contractors/lookup", { params: { query: { email } } });
+  if (error) throw toError(error);
+  return data as unknown as ContractorLookup;
+}
+
+export type PayContractorBody = components["schemas"]["PayContractorDto"];
+export async function payContractor(body: PayContractorBody): Promise<LedgerEntry> {
+  const { data, error } = await client.POST("/api/payments/pay", { body });
+  if (error) throw toError(error);
+  return data as unknown as LedgerEntry;
+}
+
+export type FundBody = components["schemas"]["FundDto"];
+export async function fundWallet(body: FundBody) {
+  const { data, error } = await client.POST("/api/me/fund", { body });
+  if (error) throw toError(error);
+  return data;
+}
+
+/** Explorer link for a transaction or account on the configured network. */
+export function explorerUrl(network: string, kind: "tx" | "account", id: string) {
+  const net = network === "mainnet" ? "public" : "testnet";
+  return `https://stellar.expert/explorer/${net}/${kind}/${id}`;
+}
