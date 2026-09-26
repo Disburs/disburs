@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import Wordmark from "@/components/Wordmark";
 import WalletStep from "@/components/onboarding/WalletStep";
+import ImageUpload from "@/components/upload/ImageUpload";
 import { Button, Card, Field, inputClass } from "@/components/portal/ui";
 import { authClient } from "@/lib/auth-client";
 import { useOnboardClient, useRequireProfile, useUpdateName } from "@/lib/hooks/useMe";
@@ -29,6 +30,7 @@ export default function OnboardingPage() {
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [company, setCompany] = useState("");
+  const [logo, setLogo] = useState<string | null>(null);
   const [country, setCountry] = useState("Kenya");
   const [teamSize, setTeamSize] = useState("");
 
@@ -58,6 +60,7 @@ export default function OnboardingPage() {
       company: company.trim(),
       country,
       ...(teamSize ? { teamSize: Number(teamSize) } : {}),
+      ...(logo ? { logo } : {}),
     });
   };
 
@@ -117,6 +120,10 @@ export default function OnboardingPage() {
             </Card>
             <Card>
               <h3 className="mb-4 text-[16px] font-medium text-ink">Your company</h3>
+              <div className="mb-5">
+                <span className="mb-2 block text-[14px] font-medium text-ink">Logo</span>
+                <ImageUpload kind="org-logo" value={logo} onChange={setLogo} label="Upload logo" />
+              </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <Field label="Company name">

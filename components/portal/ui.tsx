@@ -96,15 +96,20 @@ export function statusVariant(status: string): Variant {
 }
 
 /* ---------- Avatar ---------- */
-export function Avatar({ initials, size = 36, flag }: { initials: string; size?: number; flag?: string }) {
+export function Avatar({ initials, size = 36, flag, src }: { initials: string; size?: number; flag?: string; src?: string | null }) {
   return (
     <span className="relative inline-flex shrink-0">
-      <span
-        className="flex items-center justify-center rounded-full border border-line bg-subtle font-medium text-ink"
-        style={{ width: size, height: size, fontSize: size * 0.34 }}
-      >
-        {initials}
-      </span>
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt="" className="rounded-full border border-line object-cover" style={{ width: size, height: size }} />
+      ) : (
+        <span
+          className="flex items-center justify-center rounded-full border border-line bg-subtle font-medium text-ink"
+          style={{ width: size, height: size, fontSize: size * 0.34 }}
+        >
+          {initials}
+        </span>
+      )}
       {flag && (
         <span className="absolute" style={{ right: -2, bottom: -2, fontSize: size * 0.42, lineHeight: 1 }}>
           {flag}

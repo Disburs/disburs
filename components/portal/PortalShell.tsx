@@ -182,7 +182,7 @@ export default function PortalShell({ children }: { children: React.ReactNode })
               <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-mint ring-2 ring-canvas" />
             </button>
             <div className="flex items-center gap-2.5">
-              <Avatar initials={orgInitials} size={38} />
+              <Avatar initials={orgInitials} size={38} src={me?.organization?.logo} />
               <div className="hidden md:block">
                 <div className="text-[13.5px] font-medium leading-tight text-ink">{me?.organization?.name ?? "—"}</div>
                 <div className="text-[12px] text-muted">{me?.user.email ?? ""}</div>

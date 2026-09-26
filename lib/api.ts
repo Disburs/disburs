@@ -68,6 +68,7 @@ export interface Me {
     id: string;
     name: string;
     slug: string;
+    logo: string | null;
     country: string | null;
     teamSize: number | null;
     treasuryWallet: WalletState | null;
@@ -172,4 +173,25 @@ export async function fundWallet(body: FundBody) {
 export function explorerUrl(network: string, kind: "tx" | "account", id: string) {
   const net = network === "mainnet" ? "public" : "testnet";
   return `https://stellar.expert/explorer/${net}/${kind}/${id}`;
+}
+
+/* ------------------------------- Uploads ------------------------------ */
+export type UploadKind = "org-logo" | "avatar";
+export interface UploadSignature {
+  cloudName: string;
+  apiKey: string;
+  uploadUrl: string;
+  fields: Record<string, string | number>;
+}
+
+export async function getUploadConfig(): Promise<{ enabled: boolean }> {
+  const { data, error } = await client.GET("/api/uploads/config");
+  if (error) throw toError(error);
+  return data as unknown as { enabled: boolean };
+}
+
+export async function signUpload(kind: UploadKind): Promise<UploadSignature> {
+  const { data, error } = await client.POST("/api/uploads/sign", { body: { kind } });
+  if (error) throw toError(error);
+  return data as unknown as UploadSignature;
 }
