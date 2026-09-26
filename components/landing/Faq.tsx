@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Container, Heading, Lead } from "./Section";
 import Reveal from "./Reveal";
@@ -66,7 +66,26 @@ const CATEGORIES: Category[] = [
 export default function Faq() {
   const [cat, setCat] = useState(0);
   const [open, setOpen] = useState<number | null>(0);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const items = CATEGORIES[cat].items;
+
+  const selectCategory = (index: number) => {
+    setCat(index);
+    setOpen(0);
+    requestAnimationFrame(() => tabRefs.current[index]?.focus());
+  };
+
+  const handleCategoryKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | undefined;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % CATEGORIES.length;
+    if (event.key === "ArrowLeft") nextIndex = (index - 1 + CATEGORIES.length) % CATEGORIES.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = CATEGORIES.length - 1;
+    if (nextIndex === undefined) return;
+
+    event.preventDefault();
+    selectCategory(nextIndex);
+  };
 
   return (
     <section id="faq" className="bg-subtle py-24 md:py-36">
@@ -84,13 +103,15 @@ export default function Faq() {
             return (
               <button
                 key={c.name}
+                ref={(element) => { tabRefs.current[i] = element; }}
                 type="button"
                 role="tab"
+                id={`faq-tab-${i}`}
                 aria-selected={on}
-                onClick={() => {
-                  setCat(i);
-                  setOpen(0);
-                }}
+                aria-controls="faq-panel"
+                tabIndex={on ? 0 : -1}
+                onClick={() => selectCategory(i)}
+                onKeyDown={(event) => handleCategoryKeyDown(event, i)}
                 className={`h-12 cursor-pointer rounded-full px-6 text-[15px] font-medium transition-colors duration-150 ${
                   on ? "bg-ink-deep text-white" : "border border-line bg-canvas text-ink hover:opacity-[0.84]"
                 }`}
@@ -101,7 +122,13 @@ export default function Faq() {
           })}
         </div>
 
-        <div className="mt-8 divide-y divide-line border-y border-line">
+        <div
+          id="faq-panel"
+          role="tabpanel"
+          aria-labelledby={`faq-tab-${cat}`}
+          tabIndex={0}
+          className="mt-8 divide-y divide-line border-y border-line"
+        >
           {items.map((it, i) => {
             const isOpen = open === i;
             const panelId = `faq-${cat}-${i}`;
