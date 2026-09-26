@@ -8,7 +8,8 @@ import type { paths, components } from "./api-types";
  */
 const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
-export const client = createClient<paths>({ baseUrl });
+// Sessions are httpOnly cookies set by the backend, so requests must carry credentials.
+export const client = createClient<paths>({ baseUrl, credentials: "include" });
 
 /** Turn an openapi-fetch error body into an Error with a readable message. */
 function toError(error: unknown): Error {
@@ -52,4 +53,19 @@ export async function onboardContractor(body: OnboardContractorBody) {
   const { data, error } = await client.POST("/api/onboarding/contractor", { body });
   if (error) throw toError(error);
   return data;
+}
+
+/* -------------------------------- Me ---------------------------------- */
+/** The signed-in user with their org / contractor profile and wallet state. */
+export interface Me {
+  user: { id: string; email: string; name: string | null; role: string };
+  organization: { id: string; name: string; treasuryWallet: { publicKey: string; isActivated: boolean } | null } | null;
+  contractor: { id: string; wallet: { publicKey: string; isActivated: boolean } | null } | null;
+}
+
+export async function getMe(): Promise<Me | null> {
+  const { data, error, response } = await client.GET("/api/me");
+  if (response.status === 401) return null;
+  if (error) throw toError(error);
+  return data as unknown as Me;
 }
