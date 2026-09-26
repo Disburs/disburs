@@ -50,7 +50,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Onboard a client (employer) */
+        /** Onboard the signed-in user as an employer (creates their organization) */
         post: operations["OnboardingController_onboardClient"];
         delete?: never;
         options?: never;
@@ -67,8 +67,110 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Onboard a contractor (worker) */
+        /** Onboard the signed-in user as a contractor (worker) */
         post: operations["OnboardingController_onboardContractor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The signed-in user with their organization / contractor profile and wallet state */
+        get: operations["MeController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retry on-chain activation for the signed-in user's wallet(s) */
+        post: operations["MeController_activate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/fund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mint test USDC into one of the caller’s wallets (testnet only) */
+        post: operations["MeController_fund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send USDC from one of the caller’s wallets, with an optional memo */
+        post: operations["MeController_send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay a contractor from your organization treasury (idempotent) */
+        post: operations["PaymentsController_pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your ledger — money actions you initiated or received */
+        get: operations["PaymentsController_list"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -97,20 +199,17 @@ export interface components {
             country?: string;
         };
         OnboardClientDto: {
-            /** @example jane@acme.io */
-            email: string;
-            /** @example Jane Doe */
-            name: string;
-            /** @example Acme Inc */
-            company: string;
+            /**
+             * @description Organization name. Defaults to "<name>'s Organization".
+             * @example Acme Inc
+             */
+            company?: string;
             /** @example Nigeria */
-            country: string;
+            country?: string;
             /** @example 12 */
             teamSize?: number;
         };
         OnboardContractorDto: {
-            /** @example kwabena@work.io */
-            email: string;
             /** @example Kwabena Mensah */
             name: string;
             /** @example Ghana */
@@ -120,6 +219,85 @@ export interface components {
              * @enum {string}
              */
             payoutCurrency: "USDC" | "NGN" | "KES" | "GHS" | "ZAR";
+            /**
+             * @description Payee type. Defaults to INDIVIDUAL.
+             * @default INDIVIDUAL
+             * @enum {string}
+             */
+            type: "INDIVIDUAL" | "BUSINESS";
+            /**
+             * @description Required when type = BUSINESS.
+             * @example Acme Logistics Ltd
+             */
+            companyLegalName?: string;
+            /**
+             * @description Required when type = BUSINESS.
+             * @example 12 Ring Road, Accra, Ghana
+             */
+            businessAddress?: string;
+        };
+        FundDto: {
+            /**
+             * @description Public key of a wallet the caller owns.
+             * @example GAP24RSA…
+             */
+            publicKey: string;
+            /**
+             * @description Amount to mint. Defaults to 100.
+             * @example 100
+             */
+            amount?: string;
+        };
+        SendDto: {
+            /**
+             * @description Source wallet (must belong to the caller).
+             * @example GAP24RSA…
+             */
+            fromPublicKey: string;
+            /**
+             * @description Recipient Stellar address.
+             * @example GByEXCHANGE…
+             */
+            destination: string;
+            /**
+             * @description Amount of USDC (max 7 decimal places).
+             * @example 25.5
+             */
+            amount: string;
+            /**
+             * @description Optional memo. Many exchanges require one to credit the deposit.
+             * @example 1234567
+             */
+            memo?: string;
+            /**
+             * @description Memo type. Exchanges usually specify MEMO_ID (numeric) or MEMO_TEXT.
+             * @default text
+             * @enum {string}
+             */
+            memoType: "text" | "id";
+        };
+        PayContractorDto: {
+            /**
+             * @description The contractor (payee) to pay.
+             * @example a1b2c3d4-…
+             */
+            contractorId: string;
+            /**
+             * @description USDC amount (max 7 decimal places).
+             * @example 250.5
+             */
+            amount: string;
+            /** @description Which organization treasury pays. Defaults to your org if you own exactly one. */
+            organizationId?: string;
+            /** @description Optional memo (e.g. for an exchange payee). */
+            memo?: string;
+            /**
+             * @default text
+             * @enum {string}
+             */
+            memoType: "text" | "id";
+            /** @description Idempotency key — a retry with the same key never double-pays. */
+            idempotencyKey?: string;
         };
     };
     responses: never;
@@ -203,6 +381,120 @@ export interface operations {
         };
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_fund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FundDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_pay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayContractorDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Brand from "@/components/Wordmark";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -13,12 +13,14 @@ import {
   Wallet,
   Settings,
   Bell,
+  LogOut,
   Menu,
   X,
   Plus,
   type LucideIcon,
 } from "lucide-react";
 import { company } from "@/lib/mock";
+import { authClient } from "@/lib/auth-client";
 import { Avatar } from "./ui";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
@@ -83,6 +85,27 @@ function WalletMini() {
   );
 }
 
+function SignOutButton() {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const signOut = async () => {
+    setBusy(true);
+    await authClient.signOut();
+    router.replace("/sign-in");
+  };
+  return (
+    <button
+      type="button"
+      onClick={signOut}
+      disabled={busy}
+      className="flex h-11 w-full cursor-pointer items-center gap-3 rounded-full px-4 text-[14.5px] text-muted transition-colors duration-150 hover:text-ink disabled:opacity-50"
+    >
+      <LogOut size={17} className="text-faint" />
+      {busy ? "Signing out…" : "Log out"}
+    </button>
+  );
+}
+
 function Sidebar({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () => void }) {
   return (
     <div className="flex h-full flex-col border-r border-line bg-subtle p-5">
@@ -99,6 +122,9 @@ function Sidebar({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
       </div>
       <div className="mt-4">
         <WalletMini />
+      </div>
+      <div className="mt-2">
+        <SignOutButton />
       </div>
     </div>
   );

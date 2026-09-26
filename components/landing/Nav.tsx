@@ -58,10 +58,10 @@ export default function Nav() {
         </nav>
         <div className="flex items-center gap-3">
           <a
-            href="#waitlist"
+            href="/sign-in"
             className="hidden h-12 cursor-pointer items-center rounded-full bg-ink-deep px-7 text-[16px] font-medium text-white transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.98] sm:inline-flex"
           >
-            Join waitlist
+            Sign in
           </a>
           <button
             type="button"
@@ -92,8 +92,8 @@ export default function Nav() {
                   {l.label}
                 </a>
               ))}
-              <a href="#waitlist" onClick={() => setOpen(false)} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
-                Join waitlist
+              <a href="/sign-in" onClick={() => setOpen(false)} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
+                Sign in
               </a>
             </Container>
           </motion.div>
