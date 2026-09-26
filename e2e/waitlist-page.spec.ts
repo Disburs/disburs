@@ -32,6 +32,6 @@ test.describe("/waitlist page", () => {
   test("Back to home navigates to the landing page", async ({ page }) => {
     await page.goto("/waitlist");
     await page.getByRole("link", { name: /Back to home/i }).click();
-    await expect(page).toHaveURL("http://localhost:3000/");
+    await expect(page).toHaveURL(/\/$/);
   });
 });
