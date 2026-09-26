@@ -1,10 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * The demo areas (portal, onboarding, contractor) are reachable only on
- * localhost — `proxy.ts` redirects them to "/" on any non-local host, and their
- * in-page links are hidden via DemoOnly. These smoke tests run on localhost, so
- * they confirm each route serves there without erroring.
+ * The product areas (portal, onboarding, contractor) are real screens that gate
+ * themselves on a session; only the still-simulated pages (payroll, history,
+ * contractors, settings, chat, cash-out, messages) are localhost-only via
+ * `proxy.ts`. These smoke tests run on localhost, so they confirm each route
+ * serves there without erroring.
  */
 const demoRoutes = ["/portal", "/onboarding", "/contractor"];
 
