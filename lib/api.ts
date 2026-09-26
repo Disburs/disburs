@@ -98,3 +98,17 @@ export async function activateWallets(): Promise<Me> {
   if (error) throw toError(error);
   return data as unknown as Me;
 }
+
+/* --------------------------- Auth providers ---------------------------- */
+export type SocialProvider = "google";
+export interface AuthProviders {
+  magicLink: boolean;
+  social: SocialProvider[];
+}
+
+/** Which sign-in methods the backend has configured. Public. */
+export async function getAuthProviders(): Promise<AuthProviders> {
+  const { data, error } = await client.GET("/api/auth-providers");
+  if (error) throw toError(error);
+  return data as unknown as AuthProviders;
+}
