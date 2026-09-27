@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard,
-  MessageSquare,
   Users,
   UsersRound,
   ReceiptText,
@@ -14,11 +13,9 @@ import {
   History,
   Wallet,
   Settings,
-  Bell,
   LogOut,
   Menu,
   X,
-  Plus,
   type LucideIcon,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -30,7 +27,6 @@ import OrgSwitcher from "./OrgSwitcher";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Dashboard", href: "/portal", icon: LayoutDashboard },
-  { label: "Agent chat", href: "/portal/chat", icon: MessageSquare },
   { label: "Contractors", href: "/portal/contractors", icon: Users },
   { label: "Pay", href: "/portal/pay", icon: Send },
   { label: "Payroll", href: "/portal/payroll", icon: ReceiptText },
@@ -54,7 +50,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
     <nav className="flex flex-col gap-1" aria-label="Portal">
       {NAV.map((item) => {
         const Icon = item.icon;
-        const active = pathname === item.href || (item.href !== "/portal" && pathname.startsWith(item.href));
+        const active = pathname === item.href || (item.href !== "/portal" && pathname.startsWith(item.href + "/"));
         return (
           <Link
             key={item.href}
@@ -179,17 +175,13 @@ export default function PortalShell({ children }: { children: React.ReactNode })
               <Menu size={22} />
             </button>
             <Brand className="text-[20px] font-semibold tracking-[-0.03em] text-ink lg:hidden" />
-            <span className="hidden items-center gap-1.5 text-[13px] text-accent lg:inline-flex">
+            <span className="hidden items-center gap-1.5 text-[13px] text-muted lg:inline-flex">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
-              Agent active
+              Stellar {me?.network ?? "testnet"}
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <button type="button" className="relative flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink transition-colors hover:border-ink" aria-label="Notifications">
-              <Bell size={18} />
-              <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-mint ring-2 ring-canvas" />
-            </button>
             <div className="flex items-center gap-2.5">
               <Avatar initials={orgInitials} size={38} src={me?.organization?.logo} />
               <div className="hidden md:block">
@@ -202,14 +194,6 @@ export default function PortalShell({ children }: { children: React.ReactNode })
 
         <main className="max-w-[1240px] px-5 pb-20 pt-8 md:px-8 md:pt-10">{children}</main>
       </div>
-
-      <Link
-        href="/portal/contractors/new"
-        className="fixed bottom-6 right-6 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink-deep lg:hidden"
-        aria-label="Add contractor"
-      >
-        <Plus size={24} />
-      </Link>
     </div>
   );
 }

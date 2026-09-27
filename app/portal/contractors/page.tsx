@@ -2,66 +2,103 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Search,
-  Plus,
-  ChevronDown,
-  Download,
-  Play,
-  Copy,
-  Sparkles,
-} from "lucide-react";
-import { Card, Badge, Button, Avatar, PageTitle, statusVariant } from "@/components/portal/ui";
-import { contractors, type ContractorStatus } from "@/lib/mock";
+import { Check, ChevronDown, Copy, ExternalLink, Search } from "lucide-react";
+import { Avatar, Badge, Button, Card, PageTitle } from "@/components/portal/ui";
+import { useMe } from "@/lib/hooks/useMe";
+import { useContractors } from "@/lib/hooks/usePayments";
+import { MONEY_ROLES, explorerUrl, type OrgContractor } from "@/lib/api";
+import { shortKey, usdc, when } from "@/lib/format";
 
-const FILTERS: ("All" | ContractorStatus)[] = [
+type Filter = "All" | "On a payroll" | "Paid before" | "Wallet inactive";
+const FILTERS: Filter[] = [
   "All",
-  "Active",
-  "Pending KYC",
-  "Wallet unverified",
-  "Contract missing",
+  "On a payroll",
+  "Paid before",
+  "Wallet inactive",
 ];
 
+const initials = (s: string) =>
+  s
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+function matches(c: OrgContractor, filter: Filter) {
+  switch (filter) {
+    case "On a payroll":
+      return c.payrolls.some((p) => p.active);
+    case "Paid before":
+      return c.paymentCount > 0;
+    case "Wallet inactive":
+      return !c.wallet?.isActivated;
+    default:
+      return true;
+  }
+}
+
+/**
+ * Everyone this organization works with. Contractors onboard themselves;
+ * they appear here once they are on one of your payrolls or you have paid
+ * them. So the way to "add" one is to put them on a roster by email.
+ */
 export default function ContractorsPage() {
+  const { data: me } = useMe();
+  const list = useContractors();
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const [filter, setFilter] = useState<Filter>("All");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const rows = contractors.filter((c) => {
-    const matchQ =
-      c.name.toLowerCase().includes(query.toLowerCase()) ||
-      c.role.toLowerCase().includes(query.toLowerCase()) ||
-      c.country.toLowerCase().includes(query.toLowerCase());
-    const matchF = filter === "All" || c.status === filter;
-    return matchQ && matchF;
-  });
+  const network = me?.network ?? "testnet";
+  const canManage = Boolean(
+    me?.organization?.role && MONEY_ROLES.includes(me.organization.role),
+  );
+  const all = list.data ?? [];
+  const q = query.trim().toLowerCase();
+  const rows = all.filter(
+    (c) =>
+      matches(c, filter) &&
+      (!q ||
+        c.name.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q) ||
+        c.country.toLowerCase().includes(q)),
+  );
+  const countries = new Set(all.map((c) => c.country)).size;
 
-  const toggle = (id: string) =>
-    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  const copy = (key: string) => {
+    navigator.clipboard?.writeText(key).catch(() => {});
+    setCopied(key);
+    window.setTimeout(() => setCopied(null), 1600);
+  };
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Header row */}
       <PageTitle
-        sub={`${contractors.length} people across 4 countries`}
+        sub={
+          list.isPending
+            ? "Loading…"
+            : `${all.length} ${all.length === 1 ? "person" : "people"}${countries > 0 ? ` across ${countries} ${countries === 1 ? "country" : "countries"}` : ""}`
+        }
         action={
-          <Button href="/portal/contractors/new">
-            <Plus size={16} /> Add contractor
-          </Button>
+          canManage ? (
+            <Button href="/portal/payroll" variant="ink">
+              Add to a payroll
+            </Button>
+          ) : undefined
         }
       >
         Contractors
       </PageTitle>
 
-      {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex h-12 w-full max-w-[320px] flex-[1_1_240px] items-center gap-2 border border-line bg-canvas px-4 focus-within:border-ink">
           <Search size={16} className="shrink-0 text-muted" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search name, role, country…"
+            placeholder="Search name, email, country…"
             className="w-full bg-transparent text-[15px] text-ink outline-none placeholder:text-faint"
           />
         </div>
@@ -79,120 +116,188 @@ export default function ContractorsPage() {
         </div>
       </div>
 
-      {/* Bulk action bar */}
-      {selected.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-accent-soft px-5 py-3">
-          <span className="text-[14px] font-medium text-accent">
-            {selected.length} selected
-          </span>
-          <div className="flex flex-wrap gap-2">
-            <Button href="/portal/payroll" size="sm" variant="ink">
-              <Play size={14} /> Run payroll for selected
-            </Button>
-            <Button size="sm" variant="secondary">
-              <Download size={14} /> Export CSV
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Table */}
       <Card padding={0}>
-        {/* header (desktop) */}
         <div className="hidden items-center border-b border-line px-5 py-3 text-[12.5px] font-medium text-muted md:flex">
-          <div className="w-7" />
           <div className="flex-[2_1_0]">Contractor</div>
-          <div className="flex-[1_1_0]">Rate</div>
+          <div className="flex-[1.4_1_0]">Payrolls</div>
           <div className="flex-[1_1_0]">Last paid</div>
-          <div className="flex-[1.2_1_0]">Status</div>
+          <div className="flex-[1_1_0]">Total paid</div>
+          <div className="flex-[1_1_0]">Wallet</div>
           <div className="w-7" />
         </div>
 
-        <div className="divide-y divide-line">
-          {rows.map((c) => {
-            const isOpen = expanded === c.id;
-            return (
-              <div key={c.id}>
-                <div className="flex flex-wrap items-center gap-y-2 px-5 py-4">
-                  <div className="w-7">
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(c.id)}
-                      onChange={() => toggle(c.id)}
-                      className="h-4 w-4 accent-ink"
-                      aria-label={`Select ${c.name}`}
-                    />
-                  </div>
-                  <div className="flex flex-[2_1_200px] items-center gap-3">
-                    <Avatar initials={c.initials} flag={c.flag} />
-                    <div>
-                      <div className="text-[14.5px] text-ink">{c.name}</div>
-                      <div className="text-[13px] text-muted">
-                        {c.role} · {c.country}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="tabular flex-[1_1_0] text-[14.5px] text-ink">{c.rate}</div>
-                  <div className="flex-[1_1_0] text-[14.5px] text-muted">{c.lastPaid ?? "—"}</div>
-                  <div className="flex-[1.2_1_0]">
-                    <Badge variant={statusVariant(c.status)} dot>
-                      {c.status}
-                    </Badge>
-                  </div>
-                  <button
-                    type="button"
-                    className="flex w-7 items-center justify-center text-muted hover:text-ink"
-                    onClick={() => setExpanded(isOpen ? null : c.id)}
-                    aria-label="Expand"
-                    aria-expanded={isOpen}
-                  >
-                    <ChevronDown
-                      size={18}
-                      className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                </div>
-
-                {isOpen && (
-                  <div className="grid grid-cols-1 gap-4 bg-subtle px-5 pb-5 pt-4 sm:grid-cols-3 md:pl-12">
-                    <div>
-                      <div className="text-[13px] text-muted">Wallet</div>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[14px] text-ink">
-                        <span className="font-mono text-[13px]">{c.wallet}</span>
-                        <Copy size={13} className="text-muted" />
-                        <Badge variant={statusVariant(c.walletStatus)}>
-                          {c.walletStatus}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-[13px] text-muted">Email</div>
-                      <div className="mt-1 text-[14px] text-ink">{c.email}</div>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5 text-[13px] text-muted">
-                        <Sparkles size={12} className="text-accent" /> Agent last action
-                      </div>
-                      <div className="mt-1 text-[14px] text-ink">{c.agentLast}</div>
-                    </div>
-                    <div className="sm:col-span-3">
-                      <Link
-                        href="/portal/contractors/new"
-                        className="text-[14px] font-medium text-accent hover:underline"
-                      >
-                        Edit contractor →
-                      </Link>
-                    </div>
-                  </div>
-                )}
+        {list.isPending ? (
+          <div className="px-5 py-10 text-center text-[14.5px] text-muted">
+            Loading…
+          </div>
+        ) : list.isError ? (
+          <div className="px-5 py-10 text-center text-[14.5px] text-[#A32D1C]">
+            {(list.error as Error).message}
+          </div>
+        ) : all.length === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <p className="mx-auto max-w-[460px] text-[15px] leading-[1.55] text-muted">
+              No contractors yet. Ask them to sign in to Disburs as a contractor
+              and finish onboarding, then add them to a payroll by the email
+              they used, or pay them once from the Pay page.
+            </p>
+            {canManage && (
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <Button href="/portal/payroll" variant="ink">
+                  Set up a payroll
+                </Button>
+                <Button href="/portal/pay" variant="secondary">
+                  Pay someone
+                </Button>
               </div>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="divide-y divide-line">
+            {rows.map((c) => {
+              const isOpen = expanded === c.id;
+              const activePayrolls = c.payrolls.filter((p) => p.active);
+              return (
+                <div key={c.id}>
+                  <div className="flex flex-wrap items-center gap-y-2 px-5 py-4">
+                    <div className="flex flex-[2_1_200px] items-center gap-3">
+                      <Avatar initials={initials(c.name)} />
+                      <div className="min-w-0">
+                        <div className="truncate text-[14.5px] text-ink">
+                          {c.name}
+                        </div>
+                        <div className="truncate text-[13px] text-muted">
+                          {c.email} · {c.country}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-[1.4_1_0] flex-wrap gap-1.5">
+                      {activePayrolls.length === 0 ? (
+                        <span className="text-[13.5px] text-muted">—</span>
+                      ) : (
+                        activePayrolls.map((p) => (
+                          <Badge key={p.id} variant="neutral">
+                            {p.name} · ${usdc(p.amount)}
+                          </Badge>
+                        ))
+                      )}
+                    </div>
+                    <div className="flex-[1_1_0] text-[14.5px] text-muted">
+                      {c.lastPaidAt ? when(c.lastPaidAt) : "Never"}
+                    </div>
+                    <div className="tabular flex-[1_1_0] text-[14.5px] text-ink">
+                      ${usdc(c.totalPaid)}
+                    </div>
+                    <div className="flex-[1_1_0]">
+                      <Badge
+                        variant={c.wallet?.isActivated ? "success" : "warn"}
+                        dot
+                      >
+                        {c.wallet?.isActivated ? "Active" : "Not activated"}
+                      </Badge>
+                    </div>
+                    <button
+                      type="button"
+                      className="flex w-7 items-center justify-center text-muted hover:text-ink"
+                      onClick={() => setExpanded(isOpen ? null : c.id)}
+                      aria-label="Expand"
+                      aria-expanded={isOpen}
+                    >
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </div>
 
-        {rows.length === 0 && (
-          <div className="px-5 py-12 text-center text-[14.5px] text-muted">
-            No contractors match your search.
+                  {isOpen && (
+                    <div className="grid grid-cols-1 gap-4 bg-subtle px-5 pb-5 pt-4 sm:grid-cols-3">
+                      <div className="min-w-0">
+                        <div className="text-[13px] text-muted">Wallet</div>
+                        {c.wallet ? (
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[14px] text-ink">
+                            <span className="font-mono text-[13px]">
+                              {shortKey(c.wallet.publicKey, 6, 6)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => copy(c.wallet!.publicKey)}
+                              aria-label="Copy address"
+                              className={
+                                copied === c.wallet.publicKey
+                                  ? "text-accent"
+                                  : "text-muted hover:text-ink"
+                              }
+                            >
+                              {copied === c.wallet.publicKey ? (
+                                <Check size={13} />
+                              ) : (
+                                <Copy size={13} />
+                              )}
+                            </button>
+                            <a
+                              href={explorerUrl(
+                                network,
+                                "account",
+                                c.wallet.publicKey,
+                              )}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label="View on explorer"
+                              className="text-muted hover:text-ink"
+                            >
+                              <ExternalLink size={13} />
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="mt-1 text-[14px] text-muted">
+                            No wallet yet
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-[13px] text-muted">
+                          Payout currency
+                        </div>
+                        <div className="mt-1 text-[14px] text-ink">
+                          {c.payoutCurrency} ·{" "}
+                          {c.type === "BUSINESS" ? "Business" : "Individual"}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[13px] text-muted">Payments</div>
+                        <div className="mt-1 text-[14px] text-ink">
+                          {c.paymentCount} settled · joined {when(c.createdAt)}
+                        </div>
+                      </div>
+                      {canManage && (
+                        <div className="flex flex-wrap gap-4 sm:col-span-3">
+                          <Link
+                            href="/portal/payroll"
+                            className="text-[14px] font-medium text-accent hover:underline"
+                          >
+                            {activePayrolls.length
+                              ? "Edit on payroll →"
+                              : "Add to a payroll →"}
+                          </Link>
+                          <Link
+                            href="/portal/pay"
+                            className="text-[14px] font-medium text-accent hover:underline"
+                          >
+                            Pay once →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {rows.length === 0 && (
+              <div className="px-5 py-12 text-center text-[14.5px] text-muted">
+                No contractors match your search.
+              </div>
+            )}
           </div>
         )}
       </Card>

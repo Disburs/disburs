@@ -110,6 +110,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizations/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit the active organization's name, logo, country or team size (owner/admin) */
+        patch: operations["OrganizationsController_update"];
+        trace?: never;
+    };
     "/api/me": {
         parameters: {
             query?: never;
@@ -212,6 +229,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/contractors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Contractors the active organization works with: on a payroll roster or paid before */
+        get: operations["ContractorsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/contractors/lookup": {
         parameters: {
             query?: never;
@@ -257,6 +291,146 @@ export interface paths {
         put?: never;
         /** Sign a direct-to-Cloudinary image upload for the signed-in user */
         post: operations["UploadsController_sign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/definitions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payroll definitions (rosters) for the active organization */
+        get: operations["PayrollController_listDefinitions"];
+        put?: never;
+        /** Create a payroll definition (owner/admin) */
+        post: operations["PayrollController_createDefinition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/definitions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a definition (owner/admin) */
+        delete: operations["PayrollController_deleteDefinition"];
+        options?: never;
+        head?: never;
+        /** Update a definition (owner/admin) */
+        patch: operations["PayrollController_updateDefinition"];
+        trace?: never;
+    };
+    "/api/payroll/definitions/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add or update a contractor on the roster, by id or email (owner/admin) */
+        post: operations["PayrollController_upsertItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/definitions/{id}/items/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a contractor from the roster (owner/admin) */
+        delete: operations["PayrollController_removeItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Runs for the active organization, newest first, with lines */
+        get: operations["PayrollController_listRuns"];
+        put?: never;
+        /** Draft a run from a definition or explicit lines (owner/admin) */
+        post: operations["PayrollController_createRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/runs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One run with its lines */
+        get: operations["PayrollController_getRun"];
+        put?: never;
+        post?: never;
+        /** Discard a draft run (owner/admin) */
+        delete: operations["PayrollController_discard"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/runs/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a draft run: owner/admin, treasury must cover the total */
+        post: operations["PayrollController_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payroll/runs/{id}/execute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Execute an approved run, or retry the failed lines of a partial one (owner/admin) */
+        post: operations["PayrollController_execute"];
         delete?: never;
         options?: never;
         head?: never;
@@ -337,6 +511,16 @@ export interface components {
             /** @description Logo URL from a signed upload. */
             logo?: string;
         };
+        UpdateOrganizationDto: {
+            /** @example Acme Studio */
+            name?: string;
+            /** @example Kenya */
+            country?: string;
+            /** @example 8 */
+            teamSize?: number;
+            /** @description Logo URL from a signed upload. */
+            logo?: string;
+        };
         FundDto: {
             /**
              * @description Public key of a wallet the caller owns.
@@ -406,6 +590,52 @@ export interface components {
              * @enum {string}
              */
             kind: "org-logo" | "avatar";
+        };
+        CreateDefinitionDto: {
+            /** @example Engineering payroll */
+            name: string;
+            /**
+             * @default MONTHLY
+             * @enum {string}
+             */
+            cadence: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+            /** @description Default transaction memo for runs. */
+            memo?: string;
+        };
+        UpdateDefinitionDto: {
+            name?: string;
+            /** @enum {string} */
+            cadence?: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+            memo?: string;
+        };
+        UpsertItemDto: {
+            /** @description Contractor id (or give `email`). */
+            contractorId?: string;
+            /** @example kwabena@example.com */
+            email?: string;
+            /**
+             * @description USDC per run (max 7 dp).
+             * @example 1200.00
+             */
+            amount: string;
+            note?: string;
+            /** @default true */
+            active: boolean;
+        };
+        AdHocLineDto: {
+            contractorId: string;
+            /** @example 250.00 */
+            amount: string;
+        };
+        CreateRunDto: {
+            /** @description Draft from this definition (active items). */
+            definitionId?: string;
+            /** @description Or explicit lines (max 500). */
+            lines?: components["schemas"]["AdHocLineDto"][];
+            /** @example March 2026 */
+            label: string;
+            /** @description Transaction memo (one per batch). */
+            memo?: string;
         };
     };
     responses: never;
@@ -556,6 +786,27 @@ export interface operations {
             };
         };
     };
+    OrganizationsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrganizationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     MeController_get: {
         parameters: {
             query?: never;
@@ -670,6 +921,23 @@ export interface operations {
             };
         };
     };
+    ContractorsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ContractorsController_lookup: {
         parameters: {
             query: {
@@ -731,6 +999,243 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+        };
+    };
+    PayrollController_listDefinitions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_createDefinition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDefinitionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_deleteDefinition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_updateDefinition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDefinitionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_upsertItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertItemDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_removeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                itemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_listRuns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_createRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRunDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_getRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_discard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PayrollController_execute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

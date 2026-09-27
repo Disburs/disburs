@@ -31,7 +31,7 @@ export default function ContractorShell({ children }: { children: React.ReactNod
   const [open, setOpen] = useState(false);
   const isOnboarding = pathname?.startsWith("/contractor/onboarding");
 
-  const isActive = (href: string) => pathname === href || (href !== "/contractor" && pathname?.startsWith(href));
+  const isActive = (href: string) => pathname === href || (href !== "/contractor" && pathname?.startsWith(href + "/"));
   // Signed out → sign in. Signed in without a payee profile → contractor onboarding.
   // The onboarding route itself only needs a session.
   const { ready } = useRequireProfile(

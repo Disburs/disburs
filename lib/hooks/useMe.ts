@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { activateWallets, createOrganization, getMe, onboardClient, onboardContractor, type Me } from "../api";
+import { activateWallets, createOrganization, getMe, onboardClient, onboardContractor, updateOrganization, type Me } from "../api";
 import { authClient } from "../auth-client";
 
 export const ME_KEY = ["me"] as const;
@@ -73,6 +73,15 @@ export function useCreateOrganization() {
   return useMutation({
     mutationFn: createOrganization,
     onSuccess: () => qc.invalidateQueries(),
+  });
+}
+
+/** Edit the active organization's name, logo, country or team size (owner/admin). */
+export function useUpdateOrganization() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: updateOrganization,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ME_KEY }),
   });
 }
 
