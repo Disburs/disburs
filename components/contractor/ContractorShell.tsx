@@ -5,10 +5,11 @@ import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Home, ArrowLeftRight, MessageCircle, Menu, X, type LucideIcon } from "lucide-react";
-import { contractor, ngn } from "@/lib/contractor";
+import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
+import { usdc } from "@/lib/format";
+import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "@/components/portal/ui";
 import { authClient } from "@/lib/auth-client";
-import { useRequireProfile } from "@/lib/hooks/useMe";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Home", href: "/contractor", icon: Home },
@@ -36,6 +37,14 @@ export default function ContractorShell({ children }: { children: React.ReactNod
   const { ready } = useRequireProfile(
     isOnboarding ? {} : { need: "contractor", onboarding: "/contractor/onboarding" },
   );
+  const { data: me } = useMe();
+  const payee = me?.contractor ?? null;
+  const initials = (payee?.name ?? me?.user.email ?? "?")
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   if (!ready) return <div className="min-h-screen bg-canvas" aria-busy="true" />;
 
@@ -89,14 +98,15 @@ export default function ContractorShell({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-3">
             <Link href="/contractor/cashout" className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 sm:flex">
+              <UsdcMark size={16} />
               <span className="text-[12.5px] text-muted">Balance</span>
-              <span className="tabular text-[14px] font-medium text-ink">${ngn(contractor.balance)}</span>
+              <span className="tabular text-[14px] font-medium text-ink">{payee?.wallet?.balances?.usdc == null ? "—" : `$${usdc(payee.wallet.balances.usdc)}`}</span>
             </Link>
             <div className="flex items-center gap-2.5">
-              <Avatar initials={contractor.initials} size={36} flag={contractor.flag} />
+              <Avatar initials={initials} size={36} />
               <div className="hidden lg:block">
-                <div className="text-[13.5px] font-medium leading-tight text-ink">{contractor.firstName}</div>
-                <div className="text-[12px] text-muted">via {contractor.employer}</div>
+                <div className="text-[13.5px] font-medium leading-tight text-ink">{payee?.name?.split(" ")[0] ?? "—"}</div>
+                <div className="text-[12px] text-muted">{payee ? `${payee.country} · ${payee.payoutCurrency}` : ""}</div>
               </div>
             </div>
             <button type="button" className="flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu" aria-expanded={open}>

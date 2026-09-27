@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { activateWallets, getMe, onboardClient, onboardContractor, type Me } from "../api";
+import { authClient } from "../auth-client";
 
 export const ME_KEY = ["me"] as const;
 
@@ -49,6 +50,19 @@ export function useOnboardContractor() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: onboardContractor,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ME_KEY }),
+  });
+}
+
+/** Save the signed-in user's display name (Better Auth `updateUser`). */
+export function useUpdateName() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string) => {
+      const { error } = await authClient.updateUser({ name });
+      if (error) throw new Error(error.message ?? "Could not save your name.");
+      return name;
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ME_KEY }),
   });
 }

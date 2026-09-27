@@ -68,6 +68,7 @@ export interface Me {
     id: string;
     name: string;
     slug: string;
+    logo: string | null;
     country: string | null;
     teamSize: number | null;
     treasuryWallet: WalletState | null;
@@ -111,4 +112,86 @@ export async function getAuthProviders(): Promise<AuthProviders> {
   const { data, error } = await client.GET("/api/auth-providers");
   if (error) throw toError(error);
   return data as unknown as AuthProviders;
+}
+
+/* ------------------------------ Payments ------------------------------ */
+export type LedgerStatus = "PENDING" | "SETTLED" | "FAILED";
+export interface LedgerEntry {
+  id: string;
+  type: "PAYOUT" | "SEND";
+  status: LedgerStatus;
+  amount: string;
+  assetCode: string;
+  source: string | null;
+  destination: string | null;
+  memo: string | null;
+  txHash: string | null;
+  error: string | null;
+  userId: string | null;
+  organizationId: string | null;
+  contractorId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function listLedger(): Promise<LedgerEntry[]> {
+  const { data, error } = await client.GET("/api/payments");
+  if (error) throw toError(error);
+  return (data ?? []) as unknown as LedgerEntry[];
+}
+
+export interface ContractorLookup {
+  id: string;
+  name: string;
+  country: string;
+  payoutCurrency: string;
+  type: "INDIVIDUAL" | "BUSINESS";
+  walletActivated: boolean;
+}
+
+export async function lookupContractor(email: string): Promise<ContractorLookup> {
+  const { data, error } = await client.GET("/api/contractors/lookup", { params: { query: { email } } });
+  if (error) throw toError(error);
+  return data as unknown as ContractorLookup;
+}
+
+export type PayContractorBody = components["schemas"]["PayContractorDto"];
+export async function payContractor(body: PayContractorBody): Promise<LedgerEntry> {
+  const { data, error } = await client.POST("/api/payments/pay", { body });
+  if (error) throw toError(error);
+  return data as unknown as LedgerEntry;
+}
+
+export type FundBody = components["schemas"]["FundDto"];
+export async function fundWallet(body: FundBody) {
+  const { data, error } = await client.POST("/api/me/fund", { body });
+  if (error) throw toError(error);
+  return data;
+}
+
+/** Explorer link for a transaction or account on the configured network. */
+export function explorerUrl(network: string, kind: "tx" | "account", id: string) {
+  const net = network === "mainnet" ? "public" : "testnet";
+  return `https://stellar.expert/explorer/${net}/${kind}/${id}`;
+}
+
+/* ------------------------------- Uploads ------------------------------ */
+export type UploadKind = "org-logo" | "avatar";
+export interface UploadSignature {
+  cloudName: string;
+  apiKey: string;
+  uploadUrl: string;
+  fields: Record<string, string | number>;
+}
+
+export async function getUploadConfig(): Promise<{ enabled: boolean }> {
+  const { data, error } = await client.GET("/api/uploads/config");
+  if (error) throw toError(error);
+  return data as unknown as { enabled: boolean };
+}
+
+export async function signUpload(kind: UploadKind): Promise<UploadSignature> {
+  const { data, error } = await client.POST("/api/uploads/sign", { body: { kind } });
+  if (error) throw toError(error);
+  return data as unknown as UploadSignature;
 }

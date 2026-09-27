@@ -194,6 +194,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/contractors/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find an onboarded contractor by email, so an employer can pay them (org owners only) */
+        get: operations["ContractorsController_lookup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/uploads/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whether image uploads are configured (public) */
+        get: operations["UploadsController_config"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/uploads/sign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign a direct-to-Cloudinary image upload for the signed-in user */
+        post: operations["UploadsController_sign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -225,6 +276,11 @@ export interface components {
             country?: string;
             /** @example 12 */
             teamSize?: number;
+            /**
+             * @description Logo URL from a signed upload (POST /api/uploads/sign).
+             * @example https://res.cloudinary.com/disburs/image/upload/v1/disburs/org-logos/….png
+             */
+            logo?: string;
         };
         OnboardContractorDto: {
             /** @example Kwabena Mensah */
@@ -315,6 +371,13 @@ export interface components {
             memoType: "text" | "id";
             /** @description Idempotency key — a retry with the same key never double-pays. */
             idempotencyKey?: string;
+        };
+        SignUploadDto: {
+            /**
+             * @description What the image is for; picks the folder + transformation.
+             * @enum {string}
+             */
+            kind: "org-logo" | "avatar";
         };
     };
     responses: never;
@@ -538,6 +601,70 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ContractorsController_lookup: {
+        parameters: {
+            query: {
+                /** @description The contractor’s sign-in email. */
+                email: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    UploadsController_config: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    UploadsController_sign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignUploadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
         };
     };
