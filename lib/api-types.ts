@@ -92,6 +92,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every organization you belong to, with your role, and which one is active */
+        get: operations["OrganizationsController_list"];
+        put?: never;
+        /** Create another organization (you become its owner; a treasury is provisioned; it becomes active) */
+        post: operations["OrganizationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me": {
         parameters: {
             query?: never;
@@ -201,7 +219,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Find an onboarded contractor by email, so an employer can pay them (org owners only) */
+        /** Find an onboarded contractor by email, so an employer can pay them (org members) */
         get: operations["ContractorsController_lookup"];
         put?: never;
         post?: never;
@@ -308,6 +326,16 @@ export interface components {
              * @example 12 Ring Road, Accra, Ghana
              */
             businessAddress?: string;
+        };
+        CreateOrganizationDto: {
+            /** @example Acme Studio */
+            name: string;
+            /** @example Kenya */
+            country?: string;
+            /** @example 8 */
+            teamSize?: number;
+            /** @description Logo URL from a signed upload. */
+            logo?: string;
         };
         FundDto: {
             /**
@@ -479,6 +507,44 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["OnboardContractorDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrganizationsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrganizationsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrganizationDto"];
             };
         };
         responses: {

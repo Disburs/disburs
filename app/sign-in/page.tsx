@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import Wordmark from "@/components/Wordmark";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient, callbackURL, type RoleIntent } from "@/lib/auth-client";
 import { getAuthProviders, type SocialProvider } from "@/lib/api";
 
@@ -32,8 +32,9 @@ const inputClass =
 const primaryClass =
   "inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-mint text-[17px] font-medium text-ink-deep transition-[opacity,transform] duration-150 enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50";
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
+  const next = useSearchParams().get("next");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<RoleIntent>("CLIENT");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -55,7 +56,7 @@ export default function SignInPage() {
   const signInWith = async (provider: SocialProvider) => {
     setSocialBusy(provider);
     setMessage(null);
-    const { error } = await authClient.signIn.social({ provider, callbackURL: callbackURL(role) });
+    const { error } = await authClient.signIn.social({ provider, callbackURL: callbackURL(role, next) });
     if (error) {
       setSocialBusy(null);
       setStatus("error");
@@ -70,7 +71,7 @@ export default function SignInPage() {
     let stopped = false;
     const tick = async () => {
       const { data } = await authClient.getSession();
-      if (!stopped && data?.session) router.replace(`/auth/callback?role=${role}`);
+      if (!stopped && data?.session) router.replace(`/auth/callback?role=${role}${next ? `&next=${encodeURIComponent(next)}` : ""}`);
     };
     const id = window.setInterval(tick, 3000);
     const onFocus = () => void tick();
@@ -80,7 +81,7 @@ export default function SignInPage() {
       window.clearInterval(id);
       window.removeEventListener("focus", onFocus);
     };
-  }, [status, role, router]);
+  }, [status, role, next, router]);
 
   const send = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -90,7 +91,7 @@ export default function SignInPage() {
     setMessage(null);
     const { error } = await authClient.signIn.magicLink({
       email: trimmed,
-      callbackURL: callbackURL(role),
+      callbackURL: callbackURL(role, next),
     });
     if (error) {
       setStatus("error");
@@ -225,5 +226,13 @@ export default function SignInPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInForm />
+    </Suspense>
   );
 }

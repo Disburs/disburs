@@ -9,6 +9,6 @@ export function shortKey(key: string, head = 4, tail = 4) {
   return key.length > head + tail + 1 ? `${key.slice(0, head)}…${key.slice(-tail)}` : key;
 }
 
-export function when(iso: string) {
+export function when(iso: string | Date) {
   return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 }

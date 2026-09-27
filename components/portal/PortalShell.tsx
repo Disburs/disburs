@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Users,
+  UsersRound,
   ReceiptText,
   Send,
   History,
@@ -25,6 +26,7 @@ import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "./ui";
+import OrgSwitcher from "./OrgSwitcher";
 
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Dashboard", href: "/portal", icon: LayoutDashboard },
@@ -34,6 +36,7 @@ const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Payroll", href: "/portal/payroll", icon: ReceiptText },
   { label: "History", href: "/portal/history", icon: History },
   { label: "Wallet", href: "/portal/wallet", icon: Wallet },
+  { label: "Team", href: "/portal/team", icon: UsersRound },
   { label: "Settings", href: "/portal/settings", icon: Settings },
 ];
 
@@ -123,6 +126,9 @@ function Sidebar({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: (
             <X size={20} />
           </button>
         )}
+      </div>
+      <div className="mb-5">
+        <OrgSwitcher />
       </div>
       <div className="flex-1">
         <NavList onNavigate={onNavigate} />
