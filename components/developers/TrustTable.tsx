@@ -28,8 +28,8 @@ export default function TrustTable() {
   return (
     <section id="trust" className="bg-canvas py-24 md:py-32">
       <Container>
-        <Reveal className="grid gap-8 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-7">
+        <Reveal className="grid min-w-0 gap-8 lg:grid-cols-12 lg:items-end">
+          <div className="min-w-0 lg:col-span-7">
             <p className="font-mono text-[12.5px] uppercase tracking-[0.12em] text-accent">Guardrails</p>
             <h2 className="mt-4 max-w-[18ch] font-display text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-[56px]">
               Rails you can reason about.
@@ -40,7 +40,7 @@ export default function TrustTable() {
           </p>
         </Reveal>
 
-        <Reveal delay={0.06} className="mt-12 overflow-x-auto">
+        <Reveal delay={0.06} className="mt-12 min-w-0 max-w-full overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">

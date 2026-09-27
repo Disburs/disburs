@@ -25,8 +25,8 @@ export default function Bento() {
           <p className="max-w-[40ch] text-[16px] leading-[1.5] text-muted">Session-authenticated REST today. Everything marked live is in the OpenAPI spec now.</p>
         </Reveal>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-6 md:gap-5">
-          <Reveal className="on-dark rounded-[28px] bg-ink-deep p-7 md:col-span-4 md:row-span-2 md:p-9">
+        <div className="mt-12 grid min-w-0 grid-cols-1 gap-4 md:grid-cols-6 md:gap-5">
+          <Reveal className="on-dark min-w-0 overflow-hidden rounded-[28px] bg-ink-deep p-7 md:col-span-4 md:row-span-2 md:p-9">
             <div className="flex items-center justify-between">
               <h3 className="text-[22px] font-medium text-white">Payments</h3>
               <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ${badge("Live")}`}>Live</span>
@@ -38,13 +38,13 @@ export default function Bento() {
               <li className="flex gap-3"><span className="w-12 text-mint">POST</span><span className="text-white/85">/api/payments/pay</span></li>
               <li className="flex gap-3"><span className="w-12 text-[#93C5FD]">GET</span><span className="text-white/85">/api/payments</span></li>
             </ul>
-            <div className="mt-6 overflow-hidden rounded-[16px] border border-white/10 bg-black/30">
+            <div className="mt-6 min-w-0 overflow-hidden rounded-[16px] border border-white/10 bg-black/30">
               <div className="border-b border-white/10 px-4 py-2 font-mono text-[11.5px] text-white/45">one payout, as the ledger and the chain saw it</div>
               <pre className="overflow-x-auto px-4 py-3 font-mono text-[12px] leading-[1.7] text-white/80"><code>{highlight(LOG, "bash")}</code></pre>
             </div>
           </Reveal>
 
-          <Reveal delay={0.05} className="rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
+          <Reveal delay={0.05} className="min-w-0 rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
             <div className="flex items-center justify-between">
               <h3 className="text-[19px] font-medium text-ink">Onboarding</h3>
               <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ${badge("Live")}`}>Live</span>
@@ -57,7 +57,7 @@ export default function Bento() {
             </ul>
           </Reveal>
 
-          <Reveal delay={0.1} className="rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
+          <Reveal delay={0.1} className="min-w-0 rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
             <div className="flex items-center justify-between">
               <h3 className="text-[19px] font-medium text-ink">Wallets</h3>
               <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ${badge("Live")}`}>Live</span>
@@ -70,7 +70,7 @@ export default function Bento() {
             </ul>
           </Reveal>
 
-          <Reveal delay={0.15} className="rounded-[28px] bg-mint p-7 md:col-span-2">
+          <Reveal delay={0.15} className="min-w-0 rounded-[28px] bg-mint p-7 md:col-span-2">
             <div className="flex items-center justify-between">
               <h3 className="text-[19px] font-medium text-ink">Payroll runs</h3>
               <span className="rounded-full bg-ink-deep px-2.5 py-0.5 text-[11.5px] font-medium text-white">Phase 1</span>
@@ -78,7 +78,7 @@ export default function Bento() {
             <p className="mt-2 text-[14.5px] leading-[1.5] text-ink/80">Roster and cadence, draft → approve → execute → reconcile, every line with a paid / failed status.</p>
           </Reveal>
 
-          <Reveal delay={0.2} className="rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
+          <Reveal delay={0.2} className="min-w-0 rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
             <div className="flex items-center justify-between">
               <h3 className="text-[19px] font-medium text-ink">Webhooks</h3>
               <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ${badge("soon")}`}>Phase 1</span>
@@ -86,7 +86,7 @@ export default function Bento() {
             <p className="mt-2 text-[14.5px] leading-[1.5] text-muted">payout.settled, payout.failed, wallet.activated, run.completed. Stop polling.</p>
           </Reveal>
 
-          <Reveal delay={0.25} className="rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
+          <Reveal delay={0.25} className="min-w-0 rounded-[28px] border border-line bg-canvas p-7 md:col-span-2">
             <div className="flex items-center justify-between">
               <h3 className="text-[19px] font-medium text-ink">Agent SDK</h3>
               <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-medium ${badge("soon")}`}>Phase 3</span>
