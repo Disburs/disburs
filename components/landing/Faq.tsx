@@ -5,8 +5,9 @@ import { Plus } from "lucide-react";
 import { Container, Heading, Lead } from "./Section";
 import Reveal from "./Reveal";
 
-type QA = { q: string; a: string };
-type Category = { name: string; items: QA[] };
+export type QA = { q: string; a: string };
+export type FaqCategory = { name: string; items: QA[] };
+type Category = FaqCategory;
 
 // FAQ content is unchanged from the previous page.
 const CATEGORIES: Category[] = [
@@ -63,10 +64,16 @@ const CATEGORIES: Category[] = [
   },
 ];
 
-export default function Faq() {
+export default function Faq({
+  categories = CATEGORIES,
+  lead = "Everything about how the agent runs, protects and pays out your payroll.",
+}: {
+  categories?: FaqCategory[];
+  lead?: string;
+}) {
   const [cat, setCat] = useState(0);
   const [open, setOpen] = useState<number | null>(0);
-  const items = CATEGORIES[cat].items;
+  const items = categories[cat].items;
 
   return (
     <section id="faq" className="bg-subtle py-24 md:py-36">
@@ -75,11 +82,11 @@ export default function Faq() {
           <Heading size="lg">
             Questions, answered plainly.
           </Heading>
-          <Lead className="max-w-[40ch]">Everything about how the agent runs, protects and pays out your payroll.</Lead>
+          <Lead className="max-w-[40ch]">{lead}</Lead>
         </Reveal>
 
         <div role="tablist" aria-label="FAQ categories" className="mt-12 flex flex-wrap gap-2 md:mt-16">
-          {CATEGORIES.map((c, i) => {
+          {categories.map((c, i) => {
             const on = i === cat;
             return (
               <button
