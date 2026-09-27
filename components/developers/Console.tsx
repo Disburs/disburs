@@ -75,7 +75,7 @@ export default function Console() {
           </button>
         </div>
       </div>
-      <pre className="overflow-x-auto px-5 py-4 font-mono text-[12.5px] leading-[1.65] text-white/85">
+      <pre className="overflow-x-auto whitespace-pre-wrap break-words px-5 py-4 font-mono text-[12.5px] leading-[1.65] text-white/85 md:whitespace-pre">
         <code>{highlight(REQUEST[tab], tab === "curl" ? "bash" : "ts")}</code>
       </pre>
       {tab === "curl" ? (
@@ -87,7 +87,7 @@ export default function Console() {
               <span className="text-white/50">4.1s to settle</span>
             </span>
           </div>
-          <pre className="overflow-x-auto px-5 py-4 font-mono text-[12.5px] leading-[1.65] text-white/85">
+          <pre className="overflow-x-auto whitespace-pre-wrap break-words px-5 py-4 font-mono text-[12.5px] leading-[1.65] text-white/85 md:whitespace-pre">
             <code>{highlight(RESPONSE, "json")}</code>
           </pre>
         </>

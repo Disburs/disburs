@@ -16,7 +16,7 @@ export default function DevHero() {
   return (
     <section id="hero" className="bg-canvas pt-[128px] md:pt-[150px]">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+        <div className="grid min-w-0 gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="min-w-0 lg:col-span-6 lg:pr-6">
             <Reveal immediate>
               <p className="font-mono text-[12.5px] uppercase tracking-[0.12em] text-accent">Disburs API · private beta</p>

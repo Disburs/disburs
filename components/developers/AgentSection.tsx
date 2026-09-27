@@ -20,8 +20,8 @@ export default function AgentSection() {
   return (
     <section id="agent" className="bg-canvas py-24 md:py-32">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
-          <Reveal className="lg:col-span-7">
+        <div className="grid min-w-0 gap-10 lg:grid-cols-12 lg:items-center">
+          <Reveal className="min-w-0 lg:col-span-7">
             <p className="font-mono text-[12.5px] uppercase tracking-[0.12em] text-accent">Autonomous by design</p>
             <h2 className="mt-4 max-w-[18ch] font-display text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-[56px]">
               Not a payout API with a chatbot. An operator with an API.
@@ -41,10 +41,10 @@ export default function AgentSection() {
               </LinkButton>
             </div>
           </Reveal>
-          <Reveal delay={0.08} className="lg:col-span-5">
+          <Reveal delay={0.08} className="min-w-0 lg:col-span-5">
             <div className="relative mx-auto max-w-[420px] rounded-[32px] bg-cream p-8">
               <Image src="/illustrations/agent.svg" alt="The Disburs agent reading contracts and preparing a run" width={800} height={714} className="h-auto w-full" />
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink-deep px-4 py-2 font-mono text-[12px] text-mint">
+              <div className="absolute -bottom-4 left-1/2 max-w-[90%] -translate-x-1/2 truncate rounded-full bg-ink-deep px-4 py-2 font-mono text-[12px] text-mint">
                 proposes · never executes alone
               </div>
             </div>
@@ -52,7 +52,7 @@ export default function AgentSection() {
         </div>
 
         <Reveal delay={0.1} className="mt-20">
-          <ol className="relative grid gap-6 md:grid-cols-5 md:gap-4">
+          <ol className="relative grid min-w-0 gap-6 md:grid-cols-5 md:gap-4">
             <div className="absolute left-[27px] top-0 h-full w-px bg-line md:left-0 md:top-[27px] md:h-px md:w-full" aria-hidden />
             {STAGES.map((s, i) => {
               const Icon = s.icon;

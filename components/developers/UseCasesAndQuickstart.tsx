@@ -39,7 +39,7 @@ export function UseCases() {
         </Reveal>
         <div className="mt-12 divide-y divide-line border-y border-line">
           {CASES.map((c, i) => (
-            <Reveal key={c.title} delay={i * 0.05} className="grid gap-6 py-10 md:grid-cols-12 md:items-center">
+            <Reveal key={c.title} delay={i * 0.05} className="grid min-w-0 gap-6 py-10 md:grid-cols-12 md:items-center">
               <div className="md:col-span-5">
                 <h3 className="font-display text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-ink">{c.title}</h3>
               </div>
@@ -79,8 +79,8 @@ export function Quickstart() {
   return (
     <section id="quickstart" className="bg-canvas py-24 md:py-32">
       <Container>
-        <div className="grid gap-12 lg:grid-cols-12">
-          <Reveal className="lg:col-span-4">
+        <div className="grid min-w-0 gap-12 lg:grid-cols-12">
+          <Reveal className="min-w-0 lg:col-span-4">
             <p className="font-mono text-[12.5px] uppercase tracking-[0.12em] text-accent">Quickstart</p>
             <h2 className="mt-4 font-display text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-ink md:text-[52px]">
               Four calls to a settled payout.
@@ -95,15 +95,15 @@ export function Quickstart() {
               </LinkButton>
             </div>
           </Reveal>
-          <ol className="relative lg:col-span-8">
+          <ol className="relative min-w-0 lg:col-span-8">
             <div className="absolute left-[19px] top-2 h-[calc(100%-16px)] w-px bg-line" aria-hidden />
             {STEPS.map((s, i) => (
-              <Reveal as="li" key={s.n} delay={i * 0.06} className="relative flex gap-6 pb-10 last:pb-0">
+              <Reveal as="li" key={s.n} delay={i * 0.06} className="relative flex min-w-0 gap-6 pb-10 last:pb-0">
                 <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-deep font-mono text-[12.5px] text-mint">{s.n}</span>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-[19px] font-medium text-ink">{s.title}</h3>
                   <p className="mt-1.5 text-[15px] leading-[1.5] text-muted">{s.body}</p>
-                  <pre className="on-dark mt-4 overflow-x-auto rounded-[16px] bg-ink-deep px-4 py-3 font-mono text-[12.5px] leading-[1.65] text-white/85"><code>{highlight(s.code, s.lang)}</code></pre>
+                  <pre className="on-dark mt-4 overflow-x-auto whitespace-pre-wrap break-words rounded-[16px] bg-ink-deep px-4 py-3 font-mono text-[12.5px] leading-[1.65] text-white/85 md:whitespace-pre"><code>{highlight(s.code, s.lang)}</code></pre>
                 </div>
               </Reveal>
             ))}

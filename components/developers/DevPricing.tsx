@@ -26,7 +26,7 @@ export default function DevPricing() {
           </div>
           <p className="max-w-[44ch] text-[16px] leading-[1.5] text-muted lg:col-span-5">No platform fee for the API itself. The flat 0.5% per payout is the same rate the payroll product charges; Stellar&rsquo;s network fee is passed through at cost.</p>
         </Reveal>
-        <Reveal delay={0.06} className="mt-12 overflow-x-auto">
+        <Reveal delay={0.06} className="mt-12 min-w-0 max-w-full overflow-x-auto">
           <table className="w-full min-w-[680px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">
