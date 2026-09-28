@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { activateWallets, createOrganization, getMe, onboardClient, onboardContractor, updateOrganization, type Me } from "../api";
 import { authClient } from "../auth-client";
@@ -22,20 +22,28 @@ export function useRequireProfile(opts: {
   need?: "organization" | "contractor";
   /** Where to send a signed-in user who lacks the needed profile. */
   onboarding?: string;
+  /**
+   * Also require a display name. Invited teammates arrive with none; they are
+   * sent to /welcome to add it and then come back here.
+   */
+  needName?: boolean;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const q = useMe();
   const me = q.data;
   const ready = !q.isPending;
   const missing = ready && me !== undefined && me !== null && opts.need && !me[opts.need];
+  const nameless = ready && !!me && !missing && !!opts.needName && !(me.user.name ?? "").trim();
 
   useEffect(() => {
     if (!ready) return;
     if (me === null) router.replace("/sign-in");
     else if (missing && opts.onboarding) router.replace(opts.onboarding);
-  }, [ready, me, missing, opts.onboarding, router]);
+    else if (nameless) router.replace(`/welcome?next=${encodeURIComponent(pathname || "/portal")}`);
+  }, [ready, me, missing, nameless, opts.onboarding, pathname, router]);
 
-  return { me: me ?? null, ready: ready && me !== null && !missing, refetch: q.refetch };
+  return { me: me ?? null, ready: ready && me !== null && !missing && !nameless, refetch: q.refetch };
 }
 
 export function useOnboardClient() {

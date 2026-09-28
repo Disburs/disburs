@@ -175,6 +175,7 @@ export default function PortalShell({
   const { ready } = useRequireProfile({
     need: "organization",
     onboarding: "/onboarding",
+    needName: true,
   });
   const { data: me } = useMe();
   const orgInitials = (me?.organization?.name ?? "?")
