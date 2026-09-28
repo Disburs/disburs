@@ -64,6 +64,8 @@ export interface WalletState {
   publicKey: string;
   isActivated: boolean;
   balances?: { xlm?: string; usdc?: string } | null;
+  /** When the reconciler last compared this wallet with the chain. */
+  reconciledAt?: string | null;
 }
 export interface Me {
   user: { id: string; email: string; name: string | null; role: string };
@@ -125,7 +127,8 @@ export async function getAuthProviders(): Promise<AuthProviders> {
 export type LedgerStatus = "PENDING" | "SETTLED" | "FAILED";
 export interface LedgerEntry {
   id: string;
-  type: "PAYOUT" | "SEND";
+  /** FUND entries are deposits the reconciler recorded from the chain. */
+  type: "PAYOUT" | "SEND" | "FUND";
   status: LedgerStatus;
   amount: string;
   assetCode: string;
@@ -134,6 +137,8 @@ export interface LedgerEntry {
   memo: string | null;
   txHash: string | null;
   error: string | null;
+  /** Set once the reconciler confirmed this entry against the chain. */
+  reconciledAt: string | null;
   userId: string | null;
   organizationId: string | null;
   contractorId: string | null;
@@ -168,8 +173,11 @@ export interface OrgContractor {
   wallet: { publicKey: string; isActivated: boolean } | null;
   payrolls: { id: string; name: string; amount: string; active: boolean }[];
   lastPaidAt: string | null;
+  lastTxHash: string | null;
   totalPaid: string;
   paymentCount: number;
+  /** Settled payments the reconciler has confirmed on chain. */
+  confirmedCount: number;
 }
 
 export async function listContractors(): Promise<OrgContractor[]> {
@@ -274,6 +282,7 @@ export interface RunLine {
   txHash: string | null;
   error: string | null;
   attempts: number;
+  reconciledAt: string | null;
 }
 export interface PayrollRun {
   id: string;
@@ -312,4 +321,56 @@ export const payrollApi = {
   discard: (id: string) => client.DELETE("/api/payroll/runs/{id}", { params: { path: { id } } }).then((r) => unwrap<{ deleted: boolean }>(r)),
   approve: (id: string) => client.POST("/api/payroll/runs/{id}/approve", { params: { path: { id } } }).then((r) => unwrap<PayrollRun>(r)),
   execute: (id: string) => client.POST("/api/payroll/runs/{id}/execute", { params: { path: { id } } }).then((r) => unwrap<PayrollRun>(r)),
+};
+
+/* ---------------------------- Reconciliation --------------------------- */
+export type DiscrepancyKind = "UNRECORDED_OUTFLOW" | "MISSING_ON_CHAIN" | "RECOVERED" | "TIMED_OUT";
+export interface Discrepancy {
+  id: string;
+  kind: DiscrepancyKind;
+  ledgerEntryId: string | null;
+  txHash: string | null;
+  source: string | null;
+  destination: string | null;
+  amount: string | null;
+  note: string;
+  resolvedAt: string | null;
+  createdAt: string;
+}
+export interface ReconciliationStatus {
+  treasury: { publicKey: string; reconciledAt: string | null; scanned: boolean } | null;
+  discrepancies: Discrepancy[];
+}
+export interface ReconciliationRun extends ReconciliationStatus {
+  summary: { scanned: number; matched: number; recovered: number; recorded: number; flagged: number };
+  sweep: { timedOut: number; missing: number };
+}
+
+export const reconciliationApi = {
+  status: () => client.GET("/api/reconciliation/status").then((r) => unwrap<ReconciliationStatus>(r)),
+  run: () => client.POST("/api/reconciliation/run").then((r) => unwrap<ReconciliationRun>(r)),
+  resolve: (id: string) =>
+    client.POST("/api/reconciliation/discrepancies/{id}/resolve", { params: { path: { id } } }).then((r) => unwrap<{ resolved: boolean }>(r)),
+};
+
+/* ------------------------------- Cash-outs ----------------------------- */
+export type CashoutStatus = "REQUESTED" | "CANCELLED" | "PAID";
+export interface CashoutRequest {
+  id: string;
+  contractorId: string;
+  amount: string;
+  currency: string;
+  destination: string;
+  note: string | null;
+  status: CashoutStatus;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+export type CreateCashoutBody = components["schemas"]["CreateCashoutDto"];
+
+export const cashoutsApi = {
+  list: () => client.GET("/api/cashouts").then((r) => unwrap<CashoutRequest[]>(r)),
+  create: (body: CreateCashoutBody) => client.POST("/api/cashouts", { body }).then((r) => unwrap<CashoutRequest>(r)),
+  cancel: (id: string) => client.POST("/api/cashouts/{id}/cancel", { params: { path: { id } } }).then((r) => unwrap<CashoutRequest>(r)),
 };

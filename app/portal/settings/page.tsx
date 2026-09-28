@@ -3,28 +3,19 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import {
-  Button,
   Card,
   Field,
   PageTitle,
   SectionHeading,
   inputClass,
 } from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
 import ImageUpload from "@/components/upload/ImageUpload";
 import { useMe, useUpdateName, useUpdateOrganization } from "@/lib/hooks/useMe";
 import { MONEY_ROLES, type Me } from "@/lib/api";
 import { joinName, splitName } from "@/lib/name";
 import { shortKey } from "@/lib/format";
-
-const COUNTRIES = [
-  "Kenya",
-  "Ghana",
-  "South Africa",
-  "Nigeria",
-  "United Kingdom",
-  "United States",
-  "Other",
-];
+import { countryNames } from "@/lib/countries";
 
 function Saved({ show }: { show: boolean }) {
   return show ? (
@@ -37,7 +28,15 @@ function Saved({ show }: { show: boolean }) {
 type Org = NonNullable<Me["organization"]>;
 
 /** Organization profile. Editable by owners and admins, read-only for members. */
-function OrgForm({ org, saved, onSaved }: { org: Org; saved: boolean; onSaved: () => void }) {
+function OrgForm({
+  org,
+  saved,
+  onSaved,
+}: {
+  org: Org;
+  saved: boolean;
+  onSaved: () => void;
+}) {
   const canManage = Boolean(org.role && MONEY_ROLES.includes(org.role));
   const updateOrg = useUpdateOrganization();
   const [name, setName] = useState(org.name);
@@ -106,7 +105,7 @@ function OrgForm({ org, saved, onSaved }: { org: Org; saved: boolean; onSaved: (
             disabled={!canManage}
           >
             <option value="">Not set</option>
-            {COUNTRIES.map((c) => (
+            {countryNames().map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -128,7 +127,6 @@ function OrgForm({ org, saved, onSaved }: { org: Org; saved: boolean; onSaved: (
       {canManage && (
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Button
-            variant="ink"
             onClick={saveOrg}
             disabled={!orgDirty || !name.trim() || updateOrg.isPending}
           >
@@ -212,7 +210,6 @@ function YouForm({ me }: { me: Me }) {
       </div>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <Button
-          variant="ink"
           onClick={saveName}
           disabled={!nameDirty || !first.trim() || updateName.isPending}
         >

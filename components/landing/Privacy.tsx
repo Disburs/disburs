@@ -12,8 +12,9 @@ export default function Privacy() {
           <Heading size="lg">Private by design.</Heading>
           <div>
             <Lead className="max-w-[40ch]">
-              Every payment is verified by the network without the amount ever being revealed. When
-              an auditor needs specifics, you disclose deliberately — with a view key.
+              Every payment is verified by the network without the amount ever
+              being revealed. When an auditor needs specifics, you disclose
+              deliberately — with a view key.
             </Lead>
             <div className="mt-8 flex flex-wrap gap-3">
               <LinkButton href="#waitlist" variant="ink">
@@ -39,17 +40,31 @@ export default function Privacy() {
             </div>
             <div className="bg-canvas p-6 md:p-10">
               <div className="flex items-center justify-between">
-                <span className="text-[15px] font-medium text-ink">March payroll</span>
-                <span className="text-[14px] text-muted">18 of 18 protected</span>
+                <span className="text-[15px] font-medium text-ink">
+                  March payroll
+                </span>
+                <span className="text-[14px] text-muted">
+                  18 of 18 protected
+                </span>
               </div>
-              <ul className="mt-5 divide-y divide-line border-y border-line" aria-label="Payroll lines with amounts protected">
+              <ul
+                className="mt-5 divide-y divide-line border-y border-line"
+                aria-label="Payroll lines with amounts protected"
+              >
                 {TEAM.map((m) => (
-                  <li key={m.name} className="flex items-center justify-between gap-3 py-4">
+                  <li
+                    key={m.name}
+                    className="flex items-center justify-between gap-3 py-4"
+                  >
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar m={m} size={36} />
                       <div className="min-w-0">
-                        <div className="truncate text-[15px] text-ink">{m.name}</div>
-                        <div className="text-[12.5px] text-muted">{m.place}</div>
+                        <div className="truncate text-[15px] text-ink">
+                          {m.name}
+                        </div>
+                        <div className="text-[12.5px] text-muted">
+                          {m.place}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -62,8 +77,8 @@ export default function Privacy() {
                 ))}
               </ul>
               <p className="mt-5 text-[14px] leading-[1.5] text-muted">
-                Verified by proof: right recipient, within budget. The amount itself never leaves
-                your records.
+                Verified by proof: right recipient, within budget. The amount
+                itself never leaves your records.
               </p>
             </div>
           </div>

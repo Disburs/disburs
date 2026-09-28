@@ -79,13 +79,15 @@ export default function Faq({
     <section id="faq" className="bg-subtle py-24 md:py-36">
       <Container>
         <Reveal className="grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-16">
-          <Heading size="lg">
-            Questions, answered plainly.
-          </Heading>
+          <Heading size="lg">Questions, answered plainly.</Heading>
           <Lead className="max-w-[40ch]">{lead}</Lead>
         </Reveal>
 
-        <div role="tablist" aria-label="FAQ categories" className="mt-12 flex flex-wrap gap-2 md:mt-16">
+        <div
+          role="tablist"
+          aria-label="FAQ categories"
+          className="mt-12 flex flex-wrap gap-2 md:mt-16"
+        >
           {categories.map((c, i) => {
             const on = i === cat;
             return (
@@ -99,7 +101,9 @@ export default function Faq({
                   setOpen(0);
                 }}
                 className={`h-12 cursor-pointer rounded-full px-6 text-[15px] font-medium transition-colors duration-150 ${
-                  on ? "bg-ink-deep text-white" : "border border-line bg-canvas text-ink hover:opacity-[0.84]"
+                  on
+                    ? "bg-ink-deep text-white"
+                    : "border border-line bg-canvas text-ink hover:opacity-[0.84]"
                 }`}
               >
                 {c.name}
@@ -139,7 +143,9 @@ export default function Faq({
                   style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
                 >
                   <div className="overflow-hidden">
-                    <p className="max-w-[64ch] pb-7 text-[17px] leading-[1.5] text-muted md:text-[19px]">{it.a}</p>
+                    <p className="max-w-[64ch] pb-7 text-[17px] leading-[1.5] text-muted md:text-[19px]">
+                      {it.a}
+                    </p>
                   </div>
                 </div>
               </div>

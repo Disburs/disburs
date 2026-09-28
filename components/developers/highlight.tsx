@@ -25,7 +25,10 @@ const RULES: Record<Lang, [RegExp, string][]> = {
   ts: [
     [/\/\/.*$/m, "text-white/40 italic"],
     [/"[^"\n]*"|'[^'\n]*'|`[^`]*`/, "text-mint"],
-    [/\b(import|from|const|let|await|async|new|export|return|process)\b/, "text-[#C4B5FD]"],
+    [
+      /\b(import|from|const|let|await|async|new|export|return|process)\b/,
+      "text-[#C4B5FD]",
+    ],
     [/\b(console)\b/, "text-[#FDE68A]"],
     [/\b[A-Z][A-Za-z0-9]*\b/, "text-[#FDE68A]"],
     [/(?<=\.)[a-zA-Z_][\w]*(?=\()/, "text-[#93C5FD]"],
@@ -43,7 +46,8 @@ export function highlight(code: string, lang: Lang): ReactNode[] {
     let best: { idx: number; len: number; cls: string } | null = null;
     for (const [re, cls] of rules) {
       const m = re.exec(rest);
-      if (m && m[0].length && (best === null || m.index < best.idx)) best = { idx: m.index, len: m[0].length, cls };
+      if (m && m[0].length && (best === null || m.index < best.idx))
+        best = { idx: m.index, len: m[0].length, cls };
     }
     if (!best) {
       out.push(rest);

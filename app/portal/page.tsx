@@ -9,13 +9,10 @@ import {
   Send,
   Users,
 } from "lucide-react";
-import {
-  Badge,
-  Button,
-  Card,
-  PageTitle,
-  StatTile,
-} from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { PageTitle, StatTile } from "@/components/portal/ui";
 import { runVariant } from "@/components/portal/RunLines";
 import { useMe } from "@/lib/hooks/useMe";
 import { useContractors, useLedger } from "@/lib/hooks/usePayments";
@@ -102,8 +99,10 @@ export default function DashboardPage() {
         }
         action={
           canManage ? (
-            <Button href="/portal/pay" variant="secondary">
-              <Send size={16} className="text-accent" /> Pay someone
+            <Button asChild>
+              <Link href="/portal/pay">
+                <Send size={16} /> Pay someone
+              </Link>
             </Button>
           ) : undefined
         }
@@ -125,8 +124,8 @@ export default function DashboardPage() {
               stay covered.
             </span>
           </div>
-          <Button href="/portal/wallet" size="sm">
-            Top up treasury
+          <Button asChild size="sm">
+            <Link href="/portal/wallet">Top up treasury</Link>
           </Button>
         </div>
       )}
@@ -134,7 +133,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <div className="flex flex-col gap-5 lg:col-span-2">
           {/* Payrolls */}
-          <Card padding={0}>
+          <Card>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4">
               <h3 className="text-[16px] font-medium text-ink">
                 Your payrolls
@@ -155,8 +154,10 @@ export default function DashboardPage() {
                   it in one approval.
                 </p>
                 {canManage && (
-                  <Button href="/portal/payroll" variant="ink">
-                    Create a payroll <ArrowRight size={16} />
+                  <Button asChild>
+                    <Link href="/portal/payroll">
+                      Create a payroll <ArrowRight size={16} />
+                    </Link>
                   </Button>
                 )}
               </div>
@@ -165,27 +166,29 @@ export default function DashboardPage() {
                 {payrolls.map((p) => {
                   const covered = balanceNum == null || p.total <= balanceNum;
                   return (
-                    <li
-                      key={p.id}
-                      className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
-                    >
-                      <div>
-                        <div className="text-[15px] font-medium text-ink">
-                          {p.name}
+                    <li key={p.id}>
+                      <Link
+                        href={`/portal/payroll/${p.id}`}
+                        className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 transition-colors hover:bg-subtle"
+                      >
+                        <div>
+                          <div className="text-[15px] font-medium text-ink">
+                            {p.name}
+                          </div>
+                          <div className="text-[13px] text-muted">
+                            {CADENCE[p.cadence]} · {p.payees}{" "}
+                            {p.payees === 1 ? "payee" : "payees"}
+                          </div>
                         </div>
-                        <div className="text-[13px] text-muted">
-                          {CADENCE[p.cadence]} · {p.payees}{" "}
-                          {p.payees === 1 ? "payee" : "payees"}
+                        <div className="flex items-center gap-3">
+                          <span className="tabular font-display text-[22px] font-semibold tracking-[-0.03em] text-ink">
+                            ${usdc(p.total)}
+                          </span>
+                          <Badge variant={covered ? "success" : "warn"} dot>
+                            {covered ? "Covered" : "Short"}
+                          </Badge>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="tabular font-display text-[22px] font-semibold tracking-[-0.03em] text-ink">
-                          ${usdc(p.total)}
-                        </span>
-                        <Badge variant={covered ? "success" : "warn"} dot>
-                          {covered ? "Covered" : "Short"}
-                        </Badge>
-                      </div>
+                      </Link>
                     </li>
                   );
                 })}
@@ -224,7 +227,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent runs */}
-          <Card padding={0}>
+          <Card>
             <div className="flex items-center justify-between border-b border-line px-6 py-4">
               <h3 className="text-[16px] font-medium text-ink">
                 Recent payroll runs
@@ -292,7 +295,7 @@ export default function DashboardPage() {
 
         {/* Activity: the org's ledger */}
         <div className="lg:col-span-1">
-          <Card padding={0} className="h-full">
+          <Card className="h-full">
             <div className="flex items-center justify-between border-b border-line px-6 py-4">
               <h3 className="text-[16px] font-medium text-ink">Activity</h3>
               <span className="text-[13px] text-muted">
@@ -324,11 +327,15 @@ export default function DashboardPage() {
                         />
                         <div className="min-w-0 flex-1">
                           <div className="text-[14px] leading-[1.5] text-ink">
-                            {e.type === "PAYOUT" ? "Paid" : "Sent"}{" "}
+                            {e.type === "PAYOUT"
+                              ? "Paid"
+                              : e.type === "FUND"
+                                ? "Received"
+                                : "Sent"}{" "}
                             <span className="tabular font-medium">
                               ${usdc(e.amount)}
                             </span>{" "}
-                            to{" "}
+                            {e.type === "FUND" ? " from" : " to"}{" "}
                             {who ?? (
                               <span className="font-mono">
                                 {e.destination ? shortKey(e.destination) : "—"}
