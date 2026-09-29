@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import ImageCropper from "./ImageCropper";
@@ -49,8 +51,10 @@ export default function ImageUpload({
   const pick = (file: File | undefined) => {
     setError(null);
     if (!file) return;
-    if (!file.type.startsWith("image/")) return setError("Please choose an image file.");
-    if (file.size > 10 * 1024 * 1024) return setError("Please choose an image under 10 MB.");
+    if (!file.type.startsWith("image/"))
+      return setError("Please choose an image file.");
+    if (file.size > 10 * 1024 * 1024)
+      return setError("Please choose an image under 10 MB.");
     setPending(URL.createObjectURL(file));
   };
 
@@ -63,8 +67,14 @@ export default function ImageUpload({
       Object.entries(sig.fields).forEach(([k, v]) => form.append(k, String(v)));
       form.append("file", blob, "image.png");
       const res = await fetch(sig.uploadUrl, { method: "POST", body: form });
-      const body = (await res.json().catch(() => ({}))) as { secure_url?: string; error?: { message?: string } };
-      if (!res.ok || !body.secure_url) throw new Error(body.error?.message ?? "Upload failed. Please try again.");
+      const body = (await res.json().catch(() => ({}))) as {
+        secure_url?: string;
+        error?: { message?: string };
+      };
+      if (!res.ok || !body.secure_url)
+        throw new Error(
+          body.error?.message ?? "Upload failed. Please try again.",
+        );
       onChange(body.secure_url);
       if (pending) URL.revokeObjectURL(pending);
       setPending(null);
@@ -80,7 +90,10 @@ export default function ImageUpload({
 
   return (
     <div className="flex items-center gap-4">
-      <div className={`relative flex shrink-0 items-center justify-center overflow-hidden border border-line bg-subtle ${radius}`} style={{ width: size, height: size }}>
+      <div
+        className={`relative flex shrink-0 items-center justify-center overflow-hidden border border-line bg-subtle ${radius}`}
+        style={{ width: size, height: size }}
+      >
         {value ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={value} alt="" className="h-full w-full object-cover" />
@@ -95,20 +108,42 @@ export default function ImageUpload({
       </div>
       <div className="flex flex-col items-start gap-1.5">
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => input.current?.click()} disabled={off || uploading} className="inline-flex h-10 cursor-pointer items-center rounded-full border border-line px-4 text-[14px] font-medium text-ink transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-50">
+          <Button
+            size="sm"
+            onClick={() => input.current?.click()}
+            disabled={off || uploading}
+          >
             {value ? "Change" : label}
-          </button>
+          </Button>
           {value && (
-            <button type="button" onClick={() => onChange(null)} disabled={uploading} aria-label="Remove image" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-muted hover:text-ink">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onChange(null)}
+              disabled={uploading}
+              aria-label="Remove image"
+              className="h-10 w-10"
+            >
               <Trash2 size={15} />
-            </button>
+            </Button>
           )}
         </div>
         <span className="text-[12.5px] text-muted">
-          {enabled === false ? "Image uploads aren't configured yet." : "PNG or JPG, up to 10 MB. You can crop it next."}
+          {enabled === false
+            ? "Image uploads aren't configured yet."
+            : "PNG or JPG, up to 10 MB. You can crop it next."}
         </span>
         {error && <span className="text-[12.5px] text-[#A32D1C]">{error}</span>}
-        <input ref={input} type="file" accept="image/*" className="hidden" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
+        <input
+          ref={input}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            pick(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
       </div>
 
       {pending && (

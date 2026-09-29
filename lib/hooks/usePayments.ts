@@ -21,6 +21,22 @@ export function useLookupContractor() {
   return useMutation({ mutationFn: lookupContractor });
 }
 
+/**
+ * Look a contractor up as the email is typed. Runs only for a well-formed
+ * email; a 404 is a normal answer ("nobody with that email"), so no retries.
+ */
+export function useContractorSearch(email: string) {
+  const key = email.trim().toLowerCase();
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(key);
+  return useQuery({
+    queryKey: ["contractor-lookup", key],
+    queryFn: () => lookupContractor(key),
+    enabled: valid,
+    retry: false,
+    staleTime: 30_000,
+  });
+}
+
 export function usePayContractor() {
   const qc = useQueryClient();
   return useMutation({

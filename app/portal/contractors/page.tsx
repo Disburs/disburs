@@ -2,8 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Copy, ExternalLink, Search } from "lucide-react";
-import { Avatar, Badge, Button, Card, PageTitle } from "@/components/portal/ui";
+import {
+  Check,
+  ChevronDown,
+  Copy,
+  ExternalLink,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
+import { Avatar, Badge, Card, PageTitle } from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
 import { useMe } from "@/lib/hooks/useMe";
 import { useContractors } from "@/lib/hooks/usePayments";
 import { MONEY_ROLES, explorerUrl, type OrgContractor } from "@/lib/api";
@@ -83,8 +91,8 @@ export default function ContractorsPage() {
         }
         action={
           canManage ? (
-            <Button href="/portal/payroll" variant="ink">
-              Add to a payroll
+            <Button asChild>
+              <Link href="/portal/payroll">Add to a payroll</Link>
             </Button>
           ) : undefined
         }
@@ -107,7 +115,7 @@ export default function ContractorsPage() {
             <Button
               key={f}
               size="sm"
-              variant={filter === f ? "ink" : "secondary"}
+              variant={filter === f ? "default" : "outline"}
               onClick={() => setFilter(f)}
             >
               {f}
@@ -143,11 +151,11 @@ export default function ContractorsPage() {
             </p>
             {canManage && (
               <div className="mt-5 flex flex-wrap justify-center gap-3">
-                <Button href="/portal/payroll" variant="ink">
-                  Set up a payroll
+                <Button asChild>
+                  <Link href="/portal/payroll">Set up a payroll</Link>
                 </Button>
-                <Button href="/portal/pay" variant="secondary">
-                  Pay someone
+                <Button asChild>
+                  <Link href="/portal/pay">Pay someone</Link>
                 </Button>
               </div>
             )}
@@ -196,18 +204,19 @@ export default function ContractorsPage() {
                         {c.wallet?.isActivated ? "Active" : "Not activated"}
                       </Badge>
                     </div>
-                    <button
-                      type="button"
-                      className="flex w-7 items-center justify-center text-muted hover:text-ink"
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setExpanded(isOpen ? null : c.id)}
                       aria-label="Expand"
                       aria-expanded={isOpen}
+                      className="h-6 w-6"
                     >
                       <ChevronDown
                         size={18}
                         className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                       />
-                    </button>
+                    </Button>
                   </div>
 
                   {isOpen && (
@@ -219,22 +228,19 @@ export default function ContractorsPage() {
                             <span className="font-mono text-[13px]">
                               {shortKey(c.wallet.publicKey, 6, 6)}
                             </span>
-                            <button
-                              type="button"
+                            <Button
+                              variant="link"
+                              size="icon"
                               onClick={() => copy(c.wallet!.publicKey)}
                               aria-label="Copy address"
-                              className={
-                                copied === c.wallet.publicKey
-                                  ? "text-accent"
-                                  : "text-muted hover:text-ink"
-                              }
+                              className="h-auto px-0"
                             >
                               {copied === c.wallet.publicKey ? (
                                 <Check size={13} />
                               ) : (
                                 <Copy size={13} />
                               )}
-                            </button>
+                            </Button>
                             <a
                               href={explorerUrl(
                                 network,
@@ -266,8 +272,30 @@ export default function ContractorsPage() {
                       </div>
                       <div>
                         <div className="text-[13px] text-muted">Payments</div>
-                        <div className="mt-1 text-[14px] text-ink">
-                          {c.paymentCount} settled · joined {when(c.createdAt)}
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 text-[14px] text-ink">
+                          <span>{c.paymentCount} settled</span>
+                          {c.paymentCount > 0 && (
+                            <span
+                              className={`inline-flex items-center gap-1 text-[12.5px] font-medium ${c.confirmedCount === c.paymentCount ? "text-accent" : "text-[#8A5A00]"}`}
+                            >
+                              <ShieldCheck size={13} /> {c.confirmedCount} on
+                              chain
+                            </span>
+                          )}
+                          {c.lastTxHash && (
+                            <a
+                              href={explorerUrl(network, "tx", c.lastTxHash)}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label="Last transaction"
+                              className="text-muted hover:text-ink"
+                            >
+                              <ExternalLink size={13} />
+                            </a>
+                          )}
+                          <span className="text-muted">
+                            · joined {when(c.createdAt)}
+                          </span>
                         </div>
                       </div>
                       {canManage && (

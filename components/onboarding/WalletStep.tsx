@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Copy, Loader2, RefreshCw } from "lucide-react";
-import { Button } from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
 import { useActivateWallets } from "@/lib/hooks/useMe";
 import type { WalletState } from "@/lib/api";
 
@@ -38,7 +38,10 @@ export default function WalletStep({
     window.setTimeout(() => setCopied(false), 1500);
   };
 
-  const title = kind === "treasury" ? "Your treasury is ready." : "Your payout wallet is ready.";
+  const title =
+    kind === "treasury"
+      ? "Your treasury is ready."
+      : "Your payout wallet is ready.";
   const blurb =
     kind === "treasury"
       ? "This is the wallet your payroll is paid from. Fund it with USDC on Stellar and every run draws from here."
@@ -46,40 +49,62 @@ export default function WalletStep({
 
   return (
     <div className="flex flex-col">
-      <h1 className="font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[44px]">{title}</h1>
+      <h1 className="font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[44px]">
+        {title}
+      </h1>
       <p className="mt-4 text-[16px] leading-[1.5] text-muted">{blurb}</p>
 
       <div className="mt-8 rounded-[20px] border border-line bg-subtle p-5">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[13.5px] text-muted">{kind === "treasury" ? "Treasury address" : "Wallet address"}</span>
+          <span className="text-[13.5px] text-muted">
+            {kind === "treasury" ? "Treasury address" : "Wallet address"}
+          </span>
           <span className="text-[12.5px] text-muted">{network}</span>
         </div>
         <div className="mt-2 flex items-center gap-3">
-          <code className="min-w-0 flex-1 truncate font-mono text-[14px] text-ink">{wallet?.publicKey ?? "—"}</code>
-          <button type="button" onClick={copy} aria-label="Copy address" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-ink hover:border-ink">
-            {copied ? <Check size={16} className="text-accent" /> : <Copy size={16} />}
-          </button>
+          <code className="min-w-0 flex-1 truncate font-mono text-[14px] text-ink">
+            {wallet?.publicKey ?? "—"}
+          </code>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={copy}
+            aria-label="Copy address"
+            className="h-10 w-10 shrink-0"
+          >
+            {copied ? (
+              <Check size={16} className="text-accent" />
+            ) : (
+              <Copy size={16} />
+            )}
+          </Button>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
           {active ? (
             <span className="inline-flex items-center gap-2 text-[14px] font-medium text-accent">
-              <Check size={16} strokeWidth={2.5} /> Activated on Stellar. It can hold and receive USDC.
+              <Check size={16} strokeWidth={2.5} /> Activated on Stellar. It can
+              hold and receive USDC.
             </span>
           ) : activate.isPending ? (
             <span className="inline-flex items-center gap-2 text-[14px] text-muted">
-              <Loader2 size={16} className="animate-spin text-accent" /> Activating on Stellar…
+              <Loader2 size={16} className="animate-spin text-accent" />{" "}
+              Activating on Stellar…
             </span>
           ) : (
             <>
-              <span className="text-[14px] text-muted">Not activated yet. Usually takes a few seconds.</span>
-              <Button size="sm" variant="secondary" onClick={() => activate.mutate()}>
+              <span className="text-[14px] text-muted">
+                Not activated yet. Usually takes a few seconds.
+              </span>
+              <Button size="sm" onClick={() => activate.mutate()}>
                 <RefreshCw size={14} /> Retry
               </Button>
             </>
           )}
         </div>
         {activate.data?.activationErrors?.length ? (
-          <p className="mt-3 text-[13px] text-[#A32D1C]">{activate.data.activationErrors[0]}</p>
+          <p className="mt-3 text-[13px] text-[#A32D1C]">
+            {activate.data.activationErrors[0]}
+          </p>
         ) : null}
       </div>
     </div>
