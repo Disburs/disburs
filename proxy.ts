@@ -3,19 +3,11 @@ import type { NextRequest } from "next/server";
 
 /**
  * Simulated screens — still mock data, not wired to the backend — are
- * reachable only on localhost. The real product screens (sign-in, onboarding,
- * dashboard, wallet, pay, contractor home) are open everywhere; they gate
- * themselves on a session.
+ * reachable only on localhost. Every employer portal screen is real now; the
+ * contractor cash-out and messages pages are the last simulated ones. Real
+ * screens are open everywhere and gate themselves on a session.
  */
-const MOCK_PREFIXES = [
-  "/portal/payroll",
-  "/portal/history",
-  "/portal/contractors",
-  "/portal/settings",
-  "/portal/chat",
-  "/contractor/cashout",
-  "/contractor/messages",
-];
+const MOCK_PREFIXES = ["/contractor/cashout", "/contractor/messages"];
 
 export function proxy(request: NextRequest) {
   const host = request.headers.get("host") ?? "";

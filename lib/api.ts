@@ -156,6 +156,28 @@ export interface ContractorLookup {
   walletActivated: boolean;
 }
 
+/** A contractor the active organization works with, as listed on /portal/contractors. */
+export interface OrgContractor {
+  id: string;
+  name: string;
+  email: string;
+  country: string;
+  payoutCurrency: string;
+  type: "INDIVIDUAL" | "BUSINESS";
+  createdAt: string;
+  wallet: { publicKey: string; isActivated: boolean } | null;
+  payrolls: { id: string; name: string; amount: string; active: boolean }[];
+  lastPaidAt: string | null;
+  totalPaid: string;
+  paymentCount: number;
+}
+
+export async function listContractors(): Promise<OrgContractor[]> {
+  const { data, error } = await client.GET("/api/contractors");
+  if (error) throw toError(error);
+  return (data ?? []) as unknown as OrgContractor[];
+}
+
 export async function lookupContractor(email: string): Promise<ContractorLookup> {
   const { data, error } = await client.GET("/api/contractors/lookup", { params: { query: { email } } });
   if (error) throw toError(error);
@@ -210,3 +232,84 @@ export async function createOrganization(body: CreateOrganizationBody) {
   if (error) throw toError(error);
   return data as unknown as { role: OrgRole; organization: { id: string; name: string } };
 }
+
+export type UpdateOrganizationBody = components["schemas"]["UpdateOrganizationDto"];
+/** Edit the active organization's profile (owner/admin). */
+export async function updateOrganization(body: UpdateOrganizationBody) {
+  const { data, error } = await client.PATCH("/api/organizations/current", { body });
+  if (error) throw toError(error);
+  return data;
+}
+
+/* ------------------------------- Payroll ------------------------------ */
+export type PayrollCadence = "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+export type RunStatus = "DRAFT" | "APPROVED" | "EXECUTING" | "SETTLED" | "PARTIAL" | "FAILED";
+export type LineStatus = "PENDING" | "SETTLED" | "FAILED";
+
+export interface PayrollItem {
+  id: string;
+  contractorId: string;
+  amount: string;
+  note: string | null;
+  active: boolean;
+  createdAt: string;
+  contractor?: { id: string; name: string; email: string };
+}
+export interface PayrollDefinition {
+  id: string;
+  organizationId: string;
+  name: string;
+  cadence: PayrollCadence;
+  memo: string | null;
+  createdAt: string;
+  items: PayrollItem[];
+}
+export interface RunLine {
+  id: string;
+  contractorId: string;
+  payeeName: string;
+  destination: string;
+  amount: string;
+  status: LineStatus;
+  txHash: string | null;
+  error: string | null;
+  attempts: number;
+}
+export interface PayrollRun {
+  id: string;
+  label: string;
+  memo: string | null;
+  status: RunStatus;
+  totalAmount: string;
+  lineCount: number;
+  definitionId: string | null;
+  approvedAt: string | null;
+  executedAt: string | null;
+  createdAt: string;
+  lines: RunLine[];
+}
+
+const unwrap = <T,>(r: { data?: unknown; error?: unknown }): T => {
+  if (r.error) throw toError(r.error);
+  return r.data as T;
+};
+
+export const payrollApi = {
+  definitions: () => client.GET("/api/payroll/definitions").then((r) => unwrap<PayrollDefinition[]>(r)),
+  createDefinition: (body: components["schemas"]["CreateDefinitionDto"]) =>
+    client.POST("/api/payroll/definitions", { body }).then((r) => unwrap<PayrollDefinition>(r)),
+  updateDefinition: (id: string, body: components["schemas"]["UpdateDefinitionDto"]) =>
+    client.PATCH("/api/payroll/definitions/{id}", { params: { path: { id } }, body }).then((r) => unwrap<PayrollDefinition>(r)),
+  deleteDefinition: (id: string) =>
+    client.DELETE("/api/payroll/definitions/{id}", { params: { path: { id } } }).then((r) => unwrap<{ deleted: boolean }>(r)),
+  upsertItem: (id: string, body: components["schemas"]["UpsertItemDto"]) =>
+    client.POST("/api/payroll/definitions/{id}/items", { params: { path: { id } }, body }).then((r) => unwrap<PayrollItem>(r)),
+  removeItem: (id: string, itemId: string) =>
+    client.DELETE("/api/payroll/definitions/{id}/items/{itemId}", { params: { path: { id, itemId } } }).then((r) => unwrap<{ deleted: boolean }>(r)),
+  runs: () => client.GET("/api/payroll/runs").then((r) => unwrap<PayrollRun[]>(r)),
+  run: (id: string) => client.GET("/api/payroll/runs/{id}", { params: { path: { id } } }).then((r) => unwrap<PayrollRun>(r)),
+  createRun: (body: components["schemas"]["CreateRunDto"]) => client.POST("/api/payroll/runs", { body }).then((r) => unwrap<PayrollRun>(r)),
+  discard: (id: string) => client.DELETE("/api/payroll/runs/{id}", { params: { path: { id } } }).then((r) => unwrap<{ deleted: boolean }>(r)),
+  approve: (id: string) => client.POST("/api/payroll/runs/{id}/approve", { params: { path: { id } } }).then((r) => unwrap<PayrollRun>(r)),
+  execute: (id: string) => client.POST("/api/payroll/runs/{id}/execute", { params: { path: { id } } }).then((r) => unwrap<PayrollRun>(r)),
+};
