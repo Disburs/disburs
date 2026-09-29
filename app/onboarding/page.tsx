@@ -14,7 +14,9 @@ import {
   useOnboardClient,
   useRequireProfile,
   useUpdateName,
+  useFeature,
 } from "@/lib/hooks/useMe";
+import FeaturePaused from "@/components/FeaturePaused";
 import { joinName, splitName } from "@/lib/name";
 import { countryNames } from "@/lib/countries";
 
@@ -31,6 +33,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { me, ready } = useRequireProfile({});
   const onboard = useOnboardClient();
+  const signupOn = useFeature("clientSignup");
   const updateName = useUpdateName();
 
   const [first, setFirst] = useState("");
@@ -116,6 +119,14 @@ export default function OnboardingPage() {
           <div className="flex items-center gap-3 text-[16px] text-muted">
             <Loader2 size={18} className="animate-spin text-accent" /> Loading
             your account…
+          </div>
+        ) : step === 0 && !signupOn ? (
+          <div className="flex flex-col gap-5">
+            <h1 className={headingClass}>Sign-ups are paused</h1>
+            <FeaturePaused title="New organizations are paused">
+              Disburs is not taking new companies for a short while. Your
+              account is saved; come back soon and pick up where you left off.
+            </FeaturePaused>
           </div>
         ) : step === 0 ? (
           <form onSubmit={submit} className="flex flex-col gap-5">

@@ -10,7 +10,8 @@ import {
   inputClass,
 } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
-import { useMe } from "@/lib/hooks/useMe";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
+import FeaturePaused from "@/components/FeaturePaused";
 import {
   useCancelCashout,
   useCashouts,
@@ -26,6 +27,7 @@ import UsdcMark from "@/components/UsdcMark";
  */
 export default function CashoutPage() {
   const { data: me } = useMe();
+  const cashoutsOn = useFeature("cashouts");
   const list = useCashouts();
   const request = useRequestCashout();
   const cancel = useCancelCashout();
@@ -65,6 +67,12 @@ export default function CashoutPage() {
       <PageTitle sub={<>Ask for your USDC to be paid out in {currency}.</>}>
         Cash out
       </PageTitle>
+      {!cashoutsOn && (
+        <FeaturePaused title="Cash-out requests are paused">
+          Disburs has switched cash-outs off for now. Your balance is safe in
+          your wallet and requests you already made are still below.
+        </FeaturePaused>
+      )}
 
       <Card tone="subtle">
         <div className="flex items-start gap-3 text-[14px] leading-[1.55] text-muted">
@@ -140,7 +148,10 @@ export default function CashoutPage() {
             onClick={submit}
             size="lg"
             disabled={
-              !amountOk || destination.trim().length < 3 || request.isPending
+              !cashoutsOn ||
+              !amountOk ||
+              destination.trim().length < 3 ||
+              request.isPending
             }
           >
             {request.isPending ? (

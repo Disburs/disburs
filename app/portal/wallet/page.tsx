@@ -147,6 +147,30 @@ export default function WalletPage() {
             Only send USDC on the Stellar network. Anything else will not
             arrive.
           </p>
+          {me?.organization?.payrollContractId && (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4 text-[13px] text-muted">
+              <span>Payroll contract</span>
+              <span className="font-mono text-ink">
+                {shortKey(me.organization.payrollContractId, 6, 6)}
+              </span>
+              <a
+                href={explorerUrl(
+                  network,
+                  "contract",
+                  me.organization.payrollContractId,
+                )}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="View contract on explorer"
+                className="text-muted hover:text-ink"
+              >
+                <ExternalLink size={13} />
+              </a>
+              <span>
+                · your organization&rsquo;s own treasury contract on Soroban.
+              </span>
+            </div>
+          )}
 
           {wallet && !wallet.isActivated && (
             <div className="mt-4 flex flex-wrap items-center gap-3 rounded-[16px] bg-[#FBF1DC] px-4 py-3 text-[13.5px] text-[#8A5A00]">
