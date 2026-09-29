@@ -20,7 +20,8 @@ export const authClient = createAuthClient({
 export type RoleIntent = "CLIENT" | "CONTRACTOR";
 
 /** Where a signed-in user lands after the magic link is verified. */
-export function callbackURL(role: RoleIntent) {
+export function callbackURL(role: RoleIntent, next?: string | null) {
   const origin = typeof window === "undefined" ? "" : window.location.origin;
-  return `${origin}/auth/callback?role=${role}`;
+  const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? `&next=${encodeURIComponent(next)}` : "";
+  return `${origin}/auth/callback?role=${role}${safeNext}`;
 }

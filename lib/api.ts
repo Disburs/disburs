@@ -57,6 +57,9 @@ export async function onboardContractor(body: OnboardContractorBody) {
 
 /* -------------------------------- Me ---------------------------------- */
 /** The signed-in user with their org / contractor profile and wallet state. */
+export type OrgRole = "owner" | "admin" | "member";
+export const MONEY_ROLES: OrgRole[] = ["owner", "admin"];
+
 export interface WalletState {
   publicKey: string;
   isActivated: boolean;
@@ -71,8 +74,12 @@ export interface Me {
     logo: string | null;
     country: string | null;
     teamSize: number | null;
+    /** The caller's role in the active organization. */
+    role: OrgRole | null;
     treasuryWallet: WalletState | null;
   } | null;
+  /** Every organization the caller belongs to (for the switcher). */
+  organizations: { id: string; name: string; logo: string | null; role: OrgRole }[];
   contractor: {
     id: string;
     name: string;
@@ -194,4 +201,12 @@ export async function signUpload(kind: UploadKind): Promise<UploadSignature> {
   const { data, error } = await client.POST("/api/uploads/sign", { body: { kind } });
   if (error) throw toError(error);
   return data as unknown as UploadSignature;
+}
+
+/* ---------------------------- Organizations --------------------------- */
+export type CreateOrganizationBody = components["schemas"]["CreateOrganizationDto"];
+export async function createOrganization(body: CreateOrganizationBody) {
+  const { data, error } = await client.POST("/api/organizations", { body });
+  if (error) throw toError(error);
+  return data as unknown as { role: OrgRole; organization: { id: string; name: string } };
 }

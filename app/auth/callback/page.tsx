@@ -36,6 +36,9 @@ function Callback() {
       }
       const me = await getMe().catch(() => null);
       if (cancelled) return;
+      // An invitation link (or any in-app path) takes priority over the default routing.
+      const next = params.get("next");
+      if (next && next.startsWith("/") && !next.startsWith("//")) return router.replace(next);
       if (me?.organization && role === "CLIENT") return router.replace("/portal");
       if (me?.contractor && role === "CONTRACTOR") return router.replace("/contractor");
       if (me?.organization) return router.replace("/portal");

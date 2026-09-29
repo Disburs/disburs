@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { activateWallets, getMe, onboardClient, onboardContractor, type Me } from "../api";
+import { activateWallets, createOrganization, getMe, onboardClient, onboardContractor, type Me } from "../api";
 import { authClient } from "../auth-client";
 
 export const ME_KEY = ["me"] as const;
@@ -64,6 +64,28 @@ export function useUpdateName() {
       return name;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ME_KEY }),
+  });
+}
+
+/** Create another organization; it becomes the active one. */
+export function useCreateOrganization() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: createOrganization,
+    onSuccess: () => qc.invalidateQueries(),
+  });
+}
+
+/** Switch the session's active organization; every org-scoped query refetches. */
+export function useSetActiveOrganization() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (organizationId: string) => {
+      const { error } = await authClient.organization.setActive({ organizationId });
+      if (error) throw new Error(error.message ?? "Could not switch organization.");
+      return organizationId;
+    },
+    onSuccess: () => qc.invalidateQueries(),
   });
 }
 
