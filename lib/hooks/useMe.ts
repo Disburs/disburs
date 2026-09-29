@@ -3,14 +3,33 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { activateWallets, createOrganization, getMe, onboardClient, onboardContractor, updateOrganization, type Me } from "../api";
+import {
+  activateWallets,
+  createOrganization,
+  getMe,
+  onboardClient,
+  onboardContractor,
+  updateOrganization,
+  type Me,
+} from "../api";
 import { authClient } from "../auth-client";
 
 export const ME_KEY = ["me"] as const;
 
+/** Whether a product feature is on. Staff switch these in the admin console; the backend enforces them. */
+export function useFeature(feature: import("../api").Feature): boolean {
+  const { data } = useMe();
+  return data?.features?.[feature] ?? true;
+}
+
 /** The signed-in user's profile; `null` data means there is no session. */
 export function useMe() {
-  return useQuery({ queryKey: ME_KEY, queryFn: getMe, staleTime: 15_000, retry: false });
+  return useQuery({
+    queryKey: ME_KEY,
+    queryFn: getMe,
+    staleTime: 15_000,
+    retry: false,
+  });
 }
 
 /**
@@ -33,17 +52,30 @@ export function useRequireProfile(opts: {
   const q = useMe();
   const me = q.data;
   const ready = !q.isPending;
-  const missing = ready && me !== undefined && me !== null && opts.need && !me[opts.need];
-  const nameless = ready && !!me && !missing && !!opts.needName && !(me.user.name ?? "").trim();
+  const missing =
+    ready && me !== undefined && me !== null && opts.need && !me[opts.need];
+  const nameless =
+    ready &&
+    !!me &&
+    !missing &&
+    !!opts.needName &&
+    !(me.user.name ?? "").trim();
 
   useEffect(() => {
     if (!ready) return;
     if (me === null) router.replace("/sign-in");
     else if (missing && opts.onboarding) router.replace(opts.onboarding);
-    else if (nameless) router.replace(`/welcome?next=${encodeURIComponent(pathname || "/portal")}`);
+    else if (nameless)
+      router.replace(
+        `/welcome?next=${encodeURIComponent(pathname || "/portal")}`,
+      );
   }, [ready, me, missing, nameless, opts.onboarding, pathname, router]);
 
-  return { me: me ?? null, ready: ready && me !== null && !missing && !nameless, refetch: q.refetch };
+  return {
+    me: me ?? null,
+    ready: ready && me !== null && !missing && !nameless,
+    refetch: q.refetch,
+  };
 }
 
 export function useOnboardClient() {
@@ -98,8 +130,11 @@ export function useSetActiveOrganization() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (organizationId: string) => {
-      const { error } = await authClient.organization.setActive({ organizationId });
-      if (error) throw new Error(error.message ?? "Could not switch organization.");
+      const { error } = await authClient.organization.setActive({
+        organizationId,
+      });
+      if (error)
+        throw new Error(error.message ?? "Could not switch organization.");
       return organizationId;
     },
     onSuccess: () => qc.invalidateQueries(),

@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Plus, Users } from "lucide-react";
+import { Archive, ArrowRight, Plus, Users } from "lucide-react";
 import { Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import { runVariant } from "@/components/portal/RunLines";
 import CreatePayroll from "@/components/portal/payroll/CreatePayroll";
 import { CADENCE_LABEL } from "@/components/portal/payroll/PayrollDetail";
+import {
+  DeleteButton,
+  RestoreButton,
+} from "@/components/portal/payroll/PayrollActions";
 import UsdcMark from "@/components/UsdcMark";
-import { useMe } from "@/lib/hooks/useMe";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
+import FeaturePaused from "@/components/FeaturePaused";
 import { useDefinitions, useRuns } from "@/lib/hooks/usePayroll";
 import { MONEY_ROLES } from "@/lib/api";
 import { usdc, when } from "@/lib/format";
@@ -21,7 +26,11 @@ import { usdc, when } from "@/lib/format";
  */
 export default function PayrollsPage() {
   const { data: me } = useMe();
+  const payrollOn = useFeature("payroll");
+  const archiveDays = me?.settings?.archiveRetentionDays ?? 30;
   const defs = useDefinitions();
+  const archived = useDefinitions(true);
+  const [tab, setTab] = useState<"active" | "archived">("active");
   const runs = useRuns();
   const [creating, setCreating] = useState(false);
   const canManage = Boolean(
@@ -29,7 +38,9 @@ export default function PayrollsPage() {
   );
   const balance = Number(me?.organization?.treasuryWallet?.balances?.usdc ?? 0);
   const all = defs.data ?? [];
-  const showCreate = creating || (!defs.isPending && all.length === 0);
+  const archivedAll = archived.data ?? [];
+  const showCreate =
+    payrollOn && (creating || (!defs.isPending && all.length === 0));
 
   return (
     <div className="flex flex-col gap-5">
@@ -40,7 +51,7 @@ export default function PayrollsPage() {
             : "Set up who gets paid, then run it in one approval."
         }
         action={
-          canManage && all.length > 0 && !creating ? (
+          payrollOn && canManage && all.length > 0 && !creating ? (
             <Button onClick={() => setCreating(true)}>
               <Plus size={16} /> New payroll
             </Button>
@@ -49,6 +60,13 @@ export default function PayrollsPage() {
       >
         Payroll
       </PageTitle>
+      {!payrollOn && (
+        <FeaturePaused title="Payroll runs are paused">
+          Disburs has switched payroll runs off for now. Your payrolls and past
+          runs are all here; nothing new can be drafted or paid until it is back
+          on.
+        </FeaturePaused>
+      )}
 
       {showCreate && (
         <div className="max-w-[720px]">
@@ -61,7 +79,102 @@ export default function PayrollsPage() {
         </div>
       )}
 
-      {defs.isPending ? (
+      {(archivedAll.length > 0 || tab === "archived") && (
+        <div
+          className="flex flex-wrap items-center gap-2"
+          role="tablist"
+          aria-label="Payrolls"
+        >
+          <Button
+            size="sm"
+            variant={tab === "active" ? "default" : "outline"}
+            onClick={() => setTab("active")}
+            role="tab"
+            aria-selected={tab === "active"}
+          >
+            Active{" "}
+            <span
+              className={tab === "active" ? "text-ink-deep/60" : "text-muted"}
+            >
+              {all.length}
+            </span>
+          </Button>
+          <Button
+            size="sm"
+            variant={tab === "archived" ? "default" : "outline"}
+            onClick={() => setTab("archived")}
+            role="tab"
+            aria-selected={tab === "archived"}
+          >
+            <Archive size={14} /> Archived{" "}
+            <span
+              className={tab === "archived" ? "text-ink-deep/60" : "text-muted"}
+            >
+              {archivedAll.length}
+            </span>
+          </Button>
+        </div>
+      )}
+
+      {tab === "archived" ? (
+        archivedAll.length === 0 ? (
+          <Card>
+            <span className="text-[14px] text-muted">
+              Nothing archived. Archived payrolls stay here for {archiveDays}{" "}
+              days, restorable, then are deleted for good.
+            </span>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {archivedAll.map((d) => {
+              const items = d.items.filter((i) => i.active);
+              const total = items.reduce((s, i) => s + Number(i.amount), 0);
+              return (
+                <div
+                  key={d.id}
+                  className="flex flex-col justify-between gap-6 rounded-card border border-dashed border-line bg-subtle p-6"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-[18px] font-medium text-ink">
+                          {d.name}
+                        </h3>
+                        <div className="mt-0.5 text-[13px] text-muted">
+                          {CADENCE_LABEL[d.cadence]}
+                        </div>
+                      </div>
+                      <Badge variant="warn" dot>
+                        Archived
+                      </Badge>
+                    </div>
+                    <div className="tabular mt-5 inline-flex items-center gap-2 font-display text-[32px] font-semibold leading-none tracking-[-0.03em] text-ink">
+                      <UsdcMark size={22} /> ${usdc(total)}
+                    </div>
+                    <div className="mt-3 flex items-center gap-1.5 text-[13.5px] text-muted">
+                      <Users size={14} /> {items.length}{" "}
+                      {items.length === 1 ? "payee" : "payees"} per run
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-[13px]">
+                    <span className="text-muted">
+                      Archived {d.archivedAt ? when(d.archivedAt) : ""} ·
+                      deleted for good{" "}
+                      {d.purgeAt ? when(d.purgeAt) : `in ${archiveDays} days`}
+                    </span>
+                    {canManage && (
+                      <span className="flex items-center gap-2">
+                        <RestoreButton def={d} />
+                        <DeleteButton def={d} />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )
+      ) : defs.isPending ? (
         <Card>
           <span className="text-[14px] text-muted">Loading…</span>
         </Card>

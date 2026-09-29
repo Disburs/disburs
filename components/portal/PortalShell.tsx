@@ -22,15 +22,21 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
+import type { Feature } from "@/lib/api";
 import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "./ui";
 import OrgSwitcher from "./OrgSwitcher";
 
-const NAV: { label: string; href: string; icon: LucideIcon }[] = [
+const NAV: {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  feature?: Feature;
+}[] = [
   { label: "Dashboard", href: "/portal", icon: LayoutDashboard },
   { label: "Contractors", href: "/portal/contractors", icon: Users },
-  { label: "Pay", href: "/portal/pay", icon: Send },
+  { label: "Pay", href: "/portal/pay", icon: Send, feature: "oneOffPay" },
   { label: "Payroll", href: "/portal/payroll", icon: ReceiptText },
   { label: "History", href: "/portal/history", icon: History },
   { label: "Wallet", href: "/portal/wallet", icon: Wallet },
@@ -50,31 +56,37 @@ function Wordmark() {
 }
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
+  const features = useMe().data?.features;
   const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-1" aria-label="Portal">
-      {NAV.map((item) => {
-        const Icon = item.icon;
-        const active =
-          pathname === item.href ||
-          (item.href !== "/portal" && pathname.startsWith(item.href + "/"));
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            className={`flex h-11 items-center gap-3 rounded-full px-4 text-[14.5px] transition-colors duration-150 ${
-              active
-                ? "border border-line bg-canvas font-medium text-ink"
-                : "text-muted hover:text-ink"
-            }`}
-          >
-            <Icon size={17} className={active ? "text-accent" : "text-faint"} />
-            {item.label}
-          </Link>
-        );
-      })}
+      {NAV.filter((n) => !n.feature || features?.[n.feature] !== false).map(
+        (item) => {
+          const Icon = item.icon;
+          const active =
+            pathname === item.href ||
+            (item.href !== "/portal" && pathname.startsWith(item.href + "/"));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
+              className={`flex h-11 items-center gap-3 rounded-full px-4 text-[14.5px] transition-colors duration-150 ${
+                active
+                  ? "border border-line bg-canvas font-medium text-ink"
+                  : "text-muted hover:text-ink"
+              }`}
+            >
+              <Icon
+                size={17}
+                className={active ? "text-accent" : "text-faint"}
+              />
+              {item.label}
+            </Link>
+          );
+        },
+      )}
     </nav>
   );
 }

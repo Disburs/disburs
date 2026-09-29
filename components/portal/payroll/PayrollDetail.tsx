@@ -22,12 +22,12 @@ import {
 import { Button } from "@/components/ui/button";
 import RunLines, { runVariant } from "@/components/portal/RunLines";
 import UsdcMark from "@/components/UsdcMark";
-import { useMe } from "@/lib/hooks/useMe";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
+import FeaturePaused from "@/components/FeaturePaused";
 import {
   useApproveAndExecute,
   useCreateRun,
   useDefinitions,
-  useDeleteDefinition,
   useDiscardRun,
   useRemoveItem,
   useRuns,
@@ -40,6 +40,7 @@ import {
   type PayrollRun,
 } from "@/lib/api";
 import { usdc, when } from "@/lib/format";
+import { ArchiveButton, DeleteButton, RestoreButton } from "./PayrollActions";
 
 function monthLabel() {
   return new Date().toLocaleString("en-US", { month: "long", year: "numeric" });
@@ -60,7 +61,16 @@ export const CADENCE_LABEL = {
 export default function PayrollDetail({ id }: { id: string }) {
   const router = useRouter();
   const { data: me } = useMe();
-  const defs = useDefinitions();
+  const payrollOn = useFeature("payroll");
+  const active = useDefinitions(false);
+  const archived = useDefinitions(true);
+  const defs = {
+    isPending: active.isPending || archived.isPending,
+    data:
+      active.data && archived.data
+        ? [...active.data, ...archived.data]
+        : undefined,
+  };
   const runs = useRuns();
   const canManage = Boolean(
     me?.organization?.role && MONEY_ROLES.includes(me.organization.role),
@@ -122,6 +132,18 @@ export default function PayrollDetail({ id }: { id: string }) {
       >
         <ArrowLeft size={15} /> All payrolls
       </Link>
+      {def?.archivedAt && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-card bg-[#FBF1DC] px-5 py-4 text-[#8A5A00]">
+          <span className="text-[14.5px]">
+            Archived {when(def.archivedAt)}. It will be deleted for good{" "}
+            {def.purgeAt
+              ? when(def.purgeAt)
+              : `in ${me?.settings?.archiveRetentionDays ?? 30} days`}{" "}
+            unless you restore it. No runs can be drafted meanwhile.
+          </span>
+          {canManage && <RestoreButton def={def} />}
+        </div>
+      )}
       <PageTitle
         sub={
           def ? (
@@ -163,14 +185,22 @@ export default function PayrollDetail({ id }: { id: string }) {
               onDismiss={() => setCompleted(null)}
             />
           ) : (
-            def && (
+            def &&
+            !def.archivedAt &&
+            (payrollOn ? (
               <DraftPanel
                 key={def.id}
                 def={def}
                 canManage={canManage}
                 balance={balance}
               />
-            )
+            ) : (
+              <FeaturePaused title="Payroll runs are paused">
+                Disburs has switched payroll runs off for now. This payroll and
+                its past runs are safe; drafting and paying resume when it is
+                back on.
+              </FeaturePaused>
+            ))
           )}
           {lastRun && (
             <Card padding={0}>
@@ -226,7 +256,6 @@ function Roster({
   const upsert = useUpsertItem(def.id);
   const remove = useRemoveItem(def.id);
   const update = useUpdateDefinition(def.id);
-  const del = useDeleteDefinition();
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(def.name);
   const [draftCadence, setDraftCadence] = useState(def.cadence);
@@ -320,20 +349,12 @@ function Roster({
                 >
                   <Pencil size={13} />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Delete payroll"
-                  onClick={() =>
-                    window.confirm(
-                      `Delete "${def.name}" and its roster? Past runs stay in History.`,
-                    ) && del.mutate(def.id, { onSuccess: onDeleted })
-                  }
-                  disabled={del.isPending}
-                  className="h-8 w-8"
-                >
-                  <Trash2 size={13} />
-                </Button>
+                {def.archivedAt ? (
+                  <RestoreButton def={def} size="icon" />
+                ) : (
+                  <ArchiveButton def={def} onArchived={onDeleted} />
+                )}
+                <DeleteButton def={def} onDeleted={onDeleted} />
               </>
             )}
           </div>

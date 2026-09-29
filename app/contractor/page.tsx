@@ -5,7 +5,7 @@ import { ArrowRight, Copy, ExternalLink } from "lucide-react";
 import { Badge, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import { useCashouts } from "@/lib/hooks/useCashouts";
-import { useMe } from "@/lib/hooks/useMe";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
 import { useLedger } from "@/lib/hooks/usePayments";
 import { explorerUrl } from "@/lib/api";
 import { shortKey, usdc, when } from "@/lib/format";
@@ -13,6 +13,7 @@ import UsdcMark from "@/components/UsdcMark";
 
 export default function ContractorHome() {
   const { data: me } = useMe();
+  const cashoutsOn = useFeature("cashouts");
   const ledger = useLedger();
   const cashouts = useCashouts();
   const wallet = me?.contractor?.wallet ?? null;
@@ -53,11 +54,17 @@ export default function ContractorHome() {
                 Pays out in {me?.contractor?.payoutCurrency ?? "—"}
               </div>
             </div>
-            <Button asChild>
-              <Link href="/contractor/cashout">
-                Request a cash-out <ArrowRight size={16} />
-              </Link>
-            </Button>
+            {cashoutsOn ? (
+              <Button asChild>
+                <Link href="/contractor/cashout">
+                  Request a cash-out <ArrowRight size={16} />
+                </Link>
+              </Button>
+            ) : (
+              <span className="text-[14px] text-white/70">
+                Cash-outs are paused for now
+              </span>
+            )}
           </div>
         </div>
 

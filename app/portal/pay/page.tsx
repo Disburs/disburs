@@ -12,7 +12,8 @@ import {
   inputClass,
 } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
-import { useMe } from "@/lib/hooks/useMe";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
+import FeaturePaused from "@/components/FeaturePaused";
 import { useContractorSearch, usePayContractor } from "@/lib/hooks/usePayments";
 import { explorerUrl, type LedgerEntry } from "@/lib/api";
 import { usdc } from "@/lib/format";
@@ -30,6 +31,7 @@ const newKey = () =>
  */
 export default function PayPage() {
   const { data: me } = useMe();
+  const payOn = useFeature("oneOffPay");
   const pay = usePayContractor();
 
   const [email, setEmail] = useState("");
@@ -154,6 +156,17 @@ export default function PayPage() {
       </div>
     );
   }
+
+  if (!payOn)
+    return (
+      <div className="flex flex-col gap-5">
+        <PageTitle sub="Pay one contractor from your treasury.">Pay</PageTitle>
+        <FeaturePaused title="One-off payments are paused">
+          Disburs has switched one-off payments off for now. Payroll runs and
+          your treasury are not affected.
+        </FeaturePaused>
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-5">
