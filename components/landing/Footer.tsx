@@ -107,6 +107,10 @@ export default function Footer() {
             <span>
               Disburs is in private beta. Custodial service; not a bank.
             </span>
+            <span>
+              Official: disburs.io and hello@disburs.io. Anything else is not
+              Disburs. We will never message you first or ask for a key.
+            </span>
           </div>
         </div>
       </Container>

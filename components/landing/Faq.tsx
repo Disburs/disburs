@@ -50,7 +50,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Can anyone see our payroll on the blockchain?",
-        a: "Stellar is a public network, so records are visible. We are bringing zero-knowledge proofs to Disburs so payroll amounts stay private while the network still verifies every payment is valid.",
+        a: "On a public network, yes: a normal transfer shows the sender, the recipient and the amount to anyone, forever. Disburs is bringing zero-knowledge proofs to payroll so the amounts stay private while the network still verifies every payment. When you need to show the figures to an auditor or a regulator, you share a view key and they see your history and nothing else.",
       },
       {
         q: "Is it secure?",

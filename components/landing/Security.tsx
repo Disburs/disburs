@@ -20,7 +20,7 @@ const ITEMS: [string, string][] = [
   ],
   [
     "Privacy",
-    "Zero-knowledge proofs keep every amount off the public chain while proving each payment valid.",
+    "Private by default, auditable when required. Zero-knowledge proofs keep every amount off the public chain while proving each payment valid. A view key discloses your history to an auditor, and to no one else.",
   ],
   [
     "Encryption",

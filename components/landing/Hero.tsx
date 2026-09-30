@@ -18,9 +18,8 @@ export default function Hero() {
         </Reveal>
         <Reveal immediate delay={0.1}>
           <Lead className="mt-8 max-w-[38ch]">
-            Disburs is autonomous payroll infrastructure. Fund a treasury in
-            USDC, let the agent prepare each run, approve it — and every
-            contractor is paid in seconds.
+            Fund a treasury in USDC, approve the run the agent prepares, and
+            every contractor is paid in seconds. The amounts stay yours.
           </Lead>
         </Reveal>
         <Reveal
