@@ -18,7 +18,7 @@ const ROWS: Row[] = [
   },
   {
     title: "Salaries stay private",
-    body: "Amounts are verified by proof, never written to the public ledger. Banks, intermediaries, and anyone with the spreadsheet no longer see what each person earns.",
+    body: "Amounts are verified by proof, never written to the public ledger. Employees, competitors and anyone with the address stop seeing what each person earns. When an auditor asks, you share a view key and they see exactly what they need, and nothing else.",
   },
   {
     title: "Reconciled automatically",
