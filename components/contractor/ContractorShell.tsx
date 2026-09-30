@@ -6,7 +6,14 @@ import { useState } from "react";
 import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, ArrowLeftRight, Menu, X, type LucideIcon } from "lucide-react";
+import {
+  Home,
+  ArrowLeftRight,
+  LogOut,
+  Menu,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
@@ -37,6 +44,12 @@ export default function ContractorShell({
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const signOut = async () => {
+    setSigningOut(true);
+    await authClient.signOut();
+    router.replace("/sign-in");
+  };
   const isOnboarding = pathname?.startsWith("/contractor/onboarding");
 
   const isActive = (href: string) =>
@@ -68,13 +81,11 @@ export default function ContractorShell({
           <Wordmark />
           <Button
             variant="link"
-            onClick={async () => {
-              await authClient.signOut();
-              router.replace("/sign-in");
-            }}
+            onClick={signOut}
+            disabled={signingOut}
             className="h-auto px-0 text-[14px]"
           >
-            Log out
+            {signingOut ? "Signing out…" : "Log out"}
           </Button>
         </header>
         <div className="mx-auto max-w-[680px] px-5 pb-24 pt-12">{children}</div>
@@ -143,6 +154,16 @@ export default function ContractorShell({
             </div>
             <Button
               variant="ghost"
+              onClick={signOut}
+              disabled={signingOut}
+              aria-label="Log out"
+              className="hidden h-10 gap-2 px-3 text-[14px] font-normal text-muted hover:text-ink md:flex"
+            >
+              <LogOut size={16} className="text-faint" />
+              {signingOut ? "Signing out…" : "Log out"}
+            </Button>
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => setOpen((v) => !v)}
               aria-label="Menu"
@@ -177,6 +198,15 @@ export default function ContractorShell({
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={signOut}
+              disabled={signingOut}
+              className="flex h-12 items-center gap-3 border-t border-line text-left text-[15px] text-muted"
+            >
+              <LogOut size={18} className="text-faint" />
+              {signingOut ? "Signing out…" : "Log out"}
+            </button>
           </nav>
         )}
       </header>
