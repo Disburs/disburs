@@ -13,7 +13,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     email = body?.email;
   } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 },
+    );
   }
 
   if (typeof email !== "string" || !EMAIL_RE.test(email)) {

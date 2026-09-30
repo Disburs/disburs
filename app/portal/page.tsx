@@ -2,167 +2,378 @@
 
 import Link from "next/link";
 import {
-  CheckCircle2,
-  MessageCircle,
-  TrendingUp,
-  ShieldCheck,
-  Bell,
-  FileText,
-  Wallet as WalletIcon,
+  AlertTriangle,
   ArrowRight,
   ArrowUpRight,
-  Sparkles,
-  AlertTriangle,
-  type LucideIcon,
+  ExternalLink,
+  Send,
+  Users,
 } from "lucide-react";
-import { Card, Badge, Button, PageTitle, StatTile, statusVariant } from "@/components/portal/ui";
-import { activityFeed, nextPayroll, payrollRuns, company, type Activity } from "@/lib/mock";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { PageTitle, StatTile } from "@/components/portal/ui";
+import { runVariant } from "@/components/portal/RunLines";
 import { useMe } from "@/lib/hooks/useMe";
+import { useContractors, useLedger } from "@/lib/hooks/usePayments";
+import { useDefinitions, useRuns } from "@/lib/hooks/usePayroll";
+import { MONEY_ROLES, explorerUrl } from "@/lib/api";
+import { shortKey, usdc, when } from "@/lib/format";
 
-const ICONS: Record<Activity["icon"], LucideIcon> = {
-  check: CheckCircle2,
-  dispute: MessageCircle,
-  fx: TrendingUp,
-  shield: ShieldCheck,
-  bell: Bell,
-  file: FileText,
-  wallet: WalletIcon,
-};
+const CADENCE = {
+  MONTHLY: "Monthly",
+  BIWEEKLY: "Every two weeks",
+  WEEKLY: "Weekly",
+  MANUAL: "Manual",
+} as const;
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US");
+function greeting() {
+  const h = new Date().getHours();
+  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
 }
 
+/**
+ * The employer dashboard, entirely from the backend: treasury balance, the
+ * payrolls set up for this organization and whether the treasury covers
+ * them, a few figures, the latest runs, and the ledger of what moved.
+ */
 export default function DashboardPage() {
   const { data: me } = useMe();
-  const firstName = (me?.user.name || me?.user.email || "there").split(/[\s@]/)[0];
+  const defs = useDefinitions();
+  const runs = useRuns();
+  const ledger = useLedger();
+  const contractors = useContractors();
+
+  const org = me?.organization ?? null;
+  const firstName = (me?.user.name || me?.user.email || "there").split(
+    /[\s@]/,
+  )[0];
+  const network = me?.network ?? "testnet";
+  const canManage = Boolean(org?.role && MONEY_ROLES.includes(org.role));
+  const balance = org?.treasuryWallet?.balances?.usdc ?? null;
+  const balanceNum = balance == null ? null : Number(balance);
+
+  const payrolls = (defs.data ?? []).map((d) => {
+    const items = d.items.filter((i) => i.active);
+    const total = items.reduce((acc, i) => acc + Number(i.amount), 0);
+    return { ...d, payees: items.length, total };
+  });
+  const largest = payrolls.reduce<(typeof payrolls)[number] | null>(
+    (best, p) => (!best || p.total > best.total ? p : best),
+    null,
+  );
+  const shortfall =
+    largest && balanceNum != null && largest.total > balanceNum
+      ? largest.total - balanceNum
+      : 0;
+
+  const orgLedger = (ledger.data ?? []).filter(
+    (e) => e.organizationId && e.organizationId === org?.id,
+  );
+  const now = new Date();
+  const paidThisMonth = orgLedger
+    .filter(
+      (e) =>
+        e.status === "SETTLED" &&
+        new Date(e.createdAt).getMonth() === now.getMonth() &&
+        new Date(e.createdAt).getFullYear() === now.getFullYear(),
+    )
+    .reduce((acc, e) => acc + Number(e.amount), 0);
+  const settledRuns = (runs.data ?? []).filter(
+    (r) => r.status === "SETTLED",
+  ).length;
+  const countries = new Set((contractors.data ?? []).map((c) => c.country))
+    .size;
+  const nameOf = (contractorId: string | null) =>
+    (contractors.data ?? []).find((c) => c.id === contractorId)?.name ?? null;
+
   return (
     <div className="flex flex-col gap-5">
-      {/* Greeting */}
       <PageTitle
-        sub={<>Here&rsquo;s what your agent has been doing.</>}
+        sub={
+          org ? (
+            <>Here&rsquo;s where {org.name} stands.</>
+          ) : (
+            "Loading your organization…"
+          )
+        }
         action={
-          <Button href="/portal/chat" variant="secondary">
-            <Sparkles size={16} className="text-accent" /> Talk to agent
-          </Button>
+          canManage ? (
+            <Button asChild>
+              <Link href="/portal/pay">
+                <Send size={16} /> Pay someone
+              </Link>
+            </Button>
+          ) : undefined
         }
       >
-        Good morning, {firstName}.
+        {greeting()}, {firstName}.
       </PageTitle>
 
-      {/* Alert banner */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-[#FBF1DC] px-5 py-4 text-[#8A5A00]">
-        <div className="flex items-center gap-3">
-          <AlertTriangle size={18} className="shrink-0" />
-          <span className="text-[14.5px]">
-            Balance is <strong className="font-semibold">${fmt(company.balance)}</strong>. The Dec 1 run
-            needs <strong className="font-semibold">${fmt(nextPayroll.total)}</strong>. Top up{" "}
-            <strong className="font-semibold">$2,600</strong> to stay covered.
-          </span>
+      {shortfall > 0 && largest && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-[#FBF1DC] px-5 py-4 text-[#8A5A00]">
+          <div className="flex items-center gap-3">
+            <AlertTriangle size={18} className="shrink-0" />
+            <span className="text-[14.5px]">
+              Balance is{" "}
+              <strong className="font-semibold">${usdc(balance)}</strong>. Your{" "}
+              {largest.name} payroll needs{" "}
+              <strong className="font-semibold">${usdc(largest.total)}</strong>.
+              Top up{" "}
+              <strong className="font-semibold">${usdc(shortfall)}</strong> to
+              stay covered.
+            </span>
+          </div>
+          <Button asChild size="sm">
+            <Link href="/portal/wallet">Top up treasury</Link>
+          </Button>
         </div>
-        <Button href="/portal/wallet" size="sm">
-          Top up wallet
-        </Button>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* Left: next payroll + stats + history */}
         <div className="flex flex-col gap-5 lg:col-span-2">
-          {/* Next payroll */}
-          <Card padding={0}>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-5">
-              <div>
-                <div className="text-[13px] text-muted">Next payroll</div>
-                <div className="mt-1 text-[20px] font-medium text-ink">{nextPayroll.date}</div>
+          {/* Payrolls */}
+          <Card>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4">
+              <h3 className="text-[16px] font-medium text-ink">
+                Your payrolls
+              </h3>
+              <Link
+                href="/portal/payroll"
+                className="flex items-center gap-1 text-[13px] font-medium text-accent"
+              >
+                Manage <ArrowUpRight size={14} />
+              </Link>
+            </div>
+            {defs.isPending ? (
+              <div className="px-6 py-6 text-[14px] text-muted">Loading…</div>
+            ) : payrolls.length === 0 ? (
+              <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-6">
+                <p className="max-w-[440px] text-[14.5px] leading-[1.5] text-muted">
+                  No payroll yet. Set up who gets paid and how often, then run
+                  it in one approval.
+                </p>
+                {canManage && (
+                  <Button asChild>
+                    <Link href="/portal/payroll">
+                      Create a payroll <ArrowRight size={16} />
+                    </Link>
+                  </Button>
+                )}
               </div>
-              <Badge variant={statusVariant(nextPayroll.status)} dot>
-                {nextPayroll.status}
-              </Badge>
-            </div>
-            <div className="grid grid-cols-1 gap-5 px-6 py-5 sm:grid-cols-3 sm:gap-0">
-              {[
-                ["Estimated total", `$${fmt(nextPayroll.total)}`],
-                ["Contractors", String(nextPayroll.count)],
-                ["Settles in", "~4s"],
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <div className="text-[13px] text-muted">{label}</div>
-                  <div className="tabular mt-2 font-display text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink">{value}</div>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-3 px-6 pb-5">
-              <Button href="/portal/payroll">
-                Review payroll <ArrowRight size={16} />
-              </Button>
-              <Button href="/portal/payroll" variant="ghost">
-                View breakdown
-              </Button>
-            </div>
+            ) : (
+              <ul className="divide-y divide-line">
+                {payrolls.map((p) => {
+                  const covered = balanceNum == null || p.total <= balanceNum;
+                  return (
+                    <li key={p.id}>
+                      <Link
+                        href={`/portal/payroll/${p.id}`}
+                        className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 transition-colors hover:bg-subtle"
+                      >
+                        <div>
+                          <div className="text-[15px] font-medium text-ink">
+                            {p.name}
+                          </div>
+                          <div className="text-[13px] text-muted">
+                            {CADENCE[p.cadence]} · {p.payees}{" "}
+                            {p.payees === 1 ? "payee" : "payees"}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="tabular font-display text-[22px] font-semibold tracking-[-0.03em] text-ink">
+                            ${usdc(p.total)}
+                          </span>
+                          <Badge variant={covered ? "success" : "warn"} dot>
+                            {covered ? "Covered" : "Short"}
+                          </Badge>
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </Card>
 
-          {/* Quick stats */}
+          {/* Figures */}
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {[
-              { label: "Active contractors", value: "9", sub: "across 4 countries" },
-              { label: "Paid this month", value: "$7,180", sub: "7 contractors" },
-              { label: "Avg. FX achieved", value: "1,618", sub: "NGN / USDC" },
-            ].map((s) => (
-              <StatTile key={s.label} label={s.label} value={s.value} sub={s.sub} />
-            ))}
+            <StatTile
+              label="Contractors"
+              value={
+                contractors.isPending
+                  ? "—"
+                  : String(contractors.data?.length ?? 0)
+              }
+              sub={
+                countries > 0
+                  ? `across ${countries} ${countries === 1 ? "country" : "countries"}`
+                  : "on a roster or paid before"
+              }
+            />
+            <StatTile
+              label="Paid this month"
+              value={ledger.isPending ? "—" : `$${usdc(paidThisMonth)}`}
+              sub={now.toLocaleString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
+            />
+            <StatTile
+              label="Runs settled"
+              value={runs.isPending ? "—" : String(settledRuns)}
+              sub={`${runs.data?.length ?? 0} in total`}
+            />
           </div>
 
           {/* Recent runs */}
-          <Card padding={0}>
+          <Card>
             <div className="flex items-center justify-between border-b border-line px-6 py-4">
-              <h3 className="text-[16px] font-medium text-ink">Recent payroll runs</h3>
-              <Link href="/portal/history" className="flex items-center gap-1 text-[13px] font-medium text-accent">
+              <h3 className="text-[16px] font-medium text-ink">
+                Recent payroll runs
+              </h3>
+              <Link
+                href="/portal/history"
+                className="flex items-center gap-1 text-[13px] font-medium text-accent"
+              >
                 View all <ArrowUpRight size={14} />
               </Link>
             </div>
-            <ul className="divide-y divide-line">
-              {payrollRuns.slice(0, 3).map((run) => (
-                <li key={run.id} className="flex items-center justify-between gap-4 px-6 py-4">
-                  <div>
-                    <div className="text-[14.5px] text-ink">{run.date}</div>
-                    <div className="text-[13px] text-muted">
-                      {run.count} contractors · tx {run.tx}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="tabular text-[14.5px] font-medium text-ink">${fmt(run.total)}</span>
-                    <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </div>
-
-        {/* Right: agent activity feed */}
-        <div className="lg:col-span-1">
-          <Card padding={0} className="h-full">
-            <div className="flex items-center gap-2 border-b border-line px-6 py-4">
-              <Sparkles size={16} className="text-accent" />
-              <h3 className="text-[16px] font-medium text-ink">Agent activity</h3>
-            </div>
-            <div className="px-6 pb-5">
+            {runs.isPending ? (
+              <div className="px-6 py-6 text-[14px] text-muted">Loading…</div>
+            ) : (runs.data ?? []).length === 0 ? (
+              <div className="px-6 py-6 text-[14px] text-muted">
+                No runs yet. Your first run will show here with its transaction.
+              </div>
+            ) : (
               <ul className="divide-y divide-line">
-                {activityFeed.map((a, i) => {
-                  const Icon = ICONS[a.icon];
+                {(runs.data ?? []).slice(0, 3).map((r) => {
+                  const tx = r.lines.find((l) => l.txHash)?.txHash ?? null;
                   return (
-                    <li key={i} className="flex gap-3 py-4">
-                      <Icon size={16} className="mt-0.5 shrink-0 text-accent" />
-                      <div>
-                        <div className="text-[14px] leading-[1.5] text-ink">{a.text}</div>
-                        <div className="mt-0.5 text-[13px] text-muted">{a.time}</div>
+                    <li
+                      key={r.id}
+                      className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
+                    >
+                      <div className="min-w-0">
+                        <div className="text-[14.5px] text-ink">{r.label}</div>
+                        <div className="text-[13px] text-muted">
+                          {r.lineCount} {r.lineCount === 1 ? "payee" : "payees"}{" "}
+                          ·{" "}
+                          {r.executedAt
+                            ? when(r.executedAt)
+                            : `drafted ${when(r.createdAt)}`}
+                          {tx && (
+                            <>
+                              {" · "}
+                              <a
+                                href={explorerUrl(network, "tx", tx)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-mono hover:text-ink"
+                              >
+                                {shortKey(tx, 6, 4)}
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="tabular text-[14.5px] font-medium text-ink">
+                          ${usdc(r.totalAmount)}
+                        </span>
+                        <Badge variant={runVariant(r.status)}>
+                          {r.status.toLowerCase()}
+                        </Badge>
                       </div>
                     </li>
                   );
                 })}
               </ul>
-              <Link href="/portal/chat" className="mt-2 flex items-center gap-1 text-[13px] font-medium text-accent">
-                Open agent chat <ArrowRight size={14} />
+            )}
+          </Card>
+        </div>
+
+        {/* Activity: the org's ledger */}
+        <div className="lg:col-span-1">
+          <Card className="h-full">
+            <div className="flex items-center justify-between border-b border-line px-6 py-4">
+              <h3 className="text-[16px] font-medium text-ink">Activity</h3>
+              <span className="text-[13px] text-muted">
+                {orgLedger.length} on record
+              </span>
+            </div>
+            <div className="px-6 pb-5">
+              {ledger.isPending ? (
+                <div className="py-6 text-[14px] text-muted">Loading…</div>
+              ) : orgLedger.length === 0 ? (
+                <div className="py-6 text-[14px] leading-[1.5] text-muted">
+                  Nothing has moved yet. Payouts and sends from the treasury
+                  will appear here with their transactions.
+                </div>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {orgLedger.slice(0, 8).map((e) => {
+                    const who = nameOf(e.contractorId);
+                    return (
+                      <li key={e.id} className="flex gap-3 py-4">
+                        <span
+                          className={`mt-1.5 inline-block h-2 w-2 shrink-0 rounded-full ${
+                            e.status === "SETTLED"
+                              ? "bg-accent"
+                              : e.status === "FAILED"
+                                ? "bg-[#A32D1C]"
+                                : "bg-[#8A5A00]"
+                          }`}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[14px] leading-[1.5] text-ink">
+                            {e.type === "PAYOUT"
+                              ? "Paid"
+                              : e.type === "FUND"
+                                ? "Received"
+                                : "Sent"}{" "}
+                            <span className="tabular font-medium">
+                              ${usdc(e.amount)}
+                            </span>{" "}
+                            {e.type === "FUND" ? " from" : " to"}{" "}
+                            {who ?? (
+                              <span className="font-mono">
+                                {e.destination ? shortKey(e.destination) : "—"}
+                              </span>
+                            )}
+                            {e.status === "FAILED" && (
+                              <span className="text-[#A32D1C]"> · failed</span>
+                            )}
+                            {e.status === "PENDING" && (
+                              <span className="text-[#8A5A00]"> · pending</span>
+                            )}
+                          </div>
+                          <div className="mt-0.5 flex items-center gap-2 text-[13px] text-muted">
+                            {when(e.createdAt)}
+                            {e.txHash && (
+                              <a
+                                href={explorerUrl(network, "tx", e.txHash)}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label="View transaction"
+                                className="hover:text-ink"
+                              >
+                                <ExternalLink size={12} />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              <Link
+                href="/portal/contractors"
+                className="mt-2 flex items-center gap-1 text-[13px] font-medium text-accent"
+              >
+                <Users size={14} /> See your contractors{" "}
+                <ArrowRight size={14} />
               </Link>
             </div>
           </Card>

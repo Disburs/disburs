@@ -22,10 +22,16 @@ function Callback() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const role = (params.get("role") === "CONTRACTOR" ? "CONTRACTOR" : "CLIENT") as RoleIntent;
+      const role = (
+        params.get("role") === "CONTRACTOR" ? "CONTRACTOR" : "CLIENT"
+      ) as RoleIntent;
       const errorParam = params.get("error");
       if (errorParam) {
-        setFailed(errorParam === "INVALID_TOKEN" || errorParam === "EXPIRED_TOKEN" ? "That link has expired or was already used." : "We couldn't sign you in.");
+        setFailed(
+          errorParam === "INVALID_TOKEN" || errorParam === "EXPIRED_TOKEN"
+            ? "That link has expired or was already used."
+            : "We couldn't sign you in.",
+        );
         return;
       }
       const { data: session } = await authClient.getSession();
@@ -38,12 +44,17 @@ function Callback() {
       if (cancelled) return;
       // An invitation link (or any in-app path) takes priority over the default routing.
       const next = params.get("next");
-      if (next && next.startsWith("/") && !next.startsWith("//")) return router.replace(next);
-      if (me?.organization && role === "CLIENT") return router.replace("/portal");
-      if (me?.contractor && role === "CONTRACTOR") return router.replace("/contractor");
+      if (next && next.startsWith("/") && !next.startsWith("//"))
+        return router.replace(next);
+      if (me?.organization && role === "CLIENT")
+        return router.replace("/portal");
+      if (me?.contractor && role === "CONTRACTOR")
+        return router.replace("/contractor");
       if (me?.organization) return router.replace("/portal");
       if (me?.contractor) return router.replace("/contractor");
-      router.replace(role === "CONTRACTOR" ? "/contractor/onboarding" : "/onboarding");
+      router.replace(
+        role === "CONTRACTOR" ? "/contractor/onboarding" : "/onboarding",
+      );
     })();
     return () => {
       cancelled = true;
@@ -79,7 +90,10 @@ export default function AuthCallbackPage() {
   return (
     <main className="flex min-h-screen flex-col bg-canvas">
       <header className="flex h-[72px] items-center border-b border-line px-5 md:px-8">
-        <Link href="/" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
+        <Link
+          href="/"
+          className="text-[22px] font-semibold tracking-[-0.03em] text-ink"
+        >
           <Wordmark />
         </Link>
       </header>

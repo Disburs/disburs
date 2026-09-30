@@ -1,198 +1,276 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { Archive, ArrowRight, Plus, Users } from "lucide-react";
+import { Badge, Card, PageTitle } from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
+import { runVariant } from "@/components/portal/RunLines";
+import CreatePayroll from "@/components/portal/payroll/CreatePayroll";
+import { CADENCE_LABEL } from "@/components/portal/payroll/PayrollDetail";
 import {
-  Sparkles,
-  TriangleAlert,
-  Gift,
-  Check,
-  Loader2,
-  ExternalLink,
-  CalendarClock,
-  Pencil,
-  ArrowRight,
-} from "lucide-react";
-import { Card, Badge, Button, Avatar, PageTitle, statusVariant } from "@/components/portal/ui";
-import { payrollLines, fxRates, nextPayroll } from "@/lib/mock";
+  DeleteButton,
+  RestoreButton,
+} from "@/components/portal/payroll/PayrollActions";
+import UsdcMark from "@/components/UsdcMark";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
+import FeaturePaused from "@/components/FeaturePaused";
+import { useDefinitions, useRuns } from "@/lib/hooks/usePayroll";
+import { MONEY_ROLES } from "@/lib/api";
+import { usdc, when } from "@/lib/format";
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US");
-}
-
-const total = payrollLines.reduce((s, l) => s + l.amount, 0);
-
-export default function PayrollPage() {
-  const [phase, setPhase] = useState<"review" | "running" | "done">("review");
-
-  const execute = () => {
-    setPhase("running");
-    window.setTimeout(() => setPhase("done"), 2400);
-  };
-
-  if (phase === "done") {
-    return (
-      <div className="mx-auto flex max-w-[520px] flex-col items-center pt-10 text-center">
-        <Check size={36} className="text-accent" />
-        <h2 className="mt-5 font-display text-[34px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[40px]">
-          {payrollLines.length} contractors paid.
-        </h2>
-        <p className="mt-3 text-[15px] text-muted">
-          ${fmt(total)} USDC sent in a single Stellar transaction. Settled in 4 seconds.
-        </p>
-        <div className="mt-5 flex items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2">
-          <span className="font-mono text-[13px] text-ink">tx GADT…K39P</span>
-          <ExternalLink size={14} className="text-accent" />
-        </div>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Button href="/portal/history">View in history <ArrowRight size={16} /></Button>
-          <Button href="/portal" variant="secondary">Back to dashboard</Button>
-        </div>
-      </div>
-    );
-  }
+/**
+ * Every payroll the organization has, as cards. An organization can run
+ * several (a monthly engineering roster next to a weekly support one); each
+ * card opens that payroll's own page with its roster and runs.
+ */
+export default function PayrollsPage() {
+  const { data: me } = useMe();
+  const payrollOn = useFeature("payroll");
+  const archiveDays = me?.settings?.archiveRetentionDays ?? 30;
+  const defs = useDefinitions();
+  const archived = useDefinitions(true);
+  const [tab, setTab] = useState<"active" | "archived">("active");
+  const runs = useRuns();
+  const [creating, setCreating] = useState(false);
+  const canManage = Boolean(
+    me?.organization?.role && MONEY_ROLES.includes(me.organization.role),
+  );
+  const balance = Number(me?.organization?.treasuryWallet?.balances?.usdc ?? 0);
+  const all = defs.data ?? [];
+  const archivedAll = archived.data ?? [];
+  const showCreate =
+    payrollOn && (creating || (!defs.isPending && all.length === 0));
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Header */}
       <PageTitle
-        sub={<>Period Dec 1 – Dec 31 · run date {nextPayroll.date}</>}
+        sub={
+          all.length
+            ? `${all.length} ${all.length === 1 ? "payroll" : "payrolls"} · treasury $${usdc(balance)} USDC`
+            : "Set up who gets paid, then run it in one approval."
+        }
         action={
-          <Badge variant={statusVariant(nextPayroll.status)} dot>
-            {nextPayroll.status}
-          </Badge>
+          payrollOn && canManage && all.length > 0 && !creating ? (
+            <Button onClick={() => setCreating(true)}>
+              <Plus size={16} /> New payroll
+            </Button>
+          ) : undefined
         }
       >
-        December payroll
+        Payroll
       </PageTitle>
+      {!payrollOn && (
+        <FeaturePaused title="Payroll runs are paused">
+          Disburs has switched payroll runs off for now. Your payrolls and past
+          runs are all here; nothing new can be drafted or paid until it is back
+          on.
+        </FeaturePaused>
+      )}
 
-      {/* Agent summary */}
-      <div className="flex gap-3 rounded-[24px] bg-accent-soft px-5 py-4">
-        <Sparkles size={18} className="mt-0.5 shrink-0 text-accent" />
-        <p className="text-[14.5px] leading-[1.55] text-accent">
-          I read all {payrollLines.length} contracts and timesheets. One bonus
-          triggered, one overtime claim verified, and two amounts capped or
-          carried over. Two flags need your eyes before I send.
-        </p>
-      </div>
-
-      {/* Table */}
-      <Card padding={0}>
-        <div className="hidden items-center border-b border-line px-5 py-3 text-[12.5px] font-medium text-muted md:flex">
-          <div className="flex-[2_1_0%]">Contractor</div>
-          <div className="flex-[1.4_1_0%]">Basis</div>
-          <div className="flex-[1_1_0%]">Wallet</div>
-          <div className="flex-[1_1_0%] text-right">Amount</div>
-          <div className="w-10" />
+      {showCreate && (
+        <div className="max-w-[720px]">
+          <CreatePayroll
+            canManage={canManage}
+            first={all.length === 0}
+            onCancel={all.length > 0 ? () => setCreating(false) : undefined}
+            onCreated={() => setCreating(false)}
+          />
         </div>
+      )}
 
-        <div className="divide-y divide-line">
-          {payrollLines.map((l) => (
-            <div key={l.id}>
-              <div className="flex flex-wrap items-center gap-y-2 px-5 py-4">
-                <div className="flex flex-[2_1_200px] items-center gap-3">
-                  <Avatar initials={l.initials} flag={l.flag} />
+      {(archivedAll.length > 0 || tab === "archived") && (
+        <div
+          className="flex flex-wrap items-center gap-2"
+          role="tablist"
+          aria-label="Payrolls"
+        >
+          <Button
+            size="sm"
+            variant={tab === "active" ? "default" : "outline"}
+            onClick={() => setTab("active")}
+            role="tab"
+            aria-selected={tab === "active"}
+          >
+            Active{" "}
+            <span
+              className={tab === "active" ? "text-ink-deep/60" : "text-muted"}
+            >
+              {all.length}
+            </span>
+          </Button>
+          <Button
+            size="sm"
+            variant={tab === "archived" ? "default" : "outline"}
+            onClick={() => setTab("archived")}
+            role="tab"
+            aria-selected={tab === "archived"}
+          >
+            <Archive size={14} /> Archived{" "}
+            <span
+              className={tab === "archived" ? "text-ink-deep/60" : "text-muted"}
+            >
+              {archivedAll.length}
+            </span>
+          </Button>
+        </div>
+      )}
+
+      {tab === "archived" ? (
+        archivedAll.length === 0 ? (
+          <Card>
+            <span className="text-[14px] text-muted">
+              Nothing archived. Archived payrolls stay here for {archiveDays}{" "}
+              days, restorable, then are deleted for good.
+            </span>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {archivedAll.map((d) => {
+              const items = d.items.filter((i) => i.active);
+              const total = items.reduce((s, i) => s + Number(i.amount), 0);
+              return (
+                <div
+                  key={d.id}
+                  className="flex flex-col justify-between gap-6 rounded-card border border-dashed border-line bg-subtle p-6"
+                >
                   <div>
-                    <div className="text-[14.5px] text-ink">{l.name}</div>
-                    <div className="text-[13px] text-muted">{l.country}</div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-[18px] font-medium text-ink">
+                          {d.name}
+                        </h3>
+                        <div className="mt-0.5 text-[13px] text-muted">
+                          {CADENCE_LABEL[d.cadence]}
+                        </div>
+                      </div>
+                      <Badge variant="warn" dot>
+                        Archived
+                      </Badge>
+                    </div>
+                    <div className="tabular mt-5 inline-flex items-center gap-2 font-display text-[32px] font-semibold leading-none tracking-[-0.03em] text-ink">
+                      <UsdcMark size={22} /> ${usdc(total)}
+                    </div>
+                    <div className="mt-3 flex items-center gap-1.5 text-[13.5px] text-muted">
+                      <Users size={14} /> {items.length}{" "}
+                      {items.length === 1 ? "payee" : "payees"} per run
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-[13px]">
+                    <span className="text-muted">
+                      Archived {d.archivedAt ? when(d.archivedAt) : ""} ·
+                      deleted for good{" "}
+                      {d.purgeAt ? when(d.purgeAt) : `in ${archiveDays} days`}
+                    </span>
+                    {canManage && (
+                      <span className="flex items-center gap-2">
+                        <RestoreButton def={d} />
+                        <DeleteButton def={d} />
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex-[1.4_1_0%] text-[13.5px] text-muted">{l.basis}</div>
-                <div className="flex-[1_1_0%]">
-                  <Badge variant={statusVariant(l.wallet)}>{l.wallet}</Badge>
-                </div>
-                <div className="tabular flex-[1_1_0%] text-right text-[15px] font-medium text-ink">
-                  ${fmt(l.amount)}
-                </div>
-                <button
-                  className="flex w-10 justify-end text-faint hover:text-ink"
-                  aria-label="Edit line"
+              );
+            })}
+          </div>
+        )
+      ) : defs.isPending ? (
+        <Card>
+          <span className="text-[14px] text-muted">Loading…</span>
+        </Card>
+      ) : (
+        all.length > 0 && (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {all.map((d) => {
+              const items = d.items.filter((i) => i.active);
+              const total = items.reduce((s, i) => s + Number(i.amount), 0);
+              const covered = total <= balance;
+              const mine = (runs.data ?? []).filter(
+                (r) => r.definitionId === d.id,
+              );
+              const open =
+                mine.find(
+                  (r) =>
+                    r.status === "DRAFT" ||
+                    r.status === "APPROVED" ||
+                    r.status === "EXECUTING",
+                ) ?? null;
+              const last =
+                mine.find(
+                  (r) =>
+                    r.status === "SETTLED" ||
+                    r.status === "PARTIAL" ||
+                    r.status === "FAILED",
+                ) ?? null;
+              return (
+                <Link
+                  key={d.id}
+                  href={`/portal/payroll/${d.id}`}
+                  className="group flex flex-col justify-between gap-6 rounded-[24px] border border-line bg-canvas p-6 transition-colors hover:border-ink"
                 >
-                  <Pencil size={15} />
-                </button>
-              </div>
-              {l.flag_note && (
-                <div className="px-5 pb-4 md:pl-[68px]">
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-medium ${
-                      l.flag_note.type === "warn"
-                        ? "bg-[#FBF1DC] text-[#8A5A00]"
-                        : "bg-accent-soft text-accent"
-                    }`}
-                  >
-                    {l.flag_note.type === "warn" ? (
-                      <TriangleAlert size={13} />
-                    ) : (
-                      <Gift size={13} />
-                    )}
-                    {l.flag_note.text}
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* FX + total */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <h3 className="mb-4 text-[16px] font-medium text-ink">FX selected by agent</h3>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
-            {Object.entries(fxRates).map(([country, r]) => (
-              <div key={country}>
-                <div className="text-[13px] text-muted">
-                  {r.flag} {r.code}
-                </div>
-                <div className="tabular mt-1 font-display text-[22px] font-semibold tracking-[-0.03em] text-ink">
-                  {fmt(r.rate)}
-                </div>
-              </div>
-            ))}
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-[18px] font-medium text-ink">
+                          {d.name}
+                        </h3>
+                        <div className="mt-0.5 text-[13px] text-muted">
+                          {CADENCE_LABEL[d.cadence]}
+                        </div>
+                      </div>
+                      {open ? (
+                        <Badge variant={runVariant(open.status)} dot>
+                          {open.status === "DRAFT"
+                            ? "draft waiting"
+                            : open.status.toLowerCase()}
+                        </Badge>
+                      ) : items.length > 0 ? (
+                        <Badge variant={covered ? "success" : "warn"} dot>
+                          {covered ? "Covered" : "Short"}
+                        </Badge>
+                      ) : null}
+                    </div>
+                    <div className="tabular mt-5 inline-flex items-center gap-2 font-display text-[32px] font-semibold leading-none tracking-[-0.03em] text-ink">
+                      <UsdcMark size={22} /> ${usdc(total)}
+                    </div>
+                    <div className="mt-3 flex items-center gap-1.5 text-[13.5px] text-muted">
+                      <Users size={14} /> {items.length}{" "}
+                      {items.length === 1 ? "payee" : "payees"} per run
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 border-t border-line pt-4 text-[13px]">
+                    <span className="text-muted">
+                      {last ? (
+                        <>
+                          Last run{" "}
+                          {last.executedAt
+                            ? when(last.executedAt)
+                            : when(last.createdAt)}{" "}
+                          ·{" "}
+                          <span
+                            className={
+                              last.status === "SETTLED"
+                                ? "text-accent"
+                                : "text-[#A32D1C]"
+                            }
+                          >
+                            {last.status.toLowerCase()}
+                          </span>
+                        </>
+                      ) : (
+                        "No runs yet"
+                      )}
+                    </span>
+                    <span className="inline-flex items-center gap-1 font-medium text-ink group-hover:text-accent">
+                      Open <ArrowRight size={14} />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
-          <p className="mt-4 text-[13px] text-muted">
-            Best available window today. Locks at execution.
-          </p>
-        </Card>
-
-        <Card tone="dark" className="flex flex-col justify-between">
-          <div>
-            <div className="text-[13.5px] text-white/60">Total payout</div>
-            <div className="tabular mt-3 font-display text-[36px] font-semibold leading-none tracking-[-0.03em] text-white">
-              ${fmt(total)}
-            </div>
-            <div className="mt-3 text-[13px] text-white/55">
-              USDC · {payrollLines.length} contractors · 0.5% fee ${fmt(Math.round(total * 0.005))}
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Sticky action bar */}
-      <div className="sticky bottom-4 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-line bg-canvas px-5 py-4">
-        <div className="text-[14.5px] text-muted">
-          Paying <strong className="font-medium text-ink">${fmt(total)} USDC</strong> to{" "}
-          {payrollLines.length} contractors
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" size="sm">
-            <Pencil size={14} /> Edit manually
-          </Button>
-          <Button variant="secondary" size="sm">
-            <CalendarClock size={14} /> Schedule for later
-          </Button>
-          <Button onClick={execute} disabled={phase === "running"}>
-            {phase === "running" ? (
-              <>
-                <Loader2 size={16} className="animate-spin" /> Executing…
-              </>
-            ) : (
-              <>
-                <Check size={16} /> Approve &amp; Execute
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
+        )
+      )}
     </div>
   );
 }

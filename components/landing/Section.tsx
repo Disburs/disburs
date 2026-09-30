@@ -2,8 +2,18 @@ import type { ReactNode } from "react";
 
 /** Shared layout + type scaffolding. */
 
-export function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-container px-4 md:px-8 ${className}`}>{children}</div>;
+export function Container({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`mx-auto w-full max-w-container px-4 md:px-8 ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 /** Serif display heading. `size`: xl (hero), lg (section), md (sub-section). */
@@ -26,7 +36,13 @@ export function Heading({
     lg: "text-[44px] leading-[1.06] tracking-[-0.03em] md:text-[64px] lg:text-[80px]",
     md: "text-[36px] leading-[1.1] tracking-[-0.02em] md:text-[48px]",
   }[size];
-  return <Tag className={`font-display font-semibold text-balance ${scale} ${color} ${className}`}>{children}</Tag>;
+  return (
+    <Tag
+      className={`font-display font-semibold text-balance ${scale} ${color} ${className}`}
+    >
+      {children}
+    </Tag>
+  );
 }
 
 /** Italic emphasis inside a serif heading. */
@@ -46,13 +62,27 @@ export function Lead({
 }) {
   const color = tone === "dark" ? "text-white/75" : "text-ink";
   return (
-    <p className={`text-[20px] font-light leading-[1.35] tracking-[-0.01em] text-pretty md:text-[26px] ${color} ${className}`}>
+    <p
+      className={`text-[20px] font-light leading-[1.35] tracking-[-0.01em] text-pretty md:text-[26px] ${color} ${className}`}
+    >
       {children}
     </p>
   );
 }
 
 /** Small label (kept for pricing/FAQ). */
-export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <span className={`inline-block text-[15px] font-medium text-muted ${className}`}>{children}</span>;
+export function Eyebrow({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`inline-block text-[15px] font-medium text-muted ${className}`}
+    >
+      {children}
+    </span>
+  );
 }
