@@ -5,8 +5,12 @@ import type { paths, components } from "./api-types";
  * Central API layer. Every backend call lives here (typed against the OpenAPI
  * spec); components consume these through the React Query hooks in lib/hooks.
  * The /api prefix is part of each path in the spec, so it's not in baseUrl.
+ *
+ * NEXT_PUBLIC_API_URL unset means same origin: `/api/*` on this app is
+ * proxied to the backend (next.config.mjs, API_PROXY_TARGET), which keeps the
+ * session cookie first-party. Set it only to talk to the API directly.
  */
-const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 // Sessions are httpOnly cookies set by the backend, so requests must carry credentials.
 export const client = createClient<paths>({ baseUrl, credentials: "include" });
