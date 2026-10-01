@@ -18,7 +18,7 @@ const ROWS: Row[] = [
   },
   {
     title: "Salaries stay private",
-    body: "Amounts are verified by proof, never written to the public ledger. Banks, intermediaries, and anyone with the spreadsheet no longer see what each person earns.",
+    body: "Amounts are verified by proof, never written to the public ledger. Employees, competitors and anyone with the address stop seeing what each person earns. When an auditor asks, you share a view key and they see exactly what they need, and nothing else.",
   },
   {
     title: "Reconciled automatically",
@@ -44,7 +44,12 @@ export default function Advantages() {
               const on = open === i;
               const id = `adv-${i}`;
               return (
-                <Reveal as="li" key={r.title} delay={i * 0.06} className="border-b border-line">
+                <Reveal
+                  as="li"
+                  key={r.title}
+                  delay={i * 0.06}
+                  className="border-b border-line"
+                >
                   <button
                     type="button"
                     aria-expanded={on}
@@ -52,7 +57,10 @@ export default function Advantages() {
                     onClick={() => setOpen(on ? -1 : i)}
                     className="group flex w-full cursor-pointer items-center gap-5 py-5 text-left transition-colors duration-200 md:gap-8 md:py-6"
                   >
-                    <span className="w-10 shrink-0 font-mono text-[14px] text-muted md:w-16" aria-hidden>
+                    <span
+                      className="w-10 shrink-0 font-mono text-[14px] text-muted md:w-16"
+                      aria-hidden
+                    >
                       0{i + 1}
                     </span>
                     <span className="flex-1 font-display text-[24px] font-semibold leading-[1.15] tracking-[-0.02em] text-ink transition-transform duration-300 ease-out group-hover:translate-x-1 md:text-[34px]">
@@ -64,9 +72,15 @@ export default function Advantages() {
                       className={`shrink-0 text-ink transition-transform duration-200 ${on ? "rotate-45" : ""}`}
                     />
                   </button>
-                  <div id={id} className="grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: on ? "1fr" : "0fr" }}>
+                  <div
+                    id={id}
+                    className="grid transition-[grid-template-rows] duration-300 ease-out"
+                    style={{ gridTemplateRows: on ? "1fr" : "0fr" }}
+                  >
                     <div className="overflow-hidden">
-                      <p className="max-w-[62ch] pb-7 pl-[60px] text-[17px] leading-[1.5] text-muted md:pl-[96px] md:text-[19px]">{r.body}</p>
+                      <p className="max-w-[62ch] pb-7 pl-[60px] text-[17px] leading-[1.5] text-muted md:pl-[96px] md:text-[19px]">
+                        {r.body}
+                      </p>
                     </div>
                   </div>
                 </Reveal>

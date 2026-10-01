@@ -1,10 +1,19 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { useState } from "react";
 import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, ArrowLeftRight, MessageCircle, Menu, X, type LucideIcon } from "lucide-react";
+import {
+  Home,
+  ArrowLeftRight,
+  LogOut,
+  Menu,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
@@ -14,28 +23,44 @@ import { authClient } from "@/lib/auth-client";
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Home", href: "/contractor", icon: Home },
   { label: "Cash out", href: "/contractor/cashout", icon: ArrowLeftRight },
-  { label: "Messages", href: "/contractor/messages", icon: MessageCircle },
 ];
 
 function Wordmark() {
   return (
-    <Link href="/contractor" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
+    <Link
+      href="/contractor"
+      className="text-[22px] font-semibold tracking-[-0.03em] text-ink"
+    >
       <Brand />
     </Link>
   );
 }
 
-export default function ContractorShell({ children }: { children: React.ReactNode }) {
+export default function ContractorShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const signOut = async () => {
+    setSigningOut(true);
+    await authClient.signOut();
+    router.replace("/sign-in");
+  };
   const isOnboarding = pathname?.startsWith("/contractor/onboarding");
 
-  const isActive = (href: string) => pathname === href || (href !== "/contractor" && pathname?.startsWith(href));
+  const isActive = (href: string) =>
+    pathname === href ||
+    (href !== "/contractor" && pathname?.startsWith(href + "/"));
   // Signed out → sign in. Signed in without a payee profile → contractor onboarding.
   // The onboarding route itself only needs a session.
   const { ready } = useRequireProfile(
-    isOnboarding ? {} : { need: "contractor", onboarding: "/contractor/onboarding" },
+    isOnboarding
+      ? {}
+      : { need: "contractor", onboarding: "/contractor/onboarding" },
   );
   const { data: me } = useMe();
   const payee = me?.contractor ?? null;
@@ -46,23 +71,22 @@ export default function ContractorShell({ children }: { children: React.ReactNod
     .slice(0, 2)
     .toUpperCase();
 
-  if (!ready) return <div className="min-h-screen bg-canvas" aria-busy="true" />;
+  if (!ready)
+    return <div className="min-h-screen bg-canvas" aria-busy="true" />;
 
   if (isOnboarding) {
     return (
       <div className="min-h-screen bg-canvas">
         <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
           <Wordmark />
-          <button
-            type="button"
-            onClick={async () => {
-              await authClient.signOut();
-              router.replace("/sign-in");
-            }}
-            className="text-[14px] text-muted hover:text-ink"
+          <Button
+            variant="link"
+            onClick={signOut}
+            disabled={signingOut}
+            className="h-auto px-0 text-[14px]"
           >
-            Log out
-          </button>
+            {signingOut ? "Signing out…" : "Log out"}
+          </Button>
         </header>
         <div className="mx-auto max-w-[680px] px-5 pb-24 pt-12">{children}</div>
       </div>
@@ -75,7 +99,10 @@ export default function ContractorShell({ children }: { children: React.ReactNod
         <div className="mx-auto flex h-[72px] max-w-[1120px] items-center justify-between gap-4 px-5 md:px-8">
           <div className="flex items-center gap-10">
             <Wordmark />
-            <nav className="hidden items-center gap-1 md:flex" aria-label="Contractor">
+            <nav
+              className="hidden items-center gap-1 md:flex"
+              aria-label="Contractor"
+            >
               {NAV.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
@@ -85,10 +112,15 @@ export default function ContractorShell({ children }: { children: React.ReactNod
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={`flex h-10 items-center gap-2 rounded-full px-4 text-[14.5px] transition-colors ${
-                      active ? "border border-line bg-subtle font-medium text-ink" : "text-muted hover:text-ink"
+                      active
+                        ? "border border-line bg-subtle font-medium text-ink"
+                        : "text-muted hover:text-ink"
                     }`}
                   >
-                    <Icon size={16} className={active ? "text-accent" : "text-faint"} />
+                    <Icon
+                      size={16}
+                      className={active ? "text-accent" : "text-faint"}
+                    />
                     {item.label}
                   </Link>
                 );
@@ -97,26 +129,57 @@ export default function ContractorShell({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/contractor/cashout" className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 sm:flex">
+            <Link
+              href="/contractor/cashout"
+              className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 sm:flex"
+            >
               <UsdcMark size={16} />
               <span className="text-[12.5px] text-muted">Balance</span>
-              <span className="tabular text-[14px] font-medium text-ink">{payee?.wallet?.balances?.usdc == null ? "—" : `$${usdc(payee.wallet.balances.usdc)}`}</span>
+              <span className="tabular text-[14px] font-medium text-ink">
+                {payee?.wallet?.balances?.usdc == null
+                  ? "—"
+                  : `$${usdc(payee.wallet.balances.usdc)}`}
+              </span>
             </Link>
             <div className="flex items-center gap-2.5">
               <Avatar initials={initials} size={36} />
               <div className="hidden lg:block">
-                <div className="text-[13.5px] font-medium leading-tight text-ink">{payee?.name?.split(" ")[0] ?? "—"}</div>
-                <div className="text-[12px] text-muted">{payee ? `${payee.country} · ${payee.payoutCurrency}` : ""}</div>
+                <div className="text-[13.5px] font-medium leading-tight text-ink">
+                  {payee?.name?.split(" ")[0] ?? "—"}
+                </div>
+                <div className="text-[12px] text-muted">
+                  {payee ? `${payee.country} · ${payee.payoutCurrency}` : ""}
+                </div>
               </div>
             </div>
-            <button type="button" className="flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu" aria-expanded={open}>
+            <Button
+              variant="ghost"
+              onClick={signOut}
+              disabled={signingOut}
+              aria-label="Log out"
+              className="hidden h-10 gap-2 px-3 text-[14px] font-normal text-muted hover:text-ink md:flex"
+            >
+              <LogOut size={16} className="text-faint" />
+              {signingOut ? "Signing out…" : "Log out"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Menu"
+              aria-expanded={open}
+              className="h-10 w-10 md:hidden"
+            >
               {open ? <X size={22} /> : <Menu size={22} />}
-            </button>
+            </Button>
           </div>
         </div>
 
         {open && (
-          <nav className="flex flex-col border-t border-line px-5 py-3 md:hidden" aria-label="Contractor">
+          <nav
+            className="flex flex-col border-t border-line px-5 py-3 md:hidden"
+            aria-label="Contractor"
+          >
             {NAV.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
@@ -127,16 +190,30 @@ export default function ContractorShell({ children }: { children: React.ReactNod
                   onClick={() => setOpen(false)}
                   className={`flex h-12 items-center gap-3 border-b border-line text-[15px] last:border-0 ${active ? "font-medium text-ink" : "text-muted"}`}
                 >
-                  <Icon size={18} className={active ? "text-accent" : "text-faint"} />
+                  <Icon
+                    size={18}
+                    className={active ? "text-accent" : "text-faint"}
+                  />
                   {item.label}
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={signOut}
+              disabled={signingOut}
+              className="flex h-12 items-center gap-3 border-t border-line text-left text-[15px] text-muted"
+            >
+              <LogOut size={18} className="text-faint" />
+              {signingOut ? "Signing out…" : "Log out"}
+            </button>
           </nav>
         )}
       </header>
 
-      <main className="mx-auto max-w-[1120px] px-5 pb-20 pt-8 md:px-8 md:pt-10">{children}</main>
+      <main className="mx-auto max-w-[1120px] px-5 pb-20 pt-8 md:px-8 md:pt-10">
+        {children}
+      </main>
     </div>
   );
 }

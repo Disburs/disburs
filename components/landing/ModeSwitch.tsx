@@ -10,7 +10,11 @@ const MODES: { key: NavMode; label: string; href: string }[] = [
 /** Two products, one nav. Moves between the payroll landing and the developer landing. */
 export default function ModeSwitch({ mode }: { mode: NavMode }) {
   return (
-    <div role="tablist" aria-label="Product" className="inline-flex h-11 items-center rounded-full border border-line bg-subtle p-1">
+    <div
+      role="tablist"
+      aria-label="Product"
+      className="inline-flex h-11 items-center rounded-full border border-line bg-subtle p-1"
+    >
       {MODES.map((m) => {
         const on = m.key === mode;
         return (

@@ -18,7 +18,11 @@ const LINKS = [
 
 export function Logo({ tone = "light" }: { tone?: "dark" | "light" }) {
   return (
-    <Link href="/" aria-label="Disburs home" className={`text-[24px] font-semibold tracking-[-0.03em] ${tone === "dark" ? "text-white" : "text-ink"}`}>
+    <Link
+      href="/"
+      aria-label="Disburs home"
+      className={`text-[24px] font-semibold tracking-[-0.03em] ${tone === "dark" ? "text-white" : "text-ink"}`}
+    >
       <Wordmark />
     </Link>
   );
@@ -64,7 +68,9 @@ export default function Nav() {
   }, [open]);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 bg-canvas transition-[border-color] duration-200 ${scrolled || open ? "border-b border-line" : "border-b border-transparent"}`}>
+    <header
+      className={`fixed inset-x-0 top-0 z-50 bg-canvas transition-[border-color] duration-200 ${scrolled || open ? "border-b border-line" : "border-b border-transparent"}`}
+    >
       <Container className="flex h-[88px] items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <Logo />
@@ -74,7 +80,11 @@ export default function Nav() {
         </div>
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-[17px] text-ink transition-opacity duration-150 hover:opacity-[0.84]">
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-[17px] text-ink transition-opacity duration-150 hover:opacity-[0.84]"
+            >
               {l.label}
             </a>
           ))}
@@ -115,11 +125,26 @@ export default function Nav() {
                 <ModeSwitch mode="payroll" />
               </div>
               {links.map((l) => (
-                <a key={l.href} href={l.href} onClick={() => { skipFocusOnClose.current = true; setOpen(false); }} className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0">
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => {
+                    skipFocusOnClose.current = true;
+                    setOpen(false);
+                  }}
+                  className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0"
+                >
                   {l.label}
                 </a>
               ))}
-              <a href={cta.href} onClick={() => { skipFocusOnClose.current = true; setOpen(false); }} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
+              <a
+                href={cta.href}
+                onClick={() => {
+                  skipFocusOnClose.current = true;
+                  setOpen(false);
+                }}
+                className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white"
+              >
                 {cta.label}
               </a>
             </Container>

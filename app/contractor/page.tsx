@@ -1,28 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, ExternalLink } from "lucide-react";
-import { Badge, Button, PageTitle } from "@/components/portal/ui";
-import { cashouts, ngn } from "@/lib/contractor";
-import { useMe } from "@/lib/hooks/useMe";
+import { ArrowRight, Copy, ExternalLink } from "lucide-react";
+import { Badge, PageTitle } from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
+import { useCashouts } from "@/lib/hooks/useCashouts";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
 import { useLedger } from "@/lib/hooks/usePayments";
 import { explorerUrl } from "@/lib/api";
-import { usdc, when } from "@/lib/format";
+import { shortKey, usdc, when } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 
 export default function ContractorHome() {
   const { data: me } = useMe();
+  const cashoutsOn = useFeature("cashouts");
   const ledger = useLedger();
+  const cashouts = useCashouts();
   const wallet = me?.contractor?.wallet ?? null;
   const network = me?.network ?? "testnet";
   const balanceStr = wallet?.balances?.usdc ?? null;
-  const firstName = (me?.contractor?.name ?? me?.user.name ?? "there").split(" ")[0];
-  const received = (ledger.data ?? []).filter((e) => e.type === "PAYOUT" && e.contractorId && e.contractorId === me?.contractor?.id);
-  const lastPayment = received.find((e) => e.status === "SETTLED") ?? received[0] ?? null;
+  const firstName = (me?.contractor?.name ?? me?.user.name ?? "there").split(
+    " ",
+  )[0];
+  const received = (ledger.data ?? []).filter(
+    (e) =>
+      (e.type === "PAYOUT" || e.type === "FUND") &&
+      e.contractorId &&
+      e.contractorId === me?.contractor?.id,
+  );
+  const lastPayment =
+    received.find((e) => e.status === "SETTLED") ?? received[0] ?? null;
 
   return (
     <div className="flex flex-col gap-5">
-      <PageTitle sub={<>Your USDC on Stellar, ready to cash out.</>}>Hi {firstName}</PageTitle>
+      <PageTitle sub={<>Your USDC on Stellar, in a wallet only you control.</>}>
+        Hi {firstName}
+      </PageTitle>
 
       {/* Top row: balance + last payment / actions */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -37,11 +50,21 @@ export default function ContractorHome() {
                   <UsdcMark size={18} /> USDC
                 </span>
               </div>
-              <div className="mt-3 text-[15px] text-mint">Cashes out to {me?.contractor?.payoutCurrency ?? "—"}</div>
+              <div className="mt-3 text-[15px] text-mint">
+                Pays out in {me?.contractor?.payoutCurrency ?? "—"}
+              </div>
             </div>
-            <Button href="/contractor/cashout">
-              Convert to local currency <ArrowRight size={16} />
-            </Button>
+            {cashoutsOn ? (
+              <Button asChild>
+                <Link href="/contractor/cashout">
+                  Request a cash-out <ArrowRight size={16} />
+                </Link>
+              </Button>
+            ) : (
+              <span className="text-[14px] text-white/70">
+                Cash-outs are paused for now
+              </span>
+            )}
           </div>
         </div>
 
@@ -51,27 +74,68 @@ export default function ContractorHome() {
             <div className="flex items-start justify-between gap-3">
               <div className="text-[13px] text-muted">Last payment</div>
               {lastPayment && (
-                <Badge variant={lastPayment.status === "SETTLED" ? "success" : "warn"} dot>
-                  {lastPayment.status === "SETTLED" ? "Received" : lastPayment.status.toLowerCase()}
+                <Badge
+                  variant={
+                    lastPayment.status === "SETTLED" ? "success" : "warn"
+                  }
+                  dot
+                >
+                  {lastPayment.status === "SETTLED"
+                    ? "Received"
+                    : lastPayment.status.toLowerCase()}
                 </Badge>
               )}
             </div>
             <div className="tabular mt-2 font-display text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink">
-              {lastPayment ? `+$${usdc(lastPayment.amount)}` : "—"} <span className="font-sans text-[14px] font-normal tracking-normal text-muted">USDC</span>
+              {lastPayment ? `+$${usdc(lastPayment.amount)}` : "—"}{" "}
+              <span className="font-sans text-[14px] font-normal tracking-normal text-muted">
+                USDC
+              </span>
             </div>
-            <div className="mt-2 text-[13px] text-muted">{lastPayment ? when(lastPayment.createdAt) : "No payments yet"}</div>
+            <div className="mt-2 text-[13px] text-muted">
+              {lastPayment ? when(lastPayment.createdAt) : "No payments yet"}
+            </div>
           </div>
 
-          <Link
-            href="/contractor/messages"
-            className="flex flex-1 items-center justify-between gap-3 rounded-[24px] border border-line bg-subtle p-5 transition-colors hover:border-ink"
-          >
+          <div className="flex flex-1 flex-col justify-between gap-3 rounded-[24px] border border-line bg-subtle p-5">
             <div>
-              <div className="text-[15px] font-medium text-ink">Message the agent</div>
-              <div className="mt-1 text-[13px] text-muted">Something looks off? Ask in plain words.</div>
+              <div className="text-[15px] font-medium text-ink">
+                Your wallet
+              </div>
+              <div className="mt-1 text-[13px] text-muted">
+                Employers pay USDC on Stellar to this address.
+              </div>
             </div>
-            <ArrowRight size={18} className="shrink-0 text-muted" />
-          </Link>
+            <div className="flex items-center gap-2 font-mono text-[13px] text-ink">
+              {wallet ? shortKey(wallet.publicKey, 8, 8) : "—"}
+              {wallet && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      navigator.clipboard
+                        ?.writeText(wallet.publicKey)
+                        .catch(() => {})
+                    }
+                    aria-label="Copy address"
+                    className="h-6 w-6"
+                  >
+                    <Copy size={13} />
+                  </Button>
+                  <a
+                    href={explorerUrl(network, "account", wallet.publicKey)}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="View on explorer"
+                    className="text-muted hover:text-ink"
+                  >
+                    <ExternalLink size={13} />
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -81,16 +145,38 @@ export default function ContractorHome() {
           {received.map((p) => (
             <Row
               key={p.id}
-              title={p.memo ? `Payout · ${p.memo}` : "Payout"}
+              title={
+                p.type === "FUND"
+                  ? "Deposit"
+                  : p.memo
+                    ? `Payout · ${p.memo}`
+                    : "Payout"
+              }
               sub={when(p.createdAt)}
               right={
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <div className="tabular text-[14.5px] font-medium text-ink">+${usdc(p.amount)}</div>
-                    <div className={`text-[12.5px] ${p.status === "SETTLED" ? "text-accent" : "text-muted"}`}>{p.status === "SETTLED" ? "Received" : p.status.toLowerCase()}</div>
+                    <div className="tabular text-[14.5px] font-medium text-ink">
+                      +${usdc(p.amount)}
+                    </div>
+                    <div
+                      className={`text-[12.5px] ${p.status === "SETTLED" ? "text-accent" : "text-muted"}`}
+                    >
+                      {p.status === "SETTLED"
+                        ? p.reconciledAt
+                          ? "Received · on chain"
+                          : "Received"
+                        : p.status.toLowerCase()}
+                    </div>
                   </div>
                   {p.txHash && (
-                    <a href={explorerUrl(network, "tx", p.txHash)} target="_blank" rel="noreferrer" aria-label="View transaction" className="text-muted hover:text-ink">
+                    <a
+                      href={explorerUrl(network, "tx", p.txHash)}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="View transaction"
+                      className="text-muted hover:text-ink"
+                    >
                       <ExternalLink size={14} />
                     </a>
                   )}
@@ -98,26 +184,58 @@ export default function ContractorHome() {
               }
             />
           ))}
-          {!ledger.isPending && received.length === 0 && <div className="py-5 text-[13.5px] text-muted">No payments yet. When an employer pays you, it shows here.</div>}
+          {!ledger.isPending && received.length === 0 && (
+            <div className="py-5 text-[13.5px] text-muted">
+              No payments yet. When an employer pays you, it shows here.
+            </div>
+          )}
         </Section>
 
-        <Section title="Cash-out history">
-          {cashouts.map((c, i) => (
+        <Section title="Cash-out requests">
+          {(cashouts.data ?? []).map((c) => (
             <Row
-              key={i}
-              title={`${c.usdc} USDC → ₦${ngn(c.local)}`}
-              sub={`${c.method} · ${c.date}`}
-              right={<Check size={16} className="text-accent" />}
+              key={c.id}
+              title={`$${usdc(c.amount)} USDC → ${c.currency}`}
+              sub={`${c.destination} · ${when(c.createdAt)}`}
+              right={
+                <Badge
+                  variant={
+                    c.status === "PAID"
+                      ? "success"
+                      : c.status === "CANCELLED"
+                        ? "neutral"
+                        : "warn"
+                  }
+                  dot
+                >
+                  {c.status === "REQUESTED"
+                    ? "Requested"
+                    : c.status === "PAID"
+                      ? "Paid"
+                      : "Cancelled"}
+                </Badge>
+              }
             />
           ))}
-          {cashouts.length === 0 && <div className="py-5 text-[13.5px] text-muted">No cash-outs yet.</div>}
+          {!cashouts.isPending && (cashouts.data ?? []).length === 0 && (
+            <div className="py-5 text-[13.5px] text-muted">
+              No requests yet. Ask for a cash-out and it shows here with its
+              status.
+            </div>
+          )}
         </Section>
       </div>
     </div>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-[24px] border border-line bg-canvas px-5 pb-1 pt-5">
       <h3 className="mb-1 text-[16px] font-medium text-ink">{title}</h3>
@@ -126,7 +244,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Row({ title, sub, right }: { title: string; sub: string; right: React.ReactNode }) {
+function Row({
+  title,
+  sub,
+  right,
+}: {
+  title: string;
+  sub: string;
+  right: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between gap-4 py-4">
       <div className="min-w-0">

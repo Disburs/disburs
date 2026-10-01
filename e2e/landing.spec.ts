@@ -8,7 +8,7 @@ test.describe("Landing page", () => {
       page.getByRole("heading", { name: /keeps every salary private/i }),
     ).toBeVisible();
     await expect(
-      page.getByText(/Disburs is autonomous payroll infrastructure/i),
+      page.getByText(/The amounts stay yours/i),
     ).toBeVisible();
   });
 

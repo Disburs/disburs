@@ -61,17 +61,41 @@ export default function Console() {
     <div className="on-dark min-w-0 overflow-hidden rounded-[24px] bg-ink-deep">
       <div className="flex flex-wrap items-center justify-between gap-y-2 border-b border-white/10 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="inline-flex h-7 shrink-0 items-center rounded-full bg-mint px-2.5 font-mono text-[11.5px] font-semibold text-ink-deep">POST</span>
-          <span className="truncate font-mono text-[13px] text-white/80">/api/payments/pay</span>
+          <span className="inline-flex h-7 shrink-0 items-center rounded-full bg-mint px-2.5 font-mono text-[11.5px] font-semibold text-ink-deep">
+            POST
+          </span>
+          <span className="truncate font-mono text-[13px] text-white/80">
+            /api/payments/pay
+          </span>
         </div>
-        <div className="flex items-center gap-1" role="tablist" aria-label="Language">
+        <div
+          className="flex items-center gap-1"
+          role="tablist"
+          aria-label="Language"
+        >
           {(["curl", "ts"] as Tab[]).map((t) => (
-            <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`h-8 rounded-full px-3 text-[12.5px] font-medium ${tab === t ? "bg-white/10 text-white" : "text-white/50 hover:text-white"}`}>
+            <button
+              key={t}
+              type="button"
+              role="tab"
+              aria-selected={tab === t}
+              onClick={() => setTab(t)}
+              className={`h-8 rounded-full px-3 text-[12.5px] font-medium ${tab === t ? "bg-white/10 text-white" : "text-white/50 hover:text-white"}`}
+            >
               {t === "curl" ? "cURL" : "TypeScript"}
             </button>
           ))}
-          <button type="button" onClick={copy} aria-label="Copy request" className="ml-1 flex h-8 w-8 items-center justify-center rounded-full text-white/60 hover:text-white">
-            {copied ? <Check size={15} className="text-mint" /> : <Copy size={15} />}
+          <button
+            type="button"
+            onClick={copy}
+            aria-label="Copy request"
+            className="ml-1 flex h-8 w-8 items-center justify-center rounded-full text-white/60 hover:text-white"
+          >
+            {copied ? (
+              <Check size={15} className="text-mint" />
+            ) : (
+              <Copy size={15} />
+            )}
           </button>
         </div>
       </div>
@@ -92,7 +116,9 @@ export default function Console() {
           </pre>
         </>
       ) : (
-        <div className="border-t border-white/10 px-5 py-2.5 text-[12px] text-white/45">The typed SDK ships with Phase 3. The REST API is live today.</div>
+        <div className="border-t border-white/10 px-5 py-2.5 text-[12px] text-white/45">
+          The typed SDK ships with Phase 3. The REST API is live today.
+        </div>
       )}
     </div>
   );

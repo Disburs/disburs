@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ElementType,
+  type ReactNode,
+} from "react";
 
 /**
  * Fade-and-rise into view, once — driven by CSS transitions (see `.reveal` in

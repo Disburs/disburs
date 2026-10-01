@@ -2,10 +2,8 @@ import { test, expect } from "@playwright/test";
 
 /**
  * The product areas (portal, onboarding, contractor) are real screens that gate
- * themselves on a session; only the still-simulated pages (payroll, history,
- * contractors, settings, chat, cash-out, messages) are localhost-only via
- * `proxy.ts`. These smoke tests run on localhost, so they confirm each route
- * serves there without erroring.
+ * themselves on a session. These smoke tests confirm each route serves without
+ * erroring.
  */
 const demoRoutes = ["/portal", "/onboarding", "/contractor"];
 

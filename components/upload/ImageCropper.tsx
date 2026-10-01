@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { useCallback, useEffect, useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import { Loader2, Minus, Plus, RotateCw } from "lucide-react";
@@ -33,10 +35,14 @@ export default function ImageCropper({
   const [area, setArea] = useState<Area | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const onCropComplete = useCallback((_: Area, pixels: Area) => setArea(pixels), []);
+  const onCropComplete = useCallback(
+    (_: Area, pixels: Area) => setArea(pixels),
+    [],
+  );
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !busy && onCancel();
+    const onKey = (e: KeyboardEvent) =>
+      e.key === "Escape" && !busy && onCancel();
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [busy, onCancel]);
@@ -53,10 +59,23 @@ export default function ImageCropper({
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={title} className="fixed inset-0 z-[100] flex items-center justify-center bg-ink-deep/70 px-4" onClick={() => !busy && onCancel()}>
-      <div className="w-full max-w-[520px] rounded-[28px] bg-canvas p-6 md:p-8" onClick={(e) => e.stopPropagation()}>
-        <h2 className="font-display text-[28px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink">{title}</h2>
-        <p className="mt-2 text-[14px] text-muted">Drag to move. Pinch or use the slider to zoom.</p>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-ink-deep/70 px-4"
+      onClick={() => !busy && onCancel()}
+    >
+      <div
+        className="w-full max-w-[520px] rounded-[28px] bg-canvas p-6 md:p-8"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="font-display text-[28px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink">
+          {title}
+        </h2>
+        <p className="mt-2 text-[14px] text-muted">
+          Drag to move. Pinch or use the slider to zoom.
+        </p>
 
         <div className="relative mt-5 h-[320px] w-full overflow-hidden rounded-[20px] bg-ink-deep">
           <Cropper
@@ -74,25 +93,53 @@ export default function ImageCropper({
         </div>
 
         <div className="mt-5 flex items-center gap-3">
-          <button type="button" aria-label="Zoom out" onClick={() => setZoom((z) => Math.max(1, z - 0.2))} className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink">
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Zoom out"
+            onClick={() => setZoom((z) => Math.max(1, z - 0.2))}
+            className="h-10 w-10"
+          >
             <Minus size={16} />
-          </button>
-          <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} aria-label="Zoom" className="flex-1 accent-ink" />
-          <button type="button" aria-label="Zoom in" onClick={() => setZoom((z) => Math.min(3, z + 0.2))} className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink">
+          </Button>
+          <input
+            type="range"
+            min={1}
+            max={3}
+            step={0.01}
+            value={zoom}
+            onChange={(e) => setZoom(Number(e.target.value))}
+            aria-label="Zoom"
+            className="flex-1 accent-ink"
+          />
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Zoom in"
+            onClick={() => setZoom((z) => Math.min(3, z + 0.2))}
+            className="h-10 w-10"
+          >
             <Plus size={16} />
-          </button>
-          <button type="button" aria-label="Rotate" onClick={() => setRotation((r) => (r + 90) % 360)} className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink">
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Rotate"
+            onClick={() => setRotation((r) => (r + 90) % 360)}
+            className="h-10 w-10"
+          >
             <RotateCw size={16} />
-          </button>
+          </Button>
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <button type="button" onClick={onCancel} disabled={busy} className="inline-flex h-11 items-center rounded-full border border-line px-5 text-[14.5px] font-medium text-ink disabled:opacity-50">
+          <Button variant="outline" onClick={onCancel} disabled={busy}>
             Cancel
-          </button>
-          <button type="button" onClick={confirm} disabled={busy || !area} className="inline-flex h-11 items-center gap-2 rounded-full bg-mint px-6 text-[14.5px] font-medium text-ink-deep disabled:opacity-50">
-            {busy ? <Loader2 size={16} className="animate-spin" /> : null} Use this
-          </button>
+          </Button>
+          <Button onClick={confirm} disabled={busy || !area}>
+            {busy ? <Loader2 size={16} className="animate-spin" /> : null} Use
+            this
+          </Button>
         </div>
       </div>
     </div>
@@ -110,7 +157,13 @@ function loadImage(src: string) {
 }
 
 /** Render the chosen area (with rotation) to a canvas and export a PNG blob. */
-export async function cropToBlob(src: string, area: Area, rotation: number, outputSize: number, aspect: number): Promise<Blob> {
+export async function cropToBlob(
+  src: string,
+  area: Area,
+  rotation: number,
+  outputSize: number,
+  aspect: number,
+): Promise<Blob> {
   const img = await loadImage(src);
   const rad = (rotation * Math.PI) / 180;
   const sin = Math.abs(Math.sin(rad));
@@ -135,7 +188,23 @@ export async function cropToBlob(src: string, area: Area, rotation: number, outp
   out.height = outH;
   const octx = out.getContext("2d");
   if (!octx) throw new Error("Canvas is not available.");
-  octx.drawImage(stage, area.x, area.y, area.width, area.height, 0, 0, outW, outH);
+  octx.drawImage(
+    stage,
+    area.x,
+    area.y,
+    area.width,
+    area.height,
+    0,
+    0,
+    outW,
+    outH,
+  );
 
-  return new Promise((resolve, reject) => out.toBlob((b) => (b ? resolve(b) : reject(new Error("Could not export the image."))), "image/png"));
+  return new Promise((resolve, reject) =>
+    out.toBlob(
+      (b) =>
+        b ? resolve(b) : reject(new Error("Could not export the image.")),
+      "image/png",
+    ),
+  );
 }
