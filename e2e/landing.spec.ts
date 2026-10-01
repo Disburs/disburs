@@ -25,4 +25,15 @@ test.describe("Landing page", () => {
     await page.waitForLoadState("networkidle");
     expect(errors).toEqual([]);
   });
+
+  test("provides a skip link before the navigation", async ({ page }) => {
+    await page.goto("/");
+
+    const skipLink = page.getByRole("link", { name: "Skip to content" });
+    await page.keyboard.press("Tab");
+    await expect(skipLink).toBeFocused();
+
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#content")).toBeFocused();
+  });
 });
