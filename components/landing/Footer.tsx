@@ -19,8 +19,8 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     title: "Company",
     links: [
       { label: "Contact", href: "mailto:hello@disburs.io" },
-      { label: "Privacy policy", href: "#" },
-      { label: "Terms", href: "#" },
+      { label: "Privacy policy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ];
