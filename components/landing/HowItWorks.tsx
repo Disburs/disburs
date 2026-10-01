@@ -3,9 +3,21 @@ import Reveal from "./Reveal";
 import LinkButton from "./Button";
 
 const STEPS: [string, string, string][] = [
-  ["01", "Fund your treasury", "Top up once in USDC. One balance covers every contractor, in every country."],
-  ["02", "The agent proposes the run", "Contracts read, rates applied, exceptions cleared. Policy checks and a zero-knowledge proof validate every line before it reaches you."],
-  ["03", "You authorize. We settle.", "Nothing moves without your approval. Then every contractor is paid in about four seconds, every salary kept private."],
+  [
+    "01",
+    "Fund your treasury",
+    "Top up once in USDC. One balance covers every contractor, in every country.",
+  ],
+  [
+    "02",
+    "The agent proposes the run",
+    "Contracts read, rates applied, exceptions cleared. Policy checks and a zero-knowledge proof validate every line before it reaches you.",
+  ],
+  [
+    "03",
+    "You authorize. We settle.",
+    "Nothing moves without your approval. Then every contractor is paid in about four seconds, every salary kept private.",
+  ],
 ];
 
 export default function HowItWorks() {
@@ -19,7 +31,8 @@ export default function HowItWorks() {
                 Three steps to payday.
               </Heading>
               <Lead tone="dark" className="mt-6 max-w-[36ch]">
-                From a funded treasury to settled salaries, with one human decision in the middle.
+                From a funded treasury to settled salaries, with one human
+                decision in the middle.
               </Lead>
               <div className="mt-8 flex flex-wrap gap-3">
                 <LinkButton href="#waitlist" variant="mint">
@@ -32,11 +45,20 @@ export default function HowItWorks() {
             </div>
             <ol className="divide-y divide-white/10 border-t border-white/10 lg:border-t-0">
               {STEPS.map(([n, t, d], i) => (
-                <Reveal as="li" key={n} delay={0.15 + i * 0.1} className="grid grid-cols-[56px_1fr] gap-4 py-7 first:lg:pt-0">
+                <Reveal
+                  as="li"
+                  key={n}
+                  delay={0.15 + i * 0.1}
+                  className="grid grid-cols-[56px_1fr] gap-4 py-7 first:lg:pt-0"
+                >
                   <span className="font-mono text-[14px] text-mint">{n}</span>
                   <div>
-                    <h3 className="font-display text-[26px] font-semibold leading-[1.15] tracking-[-0.02em] text-white md:text-[30px]">{t}</h3>
-                    <p className="mt-3 text-[16px] leading-[1.5] text-white/65 md:text-[17px]">{d}</p>
+                    <h3 className="font-display text-[26px] font-semibold leading-[1.15] tracking-[-0.02em] text-white md:text-[30px]">
+                      {t}
+                    </h3>
+                    <p className="mt-3 text-[16px] leading-[1.5] text-white/65 md:text-[17px]">
+                      {d}
+                    </p>
                   </div>
                 </Reveal>
               ))}
