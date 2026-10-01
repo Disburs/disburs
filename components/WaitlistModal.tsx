@@ -1,11 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Loader2 } from "lucide-react";
 import { useJoinWaitlist } from "@/lib/hooks/useWaitlist";
 import type { AccountType } from "@/lib/api";
-
 
 const ROLES: { value: AccountType; label: string; sub: string }[] = [
   { value: "CLIENT", label: "Pay my team", sub: "I run payroll" },
@@ -78,7 +79,8 @@ export default function WaitlistModal() {
     );
   };
 
-  const canSubmit = Boolean(email.trim()) && Boolean(role) && !mutation.isPending;
+  const canSubmit =
+    Boolean(email.trim()) && Boolean(role) && !mutation.isPending;
 
   return (
     <AnimatePresence>
@@ -102,14 +104,15 @@ export default function WaitlistModal() {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="icon"
               aria-label="Close"
               onClick={() => setOpen(false)}
-              className="absolute right-5 top-5 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-line text-ink transition-[opacity,transform] duration-150 hover:opacity-[0.84] active:scale-[0.98]"
+              className="h-11 w-11 absolute right-5 top-5"
             >
               <X size={18} />
-            </button>
+            </Button>
 
             {done ? (
               <div>
@@ -117,28 +120,33 @@ export default function WaitlistModal() {
                   <Check size={26} strokeWidth={2.5} />
                 </span>
                 <h3 className="mt-7 font-display text-[36px] font-semibold leading-[1.05] tracking-[-0.025em] text-ink md:text-[44px]">
-                  {alreadyJoined ? "You're already on the list." : "You're on the list."}
+                  {alreadyJoined
+                    ? "You're already on the list."
+                    : "You're on the list."}
                 </h3>
                 <p className="mt-5 text-[17px] leading-[1.5] text-muted">
                   {alreadyJoined ? (
                     <>
-                      We already have <b className="font-medium text-ink">{email}</b>. We&apos;ll be in
-                      touch when it&apos;s your turn.
+                      We already have{" "}
+                      <b className="font-medium text-ink">{email}</b>.
+                      We&apos;ll be in touch when it&apos;s your turn.
                     </>
                   ) : (
                     <>
-                      We&apos;ll email <b className="font-medium text-ink">{email}</b> the moment it&apos;s
-                      your turn.
+                      We&apos;ll email{" "}
+                      <b className="font-medium text-ink">{email}</b> the moment
+                      it&apos;s your turn.
                     </>
                   )}
                 </p>
-                <button
-                  type="button"
+                <Button
+                  variant="default"
+                  size="lg"
                   onClick={() => setOpen(false)}
-                  className="mt-8 inline-flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.98]"
+                  className="h-14 text-[17px] mt-8 h-14 w-full text-[17px]"
                 >
                   Done
-                </button>
+                </Button>
               </div>
             ) : (
               <>
@@ -146,35 +154,42 @@ export default function WaitlistModal() {
                   Join the <em className="font-medium italic">waitlist.</em>
                 </h3>
                 <p className="mt-4 text-[16px] leading-[1.5] text-muted md:text-[17px]">
-                  The first 20 companies get three months free and lock in launch pricing.
+                  The first 20 companies get three months free and lock in
+                  launch pricing.
                 </p>
 
                 <form onSubmit={submit} className="mt-8 flex flex-col gap-6">
                   <fieldset>
-                    <legend className="mb-3 text-[15px] font-medium text-ink">I want to…</legend>
+                    <legend className="mb-3 text-[15px] font-medium text-ink">
+                      I want to…
+                    </legend>
                     <div className="flex flex-wrap gap-2.5">
                       {ROLES.map((r) => {
                         const on = role === r.value;
                         return (
-                          <button
+                          <Button
+                            variant={on ? "default" : "outline"}
                             key={r.value}
-                            type="button"
                             onClick={() => setRole(r.value)}
                             aria-pressed={on}
-                            className={`inline-flex h-12 cursor-pointer items-center gap-2 rounded-full border px-5 text-[15px] font-medium transition-[background-color,color,border-color,transform] duration-150 active:scale-[0.98] ${
-                              on ? "border-ink-deep bg-ink-deep text-white" : "border-line bg-canvas text-ink hover:border-ink"
-                            }`}
+                            className="h-12 px-4 text-[15px]"
                           >
                             {r.label}
-                            <span className={`text-[13px] font-normal ${on ? "text-white/60" : "text-muted"}`}>{r.sub}</span>
-                          </button>
+                            <span
+                              className={`text-[13px] font-normal ${on ? "text-ink-deep/60" : "text-muted"}`}
+                            >
+                              {r.sub}
+                            </span>
+                          </Button>
                         );
                       })}
                     </div>
                   </fieldset>
 
                   <label className="block">
-                    <span className="mb-3 block text-[15px] font-medium text-ink">Work email</span>
+                    <span className="mb-3 block text-[15px] font-medium text-ink">
+                      Work email
+                    </span>
                     <input
                       type="email"
                       required
@@ -186,18 +201,27 @@ export default function WaitlistModal() {
                   </label>
 
                   {mutation.isError && (
-                    <p className="text-[14px] text-[#B42318]">{(mutation.error as Error).message}</p>
+                    <p className="text-[14px] text-[#B42318]">
+                      {(mutation.error as Error).message}
+                    </p>
                   )}
 
-                  <button
+                  <Button
                     type="submit"
+                    size="lg"
+                    className="h-14 w-full text-[17px]"
                     disabled={!canSubmit}
-                    className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-mint text-[17px] font-medium text-ink-deep transition-[opacity,transform] duration-150 enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {mutation.isPending ? <Loader2 size={20} className="animate-spin" /> : "Join the waitlist"}
-                  </button>
+                    {mutation.isPending ? (
+                      <Loader2 size={20} className="animate-spin" />
+                    ) : (
+                      "Join the waitlist"
+                    )}
+                  </Button>
                 </form>
-                <p className="mt-5 text-[13.5px] text-muted">No spam. We&apos;ll only email you about early access.</p>
+                <p className="mt-5 text-[13.5px] text-muted">
+                  No spam. We&apos;ll only email you about early access.
+                </p>
               </>
             )}
           </motion.div>

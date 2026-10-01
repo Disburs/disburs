@@ -3,26 +3,34 @@
 import { useEffect, useState } from "react";
 import Wordmark from "@/components/Wordmark";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Container } from "./Section";
+import ModeSwitch from "./ModeSwitch";
 
 const LINKS = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Privacy", href: "#privacy" },
-  { label: "Security", href: "#security" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Privacy", href: "/#privacy" },
+  { label: "Security", href: "/#security" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export function Logo({ tone = "light" }: { tone?: "dark" | "light" }) {
   return (
-    <a href="#top" aria-label="Disburs home" className={`text-[24px] font-semibold tracking-[-0.03em] ${tone === "dark" ? "text-white" : "text-ink"}`}>
+    <Link
+      href="/"
+      aria-label="Disburs home"
+      className={`text-[24px] font-semibold tracking-[-0.03em] ${tone === "dark" ? "text-white" : "text-ink"}`}
+    >
       <Wordmark />
-    </a>
+    </Link>
   );
 }
 
 export default function Nav() {
+  const links = LINKS;
+  const cta = { label: "Sign in", href: "/sign-in" };
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const reduce = useReducedMotion();
@@ -46,22 +54,33 @@ export default function Nav() {
   }, [open]);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 bg-canvas transition-[border-color] duration-200 ${scrolled || open ? "border-b border-line" : "border-b border-transparent"}`}>
-      <Container className="flex h-[88px] items-center justify-between">
-        <Logo />
-        <nav aria-label="Primary" className="hidden items-center gap-10 lg:flex">
-          {LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="text-[17px] text-ink transition-opacity duration-150 hover:opacity-[0.84]">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 bg-canvas transition-[border-color] duration-200 ${scrolled || open ? "border-b border-line" : "border-b border-transparent"}`}
+    >
+      <Container className="flex h-[88px] items-center justify-between gap-6">
+        <div className="flex items-center gap-5">
+          <Logo />
+          <span className="hidden sm:inline-flex">
+            <ModeSwitch mode="payroll" />
+          </span>
+        </div>
+        <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-[17px] text-ink transition-opacity duration-150 hover:opacity-[0.84]"
+            >
               {l.label}
             </a>
           ))}
         </nav>
         <div className="flex items-center gap-3">
           <a
-            href="#waitlist"
+            href={cta.href}
             className="hidden h-12 cursor-pointer items-center rounded-full bg-ink-deep px-7 text-[16px] font-medium text-white transition-[opacity,transform] duration-150 hover:opacity-[0.88] active:scale-[0.98] sm:inline-flex"
           >
-            Join waitlist
+            {cta.label}
           </a>
           <button
             type="button"
@@ -87,13 +106,25 @@ export default function Nav() {
             className="border-t border-line bg-canvas lg:hidden"
           >
             <Container className="flex flex-col py-4">
-              {LINKS.map((l) => (
-                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0">
+              <div className="mb-3 sm:hidden">
+                <ModeSwitch mode="payroll" />
+              </div>
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="flex h-14 items-center border-b border-line text-[18px] text-ink last:border-0"
+                >
                   {l.label}
                 </a>
               ))}
-              <a href="#waitlist" onClick={() => setOpen(false)} className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white">
-                Join waitlist
+              <a
+                href={cta.href}
+                onClick={() => setOpen(false)}
+                className="mt-5 inline-flex h-14 items-center justify-center rounded-full bg-ink-deep text-[17px] font-medium text-white"
+              >
+                {cta.label}
               </a>
             </Container>
           </motion.div>

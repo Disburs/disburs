@@ -27,7 +27,11 @@ export default function LinkButton({
   className?: string;
   size?: "sm" | "md" | "lg";
 }) {
-  const h = { sm: "h-12 px-6 text-[15px]", md: "h-14 px-8 text-[17px]", lg: "h-[64px] px-10 text-[19px]" }[size];
+  const h = {
+    sm: "h-12 px-6 text-[15px]",
+    md: "h-14 px-8 text-[17px]",
+    lg: "h-[64px] px-10 text-[19px]",
+  }[size];
   return (
     <a
       href={href}

@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { useState } from "react";
 import Wordmark from "@/components/Wordmark";
 import Link from "next/link";
@@ -8,7 +10,7 @@ import { ArrowLeft, Check, Loader2 } from "lucide-react";
 export default function WaitlistPage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">(
-    "idle"
+    "idle",
   );
 
   async function onSubmit(e: React.FormEvent) {
@@ -30,10 +32,16 @@ export default function WaitlistPage() {
   return (
     <main className="flex min-h-screen flex-col bg-canvas">
       <header className="flex h-[72px] items-center justify-between border-b border-line px-5 md:px-8">
-        <Link href="/" className="text-[22px] font-semibold tracking-[-0.03em] text-ink">
+        <Link
+          href="/"
+          className="text-[22px] font-semibold tracking-[-0.03em] text-ink"
+        >
           <Wordmark />
         </Link>
-        <Link href="/" className="inline-flex items-center gap-2 text-[14px] text-muted transition-colors hover:text-ink">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-[14px] text-muted transition-colors hover:text-ink"
+        >
           <ArrowLeft size={16} /> Back to home
         </Link>
       </header>
@@ -50,7 +58,8 @@ export default function WaitlistPage() {
               </h1>
               <p className="mt-5 text-[17px] leading-[1.5] text-muted">
                 You&rsquo;re on the list. We&rsquo;ll be in touch at{" "}
-                <b className="font-medium text-ink">{email}</b> the moment it&rsquo;s your turn.
+                <b className="font-medium text-ink">{email}</b> the moment
+                it&rsquo;s your turn.
               </p>
               <Link
                 href="/"
@@ -70,7 +79,9 @@ export default function WaitlistPage() {
 
               <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-6">
                 <label className="block">
-                  <span className="mb-3 block text-[15px] font-medium text-ink">Work email</span>
+                  <span className="mb-3 block text-[15px] font-medium text-ink">
+                    Work email
+                  </span>
                   <input
                     type="email"
                     required
@@ -82,16 +93,24 @@ export default function WaitlistPage() {
                 </label>
 
                 {status === "error" && (
-                  <p className="text-[14px] text-[#A32D1C]">Something went wrong. Please try again.</p>
+                  <p className="text-[14px] text-[#A32D1C]">
+                    Something went wrong. Please try again.
+                  </p>
                 )}
 
-                <button
+                <Button
+                  variant="default"
+                  size="lg"
                   type="submit"
                   disabled={status === "loading"}
-                  className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-mint text-[17px] font-medium text-ink-deep transition-[opacity,transform] duration-150 enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="h-14 text-[17px] h-14 w-full gap-2 text-[17px]"
                 >
-                  {status === "loading" ? <Loader2 size={20} className="animate-spin" /> : "Join the waitlist"}
-                </button>
+                  {status === "loading" ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : (
+                    "Join the waitlist"
+                  )}
+                </Button>
               </form>
 
               <p className="mt-5 text-[13.5px] text-muted">
