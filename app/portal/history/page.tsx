@@ -1,12 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ArrowRight, ChevronDown, Loader2 } from "lucide-react";
 import { Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import RunLines, { runVariant } from "@/components/portal/RunLines";
 import { useMe } from "@/lib/hooks/useMe";
-import { useExecuteRun, useRuns } from "@/lib/hooks/usePayroll";
+import {
+  useApproveAndExecute,
+  useDiscardRun,
+  useExecuteRun,
+  useRuns,
+} from "@/lib/hooks/usePayroll";
+import { toast } from "@/components/ui/sonner";
 import { MONEY_ROLES } from "@/lib/api";
 import { usdc, when } from "@/lib/format";
 
@@ -15,6 +21,9 @@ export default function HistoryPage() {
   const { data: me } = useMe();
   const runs = useRuns();
   const retry = useExecuteRun();
+  const pay = useApproveAndExecute();
+  const discard = useDiscardRun();
+  const balance = Number(me?.organization?.treasuryWallet?.balances?.usdc ?? 0);
   const [open, setOpen] = useState<string | null>(null);
   const network = me?.network ?? "testnet";
   const canManage = Boolean(
@@ -73,6 +82,61 @@ export default function HistoryPage() {
                   {on && (
                     <div className="border-t border-line bg-subtle">
                       <RunLines lines={r.lines} network={network} />
+                      {canManage && r.status === "DRAFT" && (
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-6 py-3">
+                          <span className="text-[13.5px] text-muted">
+                            {balance < Number(r.totalAmount)
+                              ? `Treasury holds $${usdc(balance)}. Fund it before approving.`
+                              : "Nothing moves until you approve."}
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                discard.mutate(r.id, {
+                                  onSuccess: () =>
+                                    toast.success("Draft discarded"),
+                                  onError: (e) =>
+                                    toast.error("Could not discard", {
+                                      description: (e as Error).message,
+                                    }),
+                                })
+                              }
+                              disabled={discard.isPending || pay.isPending}
+                            >
+                              Discard
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                pay.mutate(r.id, {
+                                  onSuccess: (run) =>
+                                    toast.success(
+                                      `Run ${run.status.toLowerCase()}`,
+                                      {
+                                        description: `${run.lines.filter((l) => l.status === "SETTLED").length} of ${run.lineCount} lines paid.`,
+                                      },
+                                    ),
+                                  onError: (e) =>
+                                    toast.error("Could not pay", {
+                                      description: (e as Error).message,
+                                    }),
+                                })
+                              }
+                              disabled={
+                                pay.isPending || balance < Number(r.totalAmount)
+                              }
+                            >
+                              {pay.isPending && pay.variables === r.id ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : null}{" "}
+                              Approve & pay ${usdc(r.totalAmount)}{" "}
+                              <ArrowRight size={14} />
+                            </Button>
+                          </span>
+                        </div>
+                      )}
                       {canManage &&
                         (r.status === "PARTIAL" || r.status === "FAILED") && (
                           <div className="border-t border-line px-6 py-3">
