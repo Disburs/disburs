@@ -39,7 +39,7 @@ const NAV: {
   { label: "Pay", href: "/portal/pay", icon: Send, feature: "oneOffPay" },
   { label: "Payroll", href: "/portal/payroll", icon: ReceiptText },
   { label: "History", href: "/portal/history", icon: History },
-  { label: "Wallet", href: "/portal/wallet", icon: Wallet },
+  { label: "Treasury", href: "/portal/wallet", icon: Wallet },
   { label: "Team", href: "/portal/team", icon: UsersRound },
   { label: "Settings", href: "/portal/settings", icon: Settings },
 ];
