@@ -116,7 +116,12 @@ export interface Me {
 }
 
 export type Feature =
-  "payroll" | "oneOffPay" | "cashouts" | "clientSignup" | "testnetFunding";
+  | "invoices"
+  | "payroll"
+  | "oneOffPay"
+  | "cashouts"
+  | "clientSignup"
+  | "testnetFunding";
 
 export async function getMe(): Promise<Me | null> {
   const { data, error, response } = await client.GET("/api/me");
@@ -510,6 +515,83 @@ export interface CashoutRequest {
   updatedAt: string;
 }
 export type CreateCashoutBody = components["schemas"]["CreateCashoutDto"];
+
+/* ------------------------------ invoices ------------------------------- */
+export type InvoiceStatus =
+  "SUBMITTED" | "APPROVED" | "REJECTED" | "CANCELLED" | "PAID";
+export interface InvoiceEvent {
+  status: InvoiceStatus;
+  byUserId: string | null;
+  note: string | null;
+  createdAt: string;
+}
+export interface Invoice {
+  id: string;
+  organizationId: string;
+  contractorId: string;
+  amount: string;
+  description: string;
+  evidenceUrl: string | null;
+  status: InvoiceStatus;
+  decidedById: string | null;
+  decidedAt: string | null;
+  decisionNote: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  line: {
+    id: string;
+    runId: string;
+    status: string;
+    txHash: string | null;
+  } | null;
+  events: InvoiceEvent[];
+  organization?: { id: string; name: string };
+  contractor?: { id: string; name: string; email: string; country: string };
+}
+export interface CreateInvoiceBody {
+  organizationId: string;
+  amount: string;
+  description: string;
+  evidenceUrl?: string;
+}
+export const invoicesApi = {
+  organizations: () =>
+    client
+      .GET("/api/invoices/organizations")
+      .then((r) =>
+        unwrap<{ id: string; name: string; logo: string | null }[]>(r),
+      ),
+  mine: () =>
+    client.GET("/api/invoices/mine").then((r) => unwrap<Invoice[]>(r)),
+  submit: (body: CreateInvoiceBody) =>
+    client.POST("/api/invoices", { body }).then((r) => unwrap<Invoice>(r)),
+  cancel: (id: string) =>
+    client
+      .POST("/api/invoices/{id}/cancel", { params: { path: { id } } })
+      .then((r) => unwrap<Invoice>(r)),
+  list: (status?: InvoiceStatus) =>
+    client
+      .GET("/api/invoices", { params: { query: status ? { status } : {} } })
+      .then((r) => unwrap<Invoice[]>(r)),
+  approve: (id: string, note?: string) =>
+    client
+      .POST("/api/invoices/{id}/approve", {
+        params: { path: { id } },
+        body: { note },
+      })
+      .then((r) => unwrap<Invoice>(r)),
+  reject: (id: string, note?: string) =>
+    client
+      .POST("/api/invoices/{id}/reject", {
+        params: { path: { id } },
+        body: { note },
+      })
+      .then((r) => unwrap<Invoice>(r)),
+  draftRun: (body: { label: string; memo?: string; invoiceIds?: string[] }) =>
+    client
+      .POST("/api/invoices/run", { body })
+      .then((r) => unwrap<PayrollRun>(r)),
+};
 
 export const cashoutsApi = {
   list: () =>
