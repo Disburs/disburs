@@ -46,7 +46,7 @@ const NAV: {
     feature: "invoices",
   },
   { label: "History", href: "/portal/history", icon: History },
-  { label: "Wallet", href: "/portal/wallet", icon: Wallet },
+  { label: "Treasury", href: "/portal/wallet", icon: Wallet },
   { label: "Team", href: "/portal/team", icon: UsersRound },
   { label: "Settings", href: "/portal/settings", icon: Settings },
 ];
