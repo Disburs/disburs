@@ -199,6 +199,8 @@ export interface OrgContractor {
   type: "INDIVIDUAL" | "BUSINESS";
   createdAt: string;
   wallet: { publicKey: string; isActivated: boolean } | null;
+  /** Added to the list directly, so they can invoice you. */
+  added: boolean;
   payrolls: { id: string; name: string; amount: string; active: boolean }[];
   lastPaidAt: string | null;
   lastTxHash: string | null;
@@ -212,6 +214,21 @@ export async function listContractors(): Promise<OrgContractor[]> {
   const { data, error } = await client.GET("/api/contractors");
   if (error) throw toError(error);
   return (data ?? []) as unknown as OrgContractor[];
+}
+
+/** Add an onboarded contractor to your list by email, so they can invoice you. */
+export async function addContractor(email: string) {
+  const { data, error } = await client.POST("/api/contractors", {
+    body: { email },
+  });
+  if (error) throw toError(error);
+  return data as unknown as { id: string; name: string; email: string };
+}
+export async function removeContractor(id: string) {
+  const { error } = await client.DELETE("/api/contractors/{id}", {
+    params: { path: { id } },
+  });
+  if (error) throw toError(error);
 }
 
 export async function lookupContractor(
@@ -604,6 +621,15 @@ export const invoicesApi = {
         body: { note },
       })
       .then((r) => unwrap<Invoice>(r)),
+  payNow: (id: string, note?: string) =>
+    client
+      .POST("/api/invoices/{id}/pay", {
+        params: { path: { id } },
+        body: { note },
+      })
+      .then((r) =>
+        unwrap<{ invoice: Invoice; run: { id: string; status: string } }>(r),
+      ),
   draftRun: (body: { label: string; memo?: string; invoiceIds?: string[] }) =>
     client
       .POST("/api/invoices/run", { body })

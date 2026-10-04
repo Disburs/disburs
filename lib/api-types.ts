@@ -236,11 +236,29 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Contractors the active organization works with: on a payroll roster or paid before */
+    /** Contractors the active organization works with: added, on a payroll roster, or paid before */
     get: operations["ContractorsController_list"];
     put?: never;
-    post?: never;
+    /** Add an onboarded contractor to your list by email, so they can invoice you (owner/admin) */
+    post: operations["ContractorsController_add"];
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/contractors/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Remove a contractor from your list (rosters and history stay) */
+    delete: operations["ContractorsController_remove"];
     options?: never;
     head?: never;
     patch?: never;
@@ -694,6 +712,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/invoices/{id}/pay": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Pay one invoice now: approves it if needed, then pays it in one step (owner/admin) */
+    post: operations["InvoicesController_pay"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/invoices/run": {
     parameters: {
       query?: never;
@@ -703,7 +738,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Draft a payroll run from approved invoices (owner/admin) */
+    /** Pay several approved invoices together: drafts one payment batch (owner/admin) */
     post: operations["InvoicesController_draftRun"];
     delete?: never;
     options?: never;
@@ -1454,6 +1489,13 @@ export interface components {
       /** @description Idempotency key — a retry with the same key never double-pays. */
       idempotencyKey?: string;
     };
+    LookupContractorDto: {
+      /**
+       * @description The contractor’s sign-in email.
+       * @example kwabena@example.com
+       */
+      email: string;
+    };
     SignUploadDto: {
       /**
        * @description What the image is for; picks the folder + transformation.
@@ -1908,6 +1950,46 @@ export interface operations {
       query?: never;
       header?: never;
       path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ContractorsController_add: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LookupContractorDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ContractorsController_remove: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
       cookie?: never;
     };
     requestBody?: never;
@@ -2534,6 +2616,29 @@ export interface operations {
     };
   };
   InvoicesController_reject: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecideInvoiceDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  InvoicesController_pay: {
     parameters: {
       query?: never;
       header?: never;

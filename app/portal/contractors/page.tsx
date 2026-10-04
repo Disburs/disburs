@@ -7,13 +7,25 @@ import {
   ChevronDown,
   Copy,
   ExternalLink,
+  Loader2,
   Search,
   ShieldCheck,
+  UserPlus,
 } from "lucide-react";
 import { Avatar, Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/lib/hooks/useMe";
-import { useContractors } from "@/lib/hooks/usePayments";
+import { useAddContractor, useContractors } from "@/lib/hooks/usePayments";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "@/components/ui/sonner";
+import { inputClass } from "@/components/portal/ui";
 import { MONEY_ROLES, explorerUrl, type OrgContractor } from "@/lib/api";
 import { shortKey, usdc, when } from "@/lib/format";
 
@@ -48,8 +60,8 @@ function matches(c: OrgContractor, filter: Filter) {
 
 /**
  * Everyone this organization works with. Contractors onboard themselves;
- * they appear here once they are on one of your payrolls or you have paid
- * them. So the way to "add" one is to put them on a roster by email.
+ * they appear here once you add them by email, put them on a payroll, or
+ * pay them. Adding one is what lets them send you invoices.
  */
 export default function ContractorsPage() {
   const { data: me } = useMe();
@@ -58,6 +70,19 @@ export default function ContractorsPage() {
   const [filter, setFilter] = useState<Filter>("All");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [email, setEmail] = useState("");
+  const add = useAddContractor();
+  const submitAdd = () =>
+    add.mutate(email.trim(), {
+      onSuccess: (c) => {
+        toast.success(`${c.name} added`, {
+          description: "They can now send you invoices.",
+        });
+        setAdding(false);
+        setEmail("");
+      },
+    });
 
   const network = me?.network ?? "testnet";
   const canManage = Boolean(
@@ -91,9 +116,14 @@ export default function ContractorsPage() {
         }
         action={
           canManage ? (
-            <Button asChild>
-              <Link href="/portal/payroll">Add to a payroll</Link>
-            </Button>
+            <span className="flex flex-wrap gap-2">
+              <Button variant="outline" asChild>
+                <Link href="/portal/payroll">Add to a payroll</Link>
+              </Button>
+              <Button onClick={() => setAdding(true)}>
+                <UserPlus size={16} /> Add contractor
+              </Button>
+            </span>
           ) : undefined
         }
       >
@@ -329,6 +359,62 @@ export default function ContractorsPage() {
           </div>
         )}
       </Card>
+      <Dialog
+        open={adding}
+        onOpenChange={(o) => {
+          setAdding(o);
+          if (!o) add.reset();
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add a contractor</DialogTitle>
+            <DialogDescription>
+              Enter the email they signed up to Disburs with. Once added, they
+              can send you invoices, and you can pay them or put them on a
+              payroll. Nothing is paid by adding them.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="mt-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (email.trim()) submitAdd();
+            }}
+          >
+            <input
+              type="email"
+              className={inputClass}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              aria-label="Contractor email"
+              autoFocus
+            />
+            {add.isError && (
+              <p className="mt-3 text-[13.5px] text-[#A32D1C]">
+                {(add.error as Error).message}
+              </p>
+            )}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAdding(false)}
+                disabled={add.isPending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!email.trim() || add.isPending}>
+                {add.isPending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : null}{" "}
+                Add
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,20 +1,51 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fundWallet, listContractors, listLedger, lookupContractor, payContractor } from "../api";
+import {
+  addContractor,
+  fundWallet,
+  listContractors,
+  listLedger,
+  lookupContractor,
+  payContractor,
+  removeContractor,
+} from "../api";
 import { ME_KEY } from "./useMe";
 
 export const LEDGER_KEY = ["ledger"] as const;
 
 export function useLedger() {
-  return useQuery({ queryKey: LEDGER_KEY, queryFn: listLedger, staleTime: 10_000 });
+  return useQuery({
+    queryKey: LEDGER_KEY,
+    queryFn: listLedger,
+    staleTime: 10_000,
+  });
 }
 
 export const CONTRACTORS_KEY = ["contractors"] as const;
 
 /** Contractors the active organization works with (on a roster or paid before). */
 export function useContractors() {
-  return useQuery({ queryKey: CONTRACTORS_KEY, queryFn: listContractors, staleTime: 10_000 });
+  return useQuery({
+    queryKey: CONTRACTORS_KEY,
+    queryFn: listContractors,
+    staleTime: 10_000,
+  });
+}
+
+export function useAddContractor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: addContractor,
+    onSuccess: () => qc.invalidateQueries({ queryKey: CONTRACTORS_KEY }),
+  });
+}
+export function useRemoveContractor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: removeContractor,
+    onSuccess: () => qc.invalidateQueries({ queryKey: CONTRACTORS_KEY }),
+  });
 }
 
 export function useLookupContractor() {

@@ -40,7 +40,7 @@ const rowTotal = (r: Row) =>
 
 const STATUS_LABEL: Record<InvoiceStatus, string> = {
   SUBMITTED: "Waiting for a decision",
-  APPROVED: "Approved · paid with their next run",
+  APPROVED: "Approved · payment on its way",
   REJECTED: "Rejected",
   CANCELLED: "Withdrawn",
   PAID: "Paid",
@@ -59,7 +59,7 @@ function statusVariant(s: InvoiceStatus) {
 /**
  * A contractor invoices an organization they work with. The organization
  * approves or rejects; an approved invoice is paid with that organization's
- * next payroll run. Everything the contractor submitted is listed below.
+ * own or together with others. Everything the contractor submitted is listed below.
  */
 export default function ContractorInvoicesPage() {
   const invoicesOn = useFeature("invoices");
@@ -122,7 +122,7 @@ export default function ContractorInvoicesPage() {
 
   return (
     <div className="mx-auto flex max-w-[760px] flex-col gap-5">
-      <PageTitle sub="Bill the companies you work with. They approve, and it is paid with their next payroll run.">
+      <PageTitle sub="Bill the companies you work with. They approve it and pay you; you get a receipt by email.">
         Invoices
       </PageTitle>
 
@@ -136,8 +136,9 @@ export default function ContractorInvoicesPage() {
       {invoicesOn && !orgs.isPending && (orgs.data?.length ?? 0) === 0 && (
         <Card tone="subtle">
           <p className="text-[14px] leading-[1.55] text-muted">
-            You can invoice a company once it has added you to a payroll or paid
-            you. Nothing to invoice yet.
+            You can invoice a company once it has added you as a contractor. Ask
+            them to add the email you signed in with, on their Contractors page.
+            Companies that have paid you before are listed automatically.
           </p>
         </Card>
       )}

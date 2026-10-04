@@ -20,6 +20,7 @@ import {
   useDecideInvoice,
   useDraftRunFromInvoices,
   useOrgInvoices,
+  usePayInvoiceNow,
 } from "@/lib/hooks/useInvoices";
 import {
   MONEY_ROLES,
@@ -45,7 +46,8 @@ function statusVariant(s: InvoiceStatus) {
 /**
  * The organization's review queue. Owners and admins approve or reject each
  * invoice with a note the contractor sees, then release approved ones as a
- * payroll run drafted from them (reviewed and paid like any other run).
+ * single payment batch, approved on the History page. One invoice can also
+ * be paid on the spot with "Approve & pay".
  */
 export default function InvoicesPage() {
   const router = useRouter();
@@ -58,6 +60,28 @@ export default function InvoicesPage() {
   const q = useOrgInvoices(tab === "all" ? undefined : tab);
   const decide = useDecideInvoice();
   const draft = useDraftRunFromInvoices();
+  const payNow = usePayInvoiceNow();
+  const balance = Number(me?.organization?.treasuryWallet?.balances?.usdc ?? 0);
+  const pay = (inv: Invoice) =>
+    payNow.mutate(
+      { id: inv.id },
+      {
+        onSuccess: (r) =>
+          r.invoice.status === "PAID"
+            ? toast.success(
+                `Paid $${usdc(inv.amount)} to ${inv.contractor?.name}`,
+                {
+                  description: `${invoiceLabel(inv.number)} is settled. They get a receipt by email.`,
+                },
+              )
+            : toast.error("The payment did not settle", {
+                description: "See History for the reason and to retry.",
+              }),
+        onError: (e) =>
+          toast.error("Could not pay", { description: (e as Error).message }),
+      },
+    );
+  const busy = decide.isPending || payNow.isPending;
   const [rejecting, setRejecting] = useState<Invoice | null>(null);
   const [note, setNote] = useState("");
   const [releasing, setReleasing] = useState(false);
@@ -110,15 +134,15 @@ export default function InvoicesPage() {
         onSuccess: (run) => {
           setReleasing(false);
           toast.success(
-            `Run drafted: ${run.lineCount} invoice${run.lineCount === 1 ? "" : "s"}`,
+            `Payment drafted: ${run.lineCount} invoice${run.lineCount === 1 ? "" : "s"}`,
             {
-              description: "Review and approve it on the History page to pay.",
+              description: "Approve it on the History page to pay.",
             },
           );
           router.push("/portal/history");
         },
         onError: (e) =>
-          toast.error("Could not draft the run", {
+          toast.error("Could not draft the payment", {
             description: (e as Error).message,
           }),
       },
@@ -133,7 +157,7 @@ export default function InvoicesPage() {
   return (
     <div className="flex flex-col gap-5">
       <PageTitle
-        sub="Invoices from the people you work with. Approve what is right, reject what is not, release the approved ones as a run."
+        sub="Invoices from the people you work with. Pay one straight away, or approve several and pay them together."
         action={
           canManage && invoicesOn && releasable.length > 0 ? (
             <Button onClick={() => setReleasing(true)}>
@@ -232,15 +256,16 @@ export default function InvoicesPage() {
                             size="sm"
                             variant="outline"
                             onClick={() => setRejecting(inv)}
-                            disabled={decide.isPending}
+                            disabled={busy}
                             className="hover:text-[#A32D1C]"
                           >
                             <X size={14} /> Reject
                           </Button>
                           <Button
                             size="sm"
+                            variant="outline"
                             onClick={() => approve(inv)}
-                            disabled={decide.isPending}
+                            disabled={busy}
                           >
                             {decide.isPending &&
                             decide.variables?.id === inv.id ? (
@@ -250,7 +275,43 @@ export default function InvoicesPage() {
                             )}{" "}
                             Approve
                           </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => pay(inv)}
+                            disabled={busy || balance < Number(inv.amount)}
+                            title={
+                              balance < Number(inv.amount)
+                                ? `Treasury holds $${usdc(balance)}`
+                                : undefined
+                            }
+                          >
+                            {payNow.isPending &&
+                            payNow.variables?.id === inv.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : null}{" "}
+                            Approve & pay
+                          </Button>
                         </>
+                      ) : inv.status === "APPROVED" &&
+                        !inv.line &&
+                        canManage &&
+                        invoicesOn ? (
+                        <Button
+                          size="sm"
+                          onClick={() => pay(inv)}
+                          disabled={busy || balance < Number(inv.amount)}
+                          title={
+                            balance < Number(inv.amount)
+                              ? `Treasury holds $${usdc(balance)}`
+                              : undefined
+                          }
+                        >
+                          {payNow.isPending &&
+                          payNow.variables?.id === inv.id ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : null}{" "}
+                          Pay now
+                        </Button>
                       ) : (
                         <Badge variant={statusVariant(inv.status)}>
                           {inv.status.toLowerCase()}
@@ -320,9 +381,9 @@ export default function InvoicesPage() {
               {releasable.length === 1 ? "" : "s"}
             </DialogTitle>
             <DialogDescription>
-              This drafts a payroll run of ${usdc(releasableTotal)} with one
-              line per invoice. Nothing is paid until you approve the run on the
-              History page.
+              This drafts one payment of ${usdc(releasableTotal)} with a line
+              per invoice. Nothing is paid until you approve it on the History
+              page.
             </DialogDescription>
           </DialogHeader>
           <input
@@ -330,7 +391,7 @@ export default function InvoicesPage() {
             maxLength={60}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            placeholder="Run label, e.g. Invoices · March"
+            placeholder="Label, e.g. Invoices · March"
           />
           <DialogFooter>
             <Button
@@ -344,7 +405,7 @@ export default function InvoicesPage() {
               {draft.isPending ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : null}{" "}
-              Draft the run
+              Draft the payment
             </Button>
           </DialogFooter>
         </DialogContent>
