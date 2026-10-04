@@ -77,6 +77,8 @@ export default function ContractorInvoicesPage() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const org = organizationId || orgs.data?.[0]?.id || "";
+  const evidenceAbove =
+    orgs.data?.find((o) => o.id === org)?.requireEvidenceAbove ?? null;
   const total = rows.reduce((a, r) => a + rowTotal(r), 0);
   const periodOk = !periodStart || !periodEnd || periodEnd >= periodStart;
   const canSubmit =
@@ -293,8 +295,16 @@ export default function ContractorInvoicesPage() {
           )}
           <div className="mt-4">
             <Field
-              label="Evidence link (optional)"
-              hint="A document, a repository, a shared folder."
+              label={
+                evidenceAbove && total > Number(evidenceAbove)
+                  ? "Evidence link (required)"
+                  : "Evidence link (optional)"
+              }
+              hint={
+                evidenceAbove
+                  ? `This company requires it for invoices above $${usdc(evidenceAbove)}.`
+                  : "A document, a repository, a shared folder."
+              }
             >
               <input
                 className={inputClass}
