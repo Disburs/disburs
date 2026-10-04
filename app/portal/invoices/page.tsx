@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Paperclip, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import { Badge, Card, PageTitle, inputClass } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,8 +20,15 @@ import {
   useDecideInvoice,
   useDraftRunFromInvoices,
   useOrgInvoices,
+  usePayInvoiceNow,
 } from "@/lib/hooks/useInvoices";
-import { MONEY_ROLES, type Invoice, type InvoiceStatus } from "@/lib/api";
+import {
+  MONEY_ROLES,
+  invoiceLabel,
+  type Invoice,
+  type InvoiceStatus,
+} from "@/lib/api";
+import InvoiceDetail, { isOverdue } from "@/components/invoices/InvoiceDetail";
 import { usdc, when } from "@/lib/format";
 
 type Tab = "SUBMITTED" | "APPROVED" | "all";
@@ -39,7 +46,8 @@ function statusVariant(s: InvoiceStatus) {
 /**
  * The organization's review queue. Owners and admins approve or reject each
  * invoice with a note the contractor sees, then release approved ones as a
- * payroll run drafted from them (reviewed and paid like any other run).
+ * single payment batch, approved on the History page. One invoice can also
+ * be paid on the spot with "Approve & pay".
  */
 export default function InvoicesPage() {
   const router = useRouter();
@@ -52,10 +60,33 @@ export default function InvoicesPage() {
   const q = useOrgInvoices(tab === "all" ? undefined : tab);
   const decide = useDecideInvoice();
   const draft = useDraftRunFromInvoices();
+  const payNow = usePayInvoiceNow();
+  const balance = Number(me?.organization?.treasuryWallet?.balances?.usdc ?? 0);
+  const pay = (inv: Invoice) =>
+    payNow.mutate(
+      { id: inv.id },
+      {
+        onSuccess: (r) =>
+          r.invoice.status === "PAID"
+            ? toast.success(
+                `Paid $${usdc(inv.amount)} to ${inv.contractor?.name}`,
+                {
+                  description: `${invoiceLabel(inv.number)} is settled. They get a receipt by email.`,
+                },
+              )
+            : toast.error("The payment did not settle", {
+                description: "See History for the reason and to retry.",
+              }),
+        onError: (e) =>
+          toast.error("Could not pay", { description: (e as Error).message }),
+      },
+    );
+  const busy = decide.isPending || payNow.isPending;
   const [rejecting, setRejecting] = useState<Invoice | null>(null);
   const [note, setNote] = useState("");
   const [releasing, setReleasing] = useState(false);
   const [label, setLabel] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const approved = useOrgInvoices("APPROVED");
   const releasable = (approved.data ?? []).filter((i) => !i.line);
@@ -103,15 +134,15 @@ export default function InvoicesPage() {
         onSuccess: (run) => {
           setReleasing(false);
           toast.success(
-            `Run drafted: ${run.lineCount} invoice${run.lineCount === 1 ? "" : "s"}`,
+            `Payment drafted: ${run.lineCount} invoice${run.lineCount === 1 ? "" : "s"}`,
             {
-              description: "Review and approve it on the History page to pay.",
+              description: "Approve it on the History page to pay.",
             },
           );
           router.push("/portal/history");
         },
         onError: (e) =>
-          toast.error("Could not draft the run", {
+          toast.error("Could not draft the payment", {
             description: (e as Error).message,
           }),
       },
@@ -126,7 +157,7 @@ export default function InvoicesPage() {
   return (
     <div className="flex flex-col gap-5">
       <PageTitle
-        sub="Invoices from the people you work with. Approve what is right, reject what is not, release the approved ones as a run."
+        sub="Invoices from the people you work with. Pay one straight away, or approve several and pay them together."
         action={
           canManage && invoicesOn && releasable.length > 0 ? (
             <Button onClick={() => setReleasing(true)}>
@@ -173,73 +204,125 @@ export default function InvoicesPage() {
           </div>
         ) : (
           <ul className="divide-y divide-line">
-            {q.data?.map((inv) => (
-              <li
-                key={inv.id}
-                className="flex flex-wrap items-start justify-between gap-3 px-6 py-4"
-              >
-                <div className="min-w-0">
-                  <div className="text-[15px] text-ink">
-                    <span className="font-medium">{inv.contractor?.name}</span>{" "}
-                    <span className="text-muted">asks</span>{" "}
-                    <span className="tabular font-medium">
-                      ${usdc(inv.amount)}
-                    </span>
+            {q.data?.map((inv) => {
+              const open = openId === inv.id;
+              return (
+                <li key={inv.id} className="px-6 py-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(open ? null : inv.id)}
+                      aria-expanded={open}
+                      className="min-w-0 text-left"
+                    >
+                      <div className="text-[15px] text-ink">
+                        <span className="font-medium">
+                          {inv.contractor?.name}
+                        </span>{" "}
+                        <span className="text-muted">asks</span>{" "}
+                        <span className="tabular font-medium">
+                          ${usdc(inv.amount)}
+                        </span>{" "}
+                        <span className="tabular text-muted">
+                          · {invoiceLabel(inv.number)}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 text-[13.5px] text-muted">
+                        {inv.description}
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[12.5px] text-muted">
+                        <span>{when(inv.createdAt)}</span>
+                        <span>
+                          · {inv.items.length} item
+                          {inv.items.length === 1 ? "" : "s"}
+                        </span>
+                        {isOverdue(inv) && (
+                          <span className="font-medium text-[#A32D1C]">
+                            · overdue
+                          </span>
+                        )}
+                        {inv.decisionNote && (
+                          <span>· “{inv.decisionNote}”</span>
+                        )}
+                        {inv.line && (
+                          <span>· in run {inv.line.status.toLowerCase()}</span>
+                        )}
+                      </div>
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {inv.status === "SUBMITTED" && canManage && invoicesOn ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setRejecting(inv)}
+                            disabled={busy}
+                            className="hover:text-[#A32D1C]"
+                          >
+                            <X size={14} /> Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => approve(inv)}
+                            disabled={busy}
+                          >
+                            {decide.isPending &&
+                            decide.variables?.id === inv.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <Check size={14} />
+                            )}{" "}
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => pay(inv)}
+                            disabled={busy || balance < Number(inv.amount)}
+                            title={
+                              balance < Number(inv.amount)
+                                ? `Treasury holds $${usdc(balance)}`
+                                : undefined
+                            }
+                          >
+                            {payNow.isPending &&
+                            payNow.variables?.id === inv.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : null}{" "}
+                            Approve & pay
+                          </Button>
+                        </>
+                      ) : inv.status === "APPROVED" &&
+                        !inv.line &&
+                        canManage &&
+                        invoicesOn ? (
+                        <Button
+                          size="sm"
+                          onClick={() => pay(inv)}
+                          disabled={busy || balance < Number(inv.amount)}
+                          title={
+                            balance < Number(inv.amount)
+                              ? `Treasury holds $${usdc(balance)}`
+                              : undefined
+                          }
+                        >
+                          {payNow.isPending &&
+                          payNow.variables?.id === inv.id ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : null}{" "}
+                          Pay now
+                        </Button>
+                      ) : (
+                        <Badge variant={statusVariant(inv.status)}>
+                          {inv.status.toLowerCase()}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <div className="mt-0.5 text-[13.5px] text-muted">
-                    {inv.description}
-                  </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-[12.5px] text-muted">
-                    <span>{when(inv.createdAt)}</span>
-                    {inv.evidenceUrl && (
-                      <a
-                        href={inv.evidenceUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-ink underline"
-                      >
-                        <Paperclip size={12} /> evidence
-                      </a>
-                    )}
-                    {inv.decisionNote && <span>· “{inv.decisionNote}”</span>}
-                    {inv.line && (
-                      <span>· in run {inv.line.status.toLowerCase()}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {inv.status === "SUBMITTED" && canManage && invoicesOn ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setRejecting(inv)}
-                        disabled={decide.isPending}
-                        className="hover:text-[#A32D1C]"
-                      >
-                        <X size={14} /> Reject
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => approve(inv)}
-                        disabled={decide.isPending}
-                      >
-                        {decide.isPending && decide.variables?.id === inv.id ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Check size={14} />
-                        )}{" "}
-                        Approve
-                      </Button>
-                    </>
-                  ) : (
-                    <Badge variant={statusVariant(inv.status)}>
-                      {inv.status.toLowerCase()}
-                    </Badge>
-                  )}
-                </div>
-              </li>
-            ))}
+                  {open && <InvoiceDetail invoice={inv} />}
+                </li>
+              );
+            })}
           </ul>
         )}
       </Card>
@@ -298,9 +381,9 @@ export default function InvoicesPage() {
               {releasable.length === 1 ? "" : "s"}
             </DialogTitle>
             <DialogDescription>
-              This drafts a payroll run of ${usdc(releasableTotal)} with one
-              line per invoice. Nothing is paid until you approve the run on the
-              History page.
+              This drafts one payment of ${usdc(releasableTotal)} with a line
+              per invoice. Nothing is paid until you approve it on the History
+              page.
             </DialogDescription>
           </DialogHeader>
           <input
@@ -308,7 +391,7 @@ export default function InvoicesPage() {
             maxLength={60}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            placeholder="Run label, e.g. Invoices · March"
+            placeholder="Label, e.g. Invoices · March"
           />
           <DialogFooter>
             <Button
@@ -322,7 +405,7 @@ export default function InvoicesPage() {
               {draft.isPending ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : null}{" "}
-              Draft the run
+              Draft the payment
             </Button>
           </DialogFooter>
         </DialogContent>
