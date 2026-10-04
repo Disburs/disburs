@@ -746,6 +746,126 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/milestones/mine": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Your milestones across every organization (contractors) */
+    get: operations["MilestonesController_mine"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/milestones/{id}/complete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Mark a milestone complete, with a note and a link to the work */
+    post: operations["MilestonesController_complete"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/milestones": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** The active organization's milestones (any member) */
+    get: operations["MilestonesController_list"];
+    put?: never;
+    /** Agree a milestone with a contractor on your list (owner/admin) */
+    post: operations["MilestonesController_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/milestones/{id}/approve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Approve a completed milestone (owner/admin) */
+    post: operations["MilestonesController_approve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/milestones/{id}/request-changes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Send a completed milestone back with what to change (owner/admin) */
+    post: operations["MilestonesController_requestChanges"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/milestones/{id}/cancel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel a milestone that has not been paid (owner/admin) */
+    post: operations["MilestonesController_cancel"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/milestones/{id}/pay": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Pay a completed milestone now: approves it if needed, then pays (owner/admin) */
+    post: operations["MilestonesController_pay"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/staff/auth/enroll/options": {
     parameters: {
       query?: never;
@@ -1291,6 +1411,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/admin/contracts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** The factory and every organization contract with its version */
+    get: operations["AdminController_contracts"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/admin/contracts/upgrade": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Upgrade one or every organization contract to an uploaded wasm, then migrate */
+    post: operations["AdminController_upgradeContracts"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/admin/contracts/factory-wasm-hash": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Point the factory at new payroll code for future deployments */
+    post: operations["AdminController_setFactoryWasmHash"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/admin/settings": {
     parameters: {
       query?: never;
@@ -1544,6 +1715,8 @@ export interface components {
     AdHocLineDto: {
       /** @description The approved invoice this line pays (set by the invoices flow). */
       invoiceId?: string;
+      /** @description The approved milestone this line pays (set by the milestones flow). */
+      milestoneId?: string;
       contractorId: string;
       /** @example 250.00 */
       amount: string;
@@ -1624,6 +1797,34 @@ export interface components {
       /** @description Only these approved invoices; omit for every approved invoice. */
       invoiceIds?: string[];
     };
+    CompleteMilestoneDto: {
+      note?: string;
+      /** @description A link to the delivered work. */
+      evidenceUrl?: string;
+    };
+    CreateMilestoneDto: {
+      /** @description A contractor on your list. */
+      contractorId: string;
+      /** @example Homepage design, final */
+      title: string;
+      /**
+       * @description USDC paid when it is approved (max 7 dp).
+       * @example 800
+       */
+      amount: string;
+      /**
+       * @description Groups milestones.
+       * @example Website redesign
+       */
+      project?: string;
+      /** @description What "done" means. */
+      description?: string;
+      /** @example 2026-04-14 */
+      dueDate?: string;
+    };
+    MilestoneNoteDto: {
+      note?: string;
+    };
     EnrollOptionsDto: {
       /** @description The token from the enrolment link. */
       token: string;
@@ -1660,6 +1861,18 @@ export interface components {
       name: string;
       /** @enum {string} */
       role: "super_admin" | "operations" | "finance" | "support";
+    };
+    UpgradeContractsDto: {
+      /** @description sha256 of the uploaded payroll wasm, 64 hex characters */
+      wasmHash: string;
+      /** @description The version label the upgraded contracts report, e.g. 0.3.1 */
+      version: string;
+      /** @description Upgrade only this organization; omit for all */
+      organizationId?: string;
+    };
+    FactoryWasmHashDto: {
+      /** @description sha256 of the uploaded payroll wasm, 64 hex characters */
+      wasmHash: string;
     };
   };
   responses: never;
@@ -2682,6 +2895,178 @@ export interface operations {
       };
     };
   };
+  MilestonesController_mine: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_complete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CompleteMilestoneDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_list: {
+    parameters: {
+      query?: {
+        status?: "PENDING" | "SUBMITTED" | "APPROVED" | "PAID" | "CANCELLED";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateMilestoneDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_approve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MilestoneNoteDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_requestChanges: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MilestoneNoteDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_cancel: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MilestoneNoteDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MilestonesController_pay: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MilestoneNoteDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   StaffAuthController_enrollOptions: {
     parameters: {
       query?: never;
@@ -3303,6 +3688,65 @@ export interface operations {
       cookie?: never;
     };
     requestBody?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdminController_contracts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdminController_upgradeContracts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpgradeContractsDto"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdminController_setFactoryWasmHash: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FactoryWasmHashDto"];
+      };
+    };
     responses: {
       201: {
         headers: {
