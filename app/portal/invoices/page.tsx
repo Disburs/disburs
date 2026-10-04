@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Paperclip, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import { Badge, Card, PageTitle, inputClass } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,13 @@ import {
   useDraftRunFromInvoices,
   useOrgInvoices,
 } from "@/lib/hooks/useInvoices";
-import { MONEY_ROLES, type Invoice, type InvoiceStatus } from "@/lib/api";
+import {
+  MONEY_ROLES,
+  invoiceLabel,
+  type Invoice,
+  type InvoiceStatus,
+} from "@/lib/api";
+import InvoiceDetail, { isOverdue } from "@/components/invoices/InvoiceDetail";
 import { usdc, when } from "@/lib/format";
 
 type Tab = "SUBMITTED" | "APPROVED" | "all";
@@ -56,6 +62,7 @@ export default function InvoicesPage() {
   const [note, setNote] = useState("");
   const [releasing, setReleasing] = useState(false);
   const [label, setLabel] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const approved = useOrgInvoices("APPROVED");
   const releasable = (approved.data ?? []).filter((i) => !i.line);
@@ -173,73 +180,88 @@ export default function InvoicesPage() {
           </div>
         ) : (
           <ul className="divide-y divide-line">
-            {q.data?.map((inv) => (
-              <li
-                key={inv.id}
-                className="flex flex-wrap items-start justify-between gap-3 px-6 py-4"
-              >
-                <div className="min-w-0">
-                  <div className="text-[15px] text-ink">
-                    <span className="font-medium">{inv.contractor?.name}</span>{" "}
-                    <span className="text-muted">asks</span>{" "}
-                    <span className="tabular font-medium">
-                      ${usdc(inv.amount)}
-                    </span>
+            {q.data?.map((inv) => {
+              const open = openId === inv.id;
+              return (
+                <li key={inv.id} className="px-6 py-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(open ? null : inv.id)}
+                      aria-expanded={open}
+                      className="min-w-0 text-left"
+                    >
+                      <div className="text-[15px] text-ink">
+                        <span className="font-medium">
+                          {inv.contractor?.name}
+                        </span>{" "}
+                        <span className="text-muted">asks</span>{" "}
+                        <span className="tabular font-medium">
+                          ${usdc(inv.amount)}
+                        </span>{" "}
+                        <span className="tabular text-muted">
+                          · {invoiceLabel(inv.number)}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 text-[13.5px] text-muted">
+                        {inv.description}
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[12.5px] text-muted">
+                        <span>{when(inv.createdAt)}</span>
+                        <span>
+                          · {inv.items.length} item
+                          {inv.items.length === 1 ? "" : "s"}
+                        </span>
+                        {isOverdue(inv) && (
+                          <span className="font-medium text-[#A32D1C]">
+                            · overdue
+                          </span>
+                        )}
+                        {inv.decisionNote && (
+                          <span>· “{inv.decisionNote}”</span>
+                        )}
+                        {inv.line && (
+                          <span>· in run {inv.line.status.toLowerCase()}</span>
+                        )}
+                      </div>
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {inv.status === "SUBMITTED" && canManage && invoicesOn ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setRejecting(inv)}
+                            disabled={decide.isPending}
+                            className="hover:text-[#A32D1C]"
+                          >
+                            <X size={14} /> Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => approve(inv)}
+                            disabled={decide.isPending}
+                          >
+                            {decide.isPending &&
+                            decide.variables?.id === inv.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <Check size={14} />
+                            )}{" "}
+                            Approve
+                          </Button>
+                        </>
+                      ) : (
+                        <Badge variant={statusVariant(inv.status)}>
+                          {inv.status.toLowerCase()}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <div className="mt-0.5 text-[13.5px] text-muted">
-                    {inv.description}
-                  </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-[12.5px] text-muted">
-                    <span>{when(inv.createdAt)}</span>
-                    {inv.evidenceUrl && (
-                      <a
-                        href={inv.evidenceUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-ink underline"
-                      >
-                        <Paperclip size={12} /> evidence
-                      </a>
-                    )}
-                    {inv.decisionNote && <span>· “{inv.decisionNote}”</span>}
-                    {inv.line && (
-                      <span>· in run {inv.line.status.toLowerCase()}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {inv.status === "SUBMITTED" && canManage && invoicesOn ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setRejecting(inv)}
-                        disabled={decide.isPending}
-                        className="hover:text-[#A32D1C]"
-                      >
-                        <X size={14} /> Reject
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => approve(inv)}
-                        disabled={decide.isPending}
-                      >
-                        {decide.isPending && decide.variables?.id === inv.id ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Check size={14} />
-                        )}{" "}
-                        Approve
-                      </Button>
-                    </>
-                  ) : (
-                    <Badge variant={statusVariant(inv.status)}>
-                      {inv.status.toLowerCase()}
-                    </Badge>
-                  )}
-                </div>
-              </li>
-            ))}
+                  {open && <InvoiceDetail invoice={inv} />}
+                </li>
+              );
+            })}
           </ul>
         )}
       </Card>

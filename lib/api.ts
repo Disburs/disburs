@@ -525,12 +525,24 @@ export interface InvoiceEvent {
   note: string | null;
   createdAt: string;
 }
+export interface InvoiceItem {
+  description: string;
+  quantity: string;
+  rate: string;
+  amount: string;
+}
 export interface Invoice {
   id: string;
   organizationId: string;
   contractorId: string;
+  /** Sequential per contractor; show with invoiceLabel(). */
+  number: number;
   amount: string;
   description: string;
+  periodStart: string | null;
+  periodEnd: string | null;
+  dueDate: string | null;
+  items: InvoiceItem[];
   evidenceUrl: string | null;
   status: InvoiceStatus;
   decidedById: string | null;
@@ -550,10 +562,15 @@ export interface Invoice {
 }
 export interface CreateInvoiceBody {
   organizationId: string;
-  amount: string;
   description: string;
+  items: { description: string; quantity: string; rate: string }[];
+  periodStart?: string;
+  periodEnd?: string;
+  dueDate?: string;
   evidenceUrl?: string;
 }
+/** INV-0007 */
+export const invoiceLabel = (n: number) => `INV-${String(n).padStart(4, "0")}`;
 export const invoicesApi = {
   organizations: () =>
     client

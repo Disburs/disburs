@@ -1529,16 +1529,45 @@ export interface components {
       destination: string;
       note?: string;
     };
+    InvoiceItemDto: {
+      /** @example Onboarding screens */
+      description: string;
+      /**
+       * @description How many (hours, days, units), up to 3 dp.
+       * @example 7.5
+       */
+      quantity: string;
+      /**
+       * @description USDC per unit, up to 7 dp.
+       * @example 40
+       */
+      rate: string;
+    };
     CreateInvoiceDto: {
       /** @description The organization being invoiced (one you work with). */
       organizationId: string;
       /**
-       * @description USDC amount (max 7 dp).
-       * @example 1250
+       * @description One-line summary.
+       * @example March design work
        */
-      amount: string;
-      /** @example March design work: onboarding screens */
       description: string;
+      /** @description The lines; the total is their sum. */
+      items: components["schemas"]["InvoiceItemDto"][];
+      /**
+       * @description First day of the period covered.
+       * @example 2026-03-01
+       */
+      periodStart?: string;
+      /**
+       * @description Last day of the period covered.
+       * @example 2026-03-31
+       */
+      periodEnd?: string;
+      /**
+       * @description When payment is due.
+       * @example 2026-04-14
+       */
+      dueDate?: string;
       /** @description A link to evidence (an uploaded file, a document, a repo). */
       evidenceUrl?: string;
     };
