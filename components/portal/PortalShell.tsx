@@ -7,9 +7,9 @@ import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  History,
   LayoutDashboard,
   Users,
-  UsersRound,
   ReceiptText,
   Wallet,
   Settings,
@@ -24,9 +24,12 @@ import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "./ui";
 import OrgSwitcher from "./OrgSwitcher";
-import PaymentsTabs, { inPayments } from "./PaymentsTabs";
+import PaymentsTabs, { inPayments, inSettings } from "./PaymentsTabs";
 
-/** Six destinations. Everything about paying people lives under Payments. */
+/**
+ * Six destinations. Ways of paying people live under Payments, the record of
+ * what was paid is Transactions, and the team sits inside Settings.
+ */
 const NAV: {
   label: string;
   href: string;
@@ -42,9 +45,14 @@ const NAV: {
     icon: ReceiptText,
     group: inPayments,
   },
+  { label: "Transactions", href: "/portal/history", icon: History },
   { label: "Treasury", href: "/portal/wallet", icon: Wallet },
-  { label: "Team", href: "/portal/team", icon: UsersRound },
-  { label: "Settings", href: "/portal/settings", icon: Settings },
+  {
+    label: "Settings",
+    href: "/portal/settings",
+    icon: Settings,
+    group: inSettings,
+  },
 ];
 
 function Wordmark() {

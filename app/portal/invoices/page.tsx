@@ -46,7 +46,7 @@ function statusVariant(s: InvoiceStatus) {
 /**
  * The organization's review queue. Owners and admins approve or reject each
  * invoice with a note the contractor sees, then release approved ones as a
- * single payment batch, approved on the History page. One invoice can also
+ * single payment batch, approved on the Transactions page. One invoice can also
  * be paid on the spot with "Approve & pay".
  */
 export default function InvoicesPage() {
@@ -75,7 +75,7 @@ export default function InvoicesPage() {
                 },
               )
             : toast.error("The payment did not settle", {
-                description: "See History for the reason and to retry.",
+                description: "See Transactions for the reason and to retry.",
               }),
         onError: (e) =>
           toast.error("Could not pay", { description: (e as Error).message }),
@@ -136,7 +136,7 @@ export default function InvoicesPage() {
           toast.success(
             `Payment drafted: ${run.lineCount} invoice${run.lineCount === 1 ? "" : "s"}`,
             {
-              description: "Approve it on the History page to pay.",
+              description: "Approve it on the Transactions page to pay.",
             },
           );
           router.push("/portal/history");
@@ -382,8 +382,8 @@ export default function InvoicesPage() {
             </DialogTitle>
             <DialogDescription>
               This drafts one payment of ${usdc(releasableTotal)} with a line
-              per invoice. Nothing is paid until you approve it on the History
-              page.
+              per invoice. Nothing is paid until you approve it on the
+              Transactions page.
             </DialogDescription>
           </DialogHeader>
           <input

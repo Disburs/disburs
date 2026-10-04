@@ -171,6 +171,8 @@ export interface LedgerEntry {
   userId: string | null;
   organizationId: string | null;
   contractorId: string | null;
+  /** The run this entry was paid in, or null for a one-off payment. */
+  runId?: string | null;
   createdAt: string;
   updatedAt: string;
 }

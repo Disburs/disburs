@@ -127,7 +127,7 @@ export default function MilestonesPage() {
               description: `"${m.title}" is settled.`,
             })
           : toast.error("The payment did not settle", {
-              description: "See History for the reason and to retry.",
+              description: "See Transactions for the reason and to retry.",
             }),
       onError: (e) =>
         toast.error("Could not pay", { description: (e as Error).message }),
