@@ -6,6 +6,8 @@ import { Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import RunLines, { runVariant } from "@/components/portal/RunLines";
 import { useMe } from "@/lib/hooks/useMe";
+import { useContractors, useLedger } from "@/lib/hooks/usePayments";
+import { ExternalLink } from "lucide-react";
 import {
   useApproveAndExecute,
   useDiscardRun,
@@ -13,13 +15,27 @@ import {
   useRuns,
 } from "@/lib/hooks/usePayroll";
 import { toast } from "@/components/ui/sonner";
-import { MONEY_ROLES } from "@/lib/api";
+import { MONEY_ROLES, explorerUrl } from "@/lib/api";
 import { usdc, when } from "@/lib/format";
 
-/** Every run for the active organization, newest first, with its lines. */
+/**
+ * Everything the organization has paid: batches (payroll, invoices,
+ * milestones) with their lines, and one-off payments from the Pay screen.
+ */
 export default function HistoryPage() {
   const { data: me } = useMe();
   const runs = useRuns();
+  const ledger = useLedger();
+  const contractors = useContractors();
+  const nameOf = (id: string | null) =>
+    contractors.data?.find((c) => c.id === id)?.name ?? "Contractor";
+  // One-off payments: payouts that were not a line of any batch.
+  const oneOff = (ledger.data ?? []).filter(
+    (e) =>
+      e.type === "PAYOUT" &&
+      !e.runId &&
+      e.organizationId === me?.organization?.id,
+  );
   const retry = useExecuteRun();
   const pay = useApproveAndExecute();
   const discard = useDiscardRun();
@@ -32,15 +48,18 @@ export default function HistoryPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <PageTitle sub="Every run, every line, with the transaction behind it.">
-        History
+      <PageTitle sub="Every payment your organization has made, with the transaction behind it.">
+        Transactions
       </PageTitle>
+      <h2 className="text-[13px] font-medium uppercase tracking-[0.06em] text-muted">
+        Batches
+      </h2>
       <Card padding={0}>
         {runs.isPending ? (
           <div className="px-6 py-6 text-[14px] text-muted">Loading…</div>
         ) : runs.data?.length === 0 ? (
           <div className="px-6 py-6 text-[14px] text-muted">
-            No runs yet. Draft one from the Payroll page.
+            No batches yet. Draft one from Payments.
           </div>
         ) : (
           <ul className="divide-y divide-line">
@@ -157,6 +176,66 @@ export default function HistoryPage() {
                 </li>
               );
             })}
+          </ul>
+        )}
+      </Card>
+
+      <h2 className="mt-3 text-[13px] font-medium uppercase tracking-[0.06em] text-muted">
+        One-off payments
+      </h2>
+      <Card padding={0}>
+        {ledger.isPending ? (
+          <div className="px-6 py-6 text-[14px] text-muted">Loading…</div>
+        ) : oneOff.length === 0 ? (
+          <div className="px-6 py-6 text-[14px] text-muted">
+            No one-off payments yet.
+          </div>
+        ) : (
+          <ul className="divide-y divide-line">
+            {oneOff.map((e) => (
+              <li
+                key={e.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
+              >
+                <div className="min-w-0">
+                  <div className="text-[15px] font-medium text-ink">
+                    {nameOf(e.contractorId)}
+                  </div>
+                  <div className="text-[13px] text-muted">
+                    {when(e.createdAt)}
+                    {e.memo ? ` · memo ${e.memo}` : ""}
+                    {e.error ? ` · ${e.error}` : ""}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="tabular text-[15px] font-medium text-ink">
+                    ${usdc(e.amount)}
+                  </span>
+                  <Badge
+                    variant={
+                      e.status === "SETTLED"
+                        ? "success"
+                        : e.status === "FAILED"
+                          ? "danger"
+                          : "warn"
+                    }
+                  >
+                    {e.status.toLowerCase()}
+                  </Badge>
+                  {e.txHash && (
+                    <a
+                      href={explorerUrl(network, "tx", e.txHash)}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="View transaction"
+                      className="text-muted hover:text-ink"
+                    >
+                      <ExternalLink size={15} />
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
           </ul>
         )}
       </Card>

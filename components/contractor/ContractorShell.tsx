@@ -10,6 +10,7 @@ import {
   Home,
   ArrowLeftRight,
   FileText,
+  Flag,
   LogOut,
   Menu,
   X,
@@ -24,6 +25,7 @@ import { authClient } from "@/lib/auth-client";
 const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Home", href: "/contractor", icon: Home },
   { label: "Invoices", href: "/contractor/invoices", icon: FileText },
+  { label: "Milestones", href: "/contractor/milestones", icon: Flag },
   { label: "Cash out", href: "/contractor/cashout", icon: ArrowLeftRight },
 ];
 

@@ -117,6 +117,7 @@ export interface Me {
 
 export type Feature =
   | "invoices"
+  | "milestones"
   | "payroll"
   | "oneOffPay"
   | "cashouts"
@@ -170,6 +171,8 @@ export interface LedgerEntry {
   userId: string | null;
   organizationId: string | null;
   contractorId: string | null;
+  /** The run this entry was paid in, or null for a one-off payment. */
+  runId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -634,6 +637,84 @@ export const invoicesApi = {
     client
       .POST("/api/invoices/run", { body })
       .then((r) => unwrap<PayrollRun>(r)),
+};
+
+/* ------------------------------ milestones ----------------------------- */
+export type MilestoneStatus =
+  "PENDING" | "SUBMITTED" | "APPROVED" | "PAID" | "CANCELLED";
+export interface Milestone {
+  id: string;
+  organizationId: string;
+  contractorId: string;
+  project: string | null;
+  title: string;
+  description: string | null;
+  amount: string;
+  dueDate: string | null;
+  status: MilestoneStatus;
+  completionNote: string | null;
+  evidenceUrl: string | null;
+  submittedAt: string | null;
+  decidedAt: string | null;
+  decisionNote: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  line: {
+    id: string;
+    runId: string;
+    status: string;
+    txHash: string | null;
+  } | null;
+  events: {
+    status: MilestoneStatus;
+    byUserId: string | null;
+    note: string | null;
+    createdAt: string;
+  }[];
+  organization?: { id: string; name: string };
+  contractor?: { id: string; name: string; email: string; country: string };
+}
+export interface CreateMilestoneBody {
+  contractorId: string;
+  title: string;
+  amount: string;
+  project?: string;
+  description?: string;
+  dueDate?: string;
+}
+const msPost = (
+  path: "approve" | "request-changes" | "cancel",
+  id: string,
+  note?: string,
+) =>
+  client
+    .POST(`/api/milestones/{id}/${path}` as "/api/milestones/{id}/approve", {
+      params: { path: { id } },
+      body: { note },
+    })
+    .then((r) => unwrap<Milestone>(r));
+export const milestonesApi = {
+  mine: () =>
+    client.GET("/api/milestones/mine").then((r) => unwrap<Milestone[]>(r)),
+  complete: (id: string, body: { note?: string; evidenceUrl?: string }) =>
+    client
+      .POST("/api/milestones/{id}/complete", { params: { path: { id } }, body })
+      .then((r) => unwrap<Milestone>(r)),
+  list: () => client.GET("/api/milestones").then((r) => unwrap<Milestone[]>(r)),
+  create: (body: CreateMilestoneBody) =>
+    client.POST("/api/milestones", { body }).then((r) => unwrap<Milestone>(r)),
+  approve: (id: string, note?: string) => msPost("approve", id, note),
+  requestChanges: (id: string, note?: string) =>
+    msPost("request-changes", id, note),
+  cancel: (id: string, note?: string) => msPost("cancel", id, note),
+  payNow: (id: string) =>
+    client
+      .POST("/api/milestones/{id}/pay", { params: { path: { id } }, body: {} })
+      .then((r) =>
+        unwrap<{ milestone: Milestone; run: { id: string; status: string } }>(
+          r,
+        ),
+      ),
 };
 
 export const cashoutsApi = {
