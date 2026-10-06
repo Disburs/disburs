@@ -241,6 +241,11 @@ export default function InvoicesPage() {
                             · overdue
                           </span>
                         )}
+                        {inv.autoApproved && (
+                          <span className="font-medium text-accent">
+                            · approved by rule
+                          </span>
+                        )}
                         {inv.decisionNote && (
                           <span>· “{inv.decisionNote}”</span>
                         )}

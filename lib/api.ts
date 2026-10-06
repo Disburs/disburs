@@ -558,6 +558,8 @@ export interface Invoice {
   /** Sequential per contractor; show with invoiceLabel(). */
   number: number;
   amount: string;
+  /** Approved by the organization's rules rather than by a person. */
+  autoApproved: boolean;
   description: string;
   periodStart: string | null;
   periodEnd: string | null;
@@ -593,11 +595,17 @@ export interface CreateInvoiceBody {
 export const invoiceLabel = (n: number) => `INV-${String(n).padStart(4, "0")}`;
 export const invoicesApi = {
   organizations: () =>
-    client
-      .GET("/api/invoices/organizations")
-      .then((r) =>
-        unwrap<{ id: string; name: string; logo: string | null }[]>(r),
-      ),
+    client.GET("/api/invoices/organizations").then((r) =>
+      unwrap<
+        {
+          id: string;
+          name: string;
+          logo: string | null;
+          /** Invoices above this need an evidence link (null: no such rule). */
+          requireEvidenceAbove: string | null;
+        }[]
+      >(r),
+    ),
   mine: () =>
     client.GET("/api/invoices/mine").then((r) => unwrap<Invoice[]>(r)),
   submit: (body: CreateInvoiceBody) =>
@@ -637,6 +645,23 @@ export const invoicesApi = {
     client
       .POST("/api/invoices/run", { body })
       .then((r) => unwrap<PayrollRun>(r)),
+};
+
+/* -------------------------------- rules -------------------------------- */
+/** An organization's rules. null means the rule is off. Amounts are USDC. */
+export interface OrgRules {
+  autoApproveInvoiceUnder: string | null;
+  requireEvidenceAbove: string | null;
+  monthlyBudget: string | null;
+  contractorMonthlyCap: string | null;
+  /** Invoices and milestones approved so far this calendar month. */
+  approvedThisMonth: string;
+}
+export type OrgRulesUpdate = Partial<Omit<OrgRules, "approvedThisMonth">>;
+export const rulesApi = {
+  get: () => client.GET("/api/rules").then((r) => unwrap<OrgRules>(r)),
+  update: (body: OrgRulesUpdate) =>
+    client.PUT("/api/rules", { body }).then((r) => unwrap<OrgRules>(r)),
 };
 
 /* ------------------------------ milestones ----------------------------- */
