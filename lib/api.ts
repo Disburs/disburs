@@ -619,20 +619,6 @@ export const reconciliationApi = {
 };
 
 /* ------------------------------- Cash-outs ----------------------------- */
-export type CashoutStatus = "REQUESTED" | "CANCELLED" | "PAID";
-export interface CashoutRequest {
-  id: string;
-  contractorId: string;
-  amount: string;
-  currency: string;
-  destination: string;
-  note: string | null;
-  status: CashoutStatus;
-  resolvedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-export type CreateCashoutBody = components["schemas"]["CreateCashoutDto"];
 
 /* ------------------------------ invoices ------------------------------- */
 export type InvoiceStatus =
@@ -900,15 +886,10 @@ export const twoFactorApi = {
       ),
 };
 
-export const cashoutsApi = {
-  list: () =>
-    client.GET("/api/cashouts").then((r) => unwrap<CashoutRequest[]>(r)),
-  create: (body: CreateCashoutBody) =>
-    client
-      .POST("/api/cashouts", { body })
-      .then((r) => unwrap<CashoutRequest>(r)),
-  cancel: (id: string) =>
-    client
-      .POST("/api/cashouts/{id}/cancel", { params: { path: { id } } })
-      .then((r) => unwrap<CashoutRequest>(r)),
-};
+/** Send USDC from one of your wallets to any Stellar address (a withdrawal). */
+export type SendBody = components["schemas"]["SendDto"];
+export async function sendFromWallet(body: SendBody): Promise<LedgerEntry> {
+  const { data, error } = await client.POST("/api/me/send", { body });
+  if (error) throw toError(error);
+  return data as unknown as LedgerEntry;
+}

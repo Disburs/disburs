@@ -17,7 +17,7 @@ const SIDES = [
     title: "For contractors",
     points: [
       "Nothing to install, no crypto to understand",
-      "Receive USDC, cash out to local currency",
+      "Receive USDC, withdraw to any wallet or exchange",
       "What you earn stays between you and your employer",
       "A clean record of every payment",
     ],

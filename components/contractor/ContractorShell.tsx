@@ -9,7 +9,6 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Home,
-  ArrowLeftRight,
   FileText,
   Flag,
   LogOut,
@@ -17,6 +16,7 @@ import {
   X,
   type LucideIcon,
   KeyRound,
+  ArrowUpRight,
 } from "lucide-react";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
@@ -28,7 +28,7 @@ const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Home", href: "/contractor", icon: Home },
   { label: "Invoices", href: "/contractor/invoices", icon: FileText },
   { label: "Milestones", href: "/contractor/milestones", icon: Flag },
-  { label: "Cash out", href: "/contractor/cashout", icon: ArrowLeftRight },
+  { label: "Withdraw", href: "/contractor/withdraw", icon: ArrowUpRight },
   { label: "Security", href: "/contractor/security", icon: KeyRound },
 ];
 
@@ -139,7 +139,7 @@ export default function ContractorShell({
 
           <div className="flex items-center gap-3">
             <Link
-              href="/contractor/cashout"
+              href="/contractor/withdraw"
               className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 sm:flex"
             >
               <UsdcMark size={16} />

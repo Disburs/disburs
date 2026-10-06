@@ -191,7 +191,7 @@ export default function ContractorOnboarding() {
               </Field>
               <Field
                 label="Payout currency"
-                hint="You receive USDC; this is what you cash out to."
+                hint="You receive USDC; this is the currency you will convert it to."
               >
                 <select
                   className={inputClass}
