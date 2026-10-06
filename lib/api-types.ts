@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizations/allowance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How many organizations you may create, and whether the next one is open */
+        get: operations["OrganizationsController_allowance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organizations": {
         parameters: {
             query?: never;
@@ -1378,6 +1395,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/users/{id}/organization-limit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Allow an account more organizations than the platform default (null = default) */
+        patch: operations["AdminController_setOrganizationLimit"];
+        trace?: never;
+    };
     "/api/admin/organizations/deploy-missing-contracts": {
         parameters: {
             query?: never;
@@ -2162,6 +2196,10 @@ export interface components {
             /** @enum {string} */
             role: "super_admin" | "operations" | "finance" | "support";
         };
+        OrgLimitDto: {
+            /** @description How many organizations this account may create; null returns it to the platform default. */
+            limit?: number | null;
+        };
         UpgradeContractsDto: {
             /** @description sha256 of the uploaded payroll wasm, 64 hex characters */
             wasmHash: string;
@@ -2299,6 +2337,23 @@ export interface operations {
         requestBody?: never;
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrganizationsController_allowance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3980,6 +4035,29 @@ export interface operations {
         requestBody?: never;
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_setOrganizationLimit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrgLimitDto"];
+            };
+        };
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

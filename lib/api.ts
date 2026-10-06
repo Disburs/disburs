@@ -378,6 +378,22 @@ export async function signUpload(kind: UploadKind): Promise<UploadSignature> {
 /* ---------------------------- Organizations --------------------------- */
 export type CreateOrganizationBody =
   components["schemas"]["CreateOrganizationDto"];
+/** How many organizations you may create, and whether the next one is open. */
+export interface OrgAllowance {
+  owned: number;
+  limit: number;
+  canCreate: boolean;
+  reason: "limit" | "unlock" | null;
+  unlockUsdc: string;
+  paidOutUsdc: string;
+  leader: { id: string; name: string } | null;
+}
+export async function getOrgAllowance(): Promise<OrgAllowance> {
+  const { data, error } = await client.GET("/api/organizations/allowance");
+  if (error) throw toError(error);
+  return data as unknown as OrgAllowance;
+}
+
 export async function createOrganization(body: CreateOrganizationBody) {
   const { data, error } = await client.POST("/api/organizations", { body });
   if (error) throw toError(error);
