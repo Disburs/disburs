@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { rememberRole } from "@/lib/last-role";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -45,6 +46,8 @@ export default function ContractorShell({
 }: {
   children: React.ReactNode;
 }) {
+  // This device now uses the contractor side: preselect it at the next sign-in.
+  useEffect(() => rememberRole("CONTRACTOR"), []);
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);

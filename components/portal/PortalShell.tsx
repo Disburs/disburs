@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { rememberRole } from "@/lib/last-role";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -151,6 +152,8 @@ function Sidebar({
   onNavigate?: () => void;
   onClose?: () => void;
 }) {
+  // This device now uses the company side: preselect it at the next sign-in.
+  useEffect(() => rememberRole("CLIENT"), []);
   return (
     <div className="flex h-full flex-col border-r border-line bg-subtle p-5">
       <div className="flex items-center justify-between px-2 pb-8">

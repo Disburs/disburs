@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
+import { BadgeCheck, Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { Avatar } from "./ui";
 import { useMe, useSetActiveOrganization } from "@/lib/hooks/useMe";
 
@@ -49,8 +49,15 @@ export default function OrgSwitcher() {
       >
         <Avatar initials={initials(org.name)} size={32} src={org.logo} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] font-medium text-ink">
-            {org.name}
+          <span className="flex items-center gap-1.5 text-[14px] font-medium text-ink">
+            <span className="truncate">{org.name}</span>
+            {org.kybStatus === "APPROVED" && (
+              <BadgeCheck
+                size={15}
+                className="shrink-0 text-accent"
+                aria-label="Verified business"
+              />
+            )}
           </span>
           <span className="block text-[12px] capitalize text-muted">
             {org.role}
@@ -85,8 +92,15 @@ export default function OrgSwitcher() {
               >
                 <Avatar initials={initials(o.name)} size={28} src={o.logo} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] text-ink">
-                    {o.name}
+                  <span className="flex items-center gap-1.5 text-[14px] text-ink">
+                    <span className="truncate">{o.name}</span>
+                    {o.kybStatus === "APPROVED" && (
+                      <BadgeCheck
+                        size={14}
+                        className="shrink-0 text-accent"
+                        aria-label="Verified business"
+                      />
+                    )}
                   </span>
                   <span className="block text-[12px] capitalize text-muted">
                     {o.role}
