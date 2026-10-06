@@ -224,7 +224,7 @@ function SignInForm() {
                           </Button>
                           {lastRole === r.value && (
                             <span className="pointer-events-none absolute -right-2 -top-2.5 rounded-full bg-ink-deep px-2.5 py-1 text-[11px] font-medium leading-none text-white">
-                              Used before
+                              Last used
                             </span>
                           )}
                         </span>

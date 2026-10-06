@@ -61,19 +61,34 @@ export function useRequireProfile(opts: {
     !!opts.needName &&
     !(me.user.name ?? "").trim();
 
+  const owesCode = ready && !!me && me.twoFactor?.pending === true;
+
   useEffect(() => {
     if (!ready) return;
     if (me === null) router.replace("/sign-in");
+    else if (owesCode)
+      router.replace(
+        `/two-factor?next=${encodeURIComponent(pathname || "/portal")}`,
+      );
     else if (missing && opts.onboarding) router.replace(opts.onboarding);
     else if (nameless)
       router.replace(
         `/welcome?next=${encodeURIComponent(pathname || "/portal")}`,
       );
-  }, [ready, me, missing, nameless, opts.onboarding, pathname, router]);
+  }, [
+    ready,
+    me,
+    owesCode,
+    missing,
+    nameless,
+    opts.onboarding,
+    pathname,
+    router,
+  ]);
 
   return {
     me: me ?? null,
-    ready: ready && me !== null && !missing && !nameless,
+    ready: ready && me !== null && !owesCode && !missing && !nameless,
     refetch: q.refetch,
   };
 }

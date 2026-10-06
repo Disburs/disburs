@@ -12,6 +12,7 @@ import { explorerUrl } from "@/lib/api";
 import { shortKey, usdc, when } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 import KycBanner from "@/components/contractor/KycBanner";
+import SetupNudge from "@/components/two-factor/SetupNudge";
 
 export default function ContractorHome() {
   const { data: me } = useMe();
@@ -42,6 +43,7 @@ export default function ContractorHome() {
       <Suspense fallback={null}>
         <KycBanner />
       </Suspense>
+      <SetupNudge href="/contractor/security" />
 
       {/* Top row: balance + last payment / actions */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
