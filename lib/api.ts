@@ -90,6 +90,8 @@ export interface Me {
     /** The organization's own payroll contract on Soroban, once deployed. */
     payrollContractId?: string | null;
     treasuryWallet: WalletState | null;
+    /** Where the business check (KYB) stands. */
+    kybStatus?: KycStatus;
   } | null;
   /** Every organization the caller belongs to (for the switcher). */
   organizations: {
@@ -97,6 +99,7 @@ export interface Me {
     name: string;
     logo: string | null;
     role: OrgRole;
+    kybStatus?: KycStatus;
   }[];
   contractor: {
     id: string;
@@ -104,8 +107,14 @@ export interface Me {
     country: string;
     payoutCurrency: string;
     type: "INDIVIDUAL" | "BUSINESS";
+    /** Where the identity check (KYC) stands. */
+    kycStatus: KycStatus;
     wallet: WalletState | null;
   } | null;
+  /** Whether a contractor must pass the identity check before being paid. */
+  kycRequired?: boolean;
+  /** Whether an organization must pass the business check once past its allowance. */
+  kybRequired?: boolean;
   network: string;
   canMint: boolean;
   activationErrors?: string[];
@@ -114,6 +123,9 @@ export interface Me {
   /** Product features staff can switch off in the admin console. Missing = on. */
   features?: Partial<Record<Feature, boolean>>;
 }
+
+export type KycStatus =
+  "NONE" | "PENDING" | "IN_REVIEW" | "APPROVED" | "DECLINED" | "EXPIRED";
 
 export type Feature =
   | "invoices"
@@ -200,6 +212,7 @@ export interface OrgContractor {
   country: string;
   payoutCurrency: string;
   type: "INDIVIDUAL" | "BUSINESS";
+  kycStatus: KycStatus;
   createdAt: string;
   wallet: { publicKey: string; isActivated: boolean } | null;
   /** Added to the list directly, so they can invoice you. */
@@ -741,6 +754,31 @@ export const milestonesApi = {
         ),
       ),
 };
+
+/** The identity check (KYC), run on the provider's hosted page. */
+export const kycApi = {
+  /** The contractor's standing; asks the provider when a result is still due. */
+  status: () =>
+    client
+      .GET("/api/kyc")
+      .then((r) => unwrap<{ status: KycStatus; required: boolean }>(r)),
+  /** Start or resume the check; open the returned page. */
+  start: () =>
+    client.POST("/api/kyc/start").then((r) => unwrap<{ url: string }>(r)),
+  /** The active organization's business check and allowance. */
+  kyb: () => client.GET("/api/kyb").then((r) => unwrap<KybStanding>(r)),
+  startKyb: () =>
+    client.POST("/api/kyb/start").then((r) => unwrap<{ url: string }>(r)),
+};
+
+export interface KybStanding {
+  status: KycStatus;
+  required: boolean;
+  /** Total an unverified organization may pay out. */
+  allowanceUsdc: string;
+  paidOutUsdc: string;
+  canManage: boolean;
+}
 
 export const cashoutsApi = {
   list: () =>

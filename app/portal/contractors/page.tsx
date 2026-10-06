@@ -233,6 +233,14 @@ export default function ContractorsPage() {
                       >
                         {c.wallet?.isActivated ? "Active" : "Not activated"}
                       </Badge>
+                      {me?.kycRequired && c.kycStatus !== "APPROVED" && (
+                        <div
+                          className="mt-1 text-[12.5px] text-muted"
+                          title="They must verify their identity from their Disburs home page before you can pay them."
+                        >
+                          Identity not verified
+                        </div>
+                      )}
                     </div>
                     <Button
                       variant="ghost"

@@ -26,6 +26,7 @@ export const SETTINGS_TABS: { label: string; href: string }[] = [
   { label: "Organization", href: "/portal/settings" },
   { label: "Team", href: "/portal/team" },
   { label: "Rules", href: "/portal/rules" },
+  { label: "Verification", href: "/portal/verification" },
 ];
 export const inSettings = (pathname: string) =>
   SETTINGS_TABS.some(
