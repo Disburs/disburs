@@ -7,6 +7,7 @@ import {
   activateWallets,
   createOrganization,
   getMe,
+  getOrgAllowance,
   onboardClient,
   onboardContractor,
   updateOrganization,
@@ -123,6 +124,15 @@ export function useUpdateName() {
 }
 
 /** Create another organization; it becomes the active one. */
+/** Whether this account may open another organization, and why not. */
+export function useOrgAllowance() {
+  return useQuery({
+    queryKey: ["org-allowance"],
+    queryFn: getOrgAllowance,
+    staleTime: 30_000,
+  });
+}
+
 export function useCreateOrganization() {
   const qc = useQueryClient();
   return useMutation({

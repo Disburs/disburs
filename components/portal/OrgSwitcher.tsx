@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BadgeCheck, Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { Avatar } from "./ui";
-import { useMe, useSetActiveOrganization } from "@/lib/hooks/useMe";
+import {
+  useMe,
+  useOrgAllowance,
+  useSetActiveOrganization,
+} from "@/lib/hooks/useMe";
+import { usdc } from "@/lib/format";
 
 const initials = (name: string) =>
   name
@@ -36,6 +41,7 @@ export default function OrgSwitcher() {
 
   const org = me?.organization;
   const orgs = me?.organizations ?? [];
+  const allowance = useOrgAllowance().data;
   if (!org) return null;
 
   return (
@@ -110,16 +116,24 @@ export default function OrgSwitcher() {
               </button>
             );
           })}
-          <Link
-            href="/portal/organizations/new"
-            onClick={() => setOpen(false)}
-            className="mt-1 flex items-center gap-3 rounded-[14px] border-t border-line px-2.5 py-2.5 text-[14px] text-ink hover:bg-subtle"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-line">
-              <Plus size={14} />
-            </span>
-            New organization
-          </Link>
+          {!allowance || allowance.canCreate ? (
+            <Link
+              href="/portal/organizations/new"
+              onClick={() => setOpen(false)}
+              className="mt-1 flex items-center gap-3 rounded-[14px] border-t border-line px-2.5 py-2.5 text-[14px] text-ink hover:bg-subtle"
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border border-line">
+                <Plus size={14} />
+              </span>
+              New organization
+            </Link>
+          ) : (
+            <div className="mt-1 border-t border-line px-2.5 py-2.5 text-[12.5px] leading-[1.45] text-muted">
+              {allowance.reason === "unlock"
+                ? `Pay out $${usdc(allowance.unlockUsdc)} USDC from ${allowance.leader?.name ?? "your organization"} to unlock a second organization ($${usdc(allowance.paidOutUsdc)} so far).`
+                : `Your account may create ${allowance.limit} ${allowance.limit === 1 ? "organization" : "organizations"}. Need another? Contact Disburs.`}
+            </div>
+          )}
         </div>
       )}
     </div>

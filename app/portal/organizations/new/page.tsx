@@ -7,7 +7,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Card, Field, PageTitle, inputClass } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import ImageUpload from "@/components/upload/ImageUpload";
-import { useCreateOrganization, useFeature } from "@/lib/hooks/useMe";
+import {
+  useCreateOrganization,
+  useFeature,
+  useOrgAllowance,
+} from "@/lib/hooks/useMe";
+import { usdc } from "@/lib/format";
 import FeaturePaused from "@/components/FeaturePaused";
 
 const COUNTRIES = [
@@ -25,6 +30,7 @@ export default function NewOrganizationPage() {
   const router = useRouter();
   const create = useCreateOrganization();
   const signupOn = useFeature("clientSignup");
+  const allowance = useOrgAllowance().data;
   const [name, setName] = useState("");
   const [country, setCountry] = useState("Kenya");
   const [teamSize, setTeamSize] = useState("");
@@ -54,6 +60,22 @@ export default function NewOrganizationPage() {
           Disburs has paused setting up new organizations for now. Your existing
           organizations are not affected.
         </FeaturePaused>
+      ) : allowance && !allowance.canCreate ? (
+        <Card>
+          <div className="text-[17px] font-medium text-ink">
+            {allowance.reason === "unlock"
+              ? "A second organization unlocks with use"
+              : "Your account is at its limit"}
+          </div>
+          <p className="mt-2 text-[14.5px] leading-[1.55] text-muted">
+            {allowance.reason === "unlock"
+              ? `Once ${allowance.leader?.name ?? "your organization"} has paid out $${usdc(allowance.unlockUsdc)} USDC in total, you can open another organization here. It has paid out $${usdc(allowance.paidOutUsdc)} so far.`
+              : `Accounts may create ${allowance.limit} ${allowance.limit === 1 ? "organization" : "organizations"}. If you run more entities, contact Disburs and we will raise it for you.`}
+          </p>
+          <Button asChild variant="outline" className="mt-5">
+            <Link href="/portal">Back to the dashboard</Link>
+          </Button>
+        </Card>
       ) : (
         <form onSubmit={submit} className="flex flex-col gap-5">
           <Card>
