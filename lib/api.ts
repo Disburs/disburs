@@ -199,6 +199,8 @@ export interface OrgContractor {
   type: "INDIVIDUAL" | "BUSINESS";
   createdAt: string;
   wallet: { publicKey: string; isActivated: boolean } | null;
+  /** Added to the list directly, so they can invoice you. */
+  added: boolean;
   payrolls: { id: string; name: string; amount: string; active: boolean }[];
   lastPaidAt: string | null;
   lastTxHash: string | null;
@@ -212,6 +214,21 @@ export async function listContractors(): Promise<OrgContractor[]> {
   const { data, error } = await client.GET("/api/contractors");
   if (error) throw toError(error);
   return (data ?? []) as unknown as OrgContractor[];
+}
+
+/** Add an onboarded contractor to your list by email, so they can invoice you. */
+export async function addContractor(email: string) {
+  const { data, error } = await client.POST("/api/contractors", {
+    body: { email },
+  });
+  if (error) throw toError(error);
+  return data as unknown as { id: string; name: string; email: string };
+}
+export async function removeContractor(id: string) {
+  const { error } = await client.DELETE("/api/contractors/{id}", {
+    params: { path: { id } },
+  });
+  if (error) throw toError(error);
 }
 
 export async function lookupContractor(
@@ -525,12 +542,24 @@ export interface InvoiceEvent {
   note: string | null;
   createdAt: string;
 }
+export interface InvoiceItem {
+  description: string;
+  quantity: string;
+  rate: string;
+  amount: string;
+}
 export interface Invoice {
   id: string;
   organizationId: string;
   contractorId: string;
+  /** Sequential per contractor; show with invoiceLabel(). */
+  number: number;
   amount: string;
   description: string;
+  periodStart: string | null;
+  periodEnd: string | null;
+  dueDate: string | null;
+  items: InvoiceItem[];
   evidenceUrl: string | null;
   status: InvoiceStatus;
   decidedById: string | null;
@@ -550,10 +579,15 @@ export interface Invoice {
 }
 export interface CreateInvoiceBody {
   organizationId: string;
-  amount: string;
   description: string;
+  items: { description: string; quantity: string; rate: string }[];
+  periodStart?: string;
+  periodEnd?: string;
+  dueDate?: string;
   evidenceUrl?: string;
 }
+/** INV-0007 */
+export const invoiceLabel = (n: number) => `INV-${String(n).padStart(4, "0")}`;
 export const invoicesApi = {
   organizations: () =>
     client
@@ -587,6 +621,15 @@ export const invoicesApi = {
         body: { note },
       })
       .then((r) => unwrap<Invoice>(r)),
+  payNow: (id: string, note?: string) =>
+    client
+      .POST("/api/invoices/{id}/pay", {
+        params: { path: { id } },
+        body: { note },
+      })
+      .then((r) =>
+        unwrap<{ invoice: Invoice; run: { id: string; status: string } }>(r),
+      ),
   draftRun: (body: { label: string; memo?: string; invoiceIds?: string[] }) =>
     client
       .POST("/api/invoices/run", { body })

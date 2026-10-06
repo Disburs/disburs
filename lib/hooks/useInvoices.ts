@@ -58,6 +58,18 @@ export function useDecideInvoice() {
     onSuccess: () => qc.invalidateQueries({ queryKey: INVOICES_KEY }),
   });
 }
+export function usePayInvoiceNow() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: { id: string; note?: string }) =>
+      invoicesApi.payNow(p.id, p.note),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: INVOICES_KEY });
+      qc.invalidateQueries({ queryKey: RUNS_KEY });
+      qc.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
+}
 export function useDraftRunFromInvoices() {
   const qc = useQueryClient();
   return useMutation({
