@@ -1,5 +1,10 @@
 import createClient from "openapi-fetch";
 import type { paths, components } from "./api-types";
+import {
+  CONFIRMATION_HEADER,
+  requestConfirmation,
+  type ConfirmationMethod,
+} from "./confirmation";
 
 /**
  * Central API layer. Every backend call lives here (typed against the OpenAPI
@@ -14,6 +19,68 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 // Sessions are httpOnly cookies set by the backend, so requests must carry credentials.
 export const client = createClient<paths>({ baseUrl, credentials: "include" });
+
+/*
+ * Money actions are refused with 403 CONFIRMATION_REQUIRED until a code comes
+ * with the request. Rather than teach every screen about codes, the client
+ * asks the person once (through the ConfirmationDialog) and retries with the
+ * code in a header. A wrong code asks again with the server's message.
+ * A session that still owes its sign-in code (SECOND_FACTOR_REQUIRED) is sent
+ * to the code screen.
+ */
+const pendingBodies = new Map<string, Request>();
+client.use({
+  onRequest({ request, id }) {
+    // Keep a copy: a body can only be read once, and we may need to resend it.
+    pendingBodies.set(id, request.clone());
+  },
+  async onResponse({ response, id }) {
+    const original = pendingBodies.get(id);
+    pendingBodies.delete(id);
+    if (response.status !== 403 || !original) return response;
+    const body = (await response
+      .clone()
+      .json()
+      .catch(() => null)) as {
+      code?: string;
+      method?: ConfirmationMethod;
+      message?: string;
+    } | null;
+    if (body?.code === "SECOND_FACTOR_REQUIRED") {
+      if (
+        typeof window !== "undefined" &&
+        !location.pathname.startsWith("/two-factor")
+      )
+        location.assign(
+          `/two-factor?next=${encodeURIComponent(location.pathname)}`,
+        );
+      return response;
+    }
+    if (body?.code !== "CONFIRMATION_REQUIRED") return response;
+    let error: string | undefined;
+    for (;;) {
+      const code = await requestConfirmation({
+        method: body?.method ?? "email",
+        error,
+      });
+      if (!code) return response; // cancelled: the screen shows the original refusal
+      // A fresh copy each time: sending a Request uses up its body.
+      const headers = new Headers(original.headers);
+      headers.set(CONFIRMATION_HEADER, code);
+      const retried = await fetch(new Request(original.clone(), { headers }));
+      if (retried.status !== 403) return retried;
+      const again = (await retried
+        .clone()
+        .json()
+        .catch(() => null)) as {
+        code?: string;
+        message?: string;
+      } | null;
+      if (again?.code !== "CONFIRMATION_INVALID") return retried;
+      error = again.message ?? "That code is not right.";
+    }
+  },
+});
 
 /** Turn an openapi-fetch error body into an Error with a readable message. */
 function toError(error: unknown): Error {
@@ -90,6 +157,8 @@ export interface Me {
     /** The organization's own payroll contract on Soroban, once deployed. */
     payrollContractId?: string | null;
     treasuryWallet: WalletState | null;
+    /** Where the business check (KYB) stands. */
+    kybStatus?: KycStatus;
   } | null;
   /** Every organization the caller belongs to (for the switcher). */
   organizations: {
@@ -97,6 +166,7 @@ export interface Me {
     name: string;
     logo: string | null;
     role: OrgRole;
+    kybStatus?: KycStatus;
   }[];
   contractor: {
     id: string;
@@ -104,8 +174,16 @@ export interface Me {
     country: string;
     payoutCurrency: string;
     type: "INDIVIDUAL" | "BUSINESS";
+    /** Where the identity check (KYC) stands. */
+    kycStatus: KycStatus;
     wallet: WalletState | null;
   } | null;
+  /** Whether a contractor must pass the identity check before being paid. */
+  kycRequired?: boolean;
+  /** Whether an organization must pass the business check once past its allowance. */
+  kybRequired?: boolean;
+  /** The authenticator app: set up or not, and whether this session still owes its sign-in code. */
+  twoFactor?: { enabled: boolean; pending: boolean };
   network: string;
   canMint: boolean;
   activationErrors?: string[];
@@ -114,6 +192,9 @@ export interface Me {
   /** Product features staff can switch off in the admin console. Missing = on. */
   features?: Partial<Record<Feature, boolean>>;
 }
+
+export type KycStatus =
+  "NONE" | "PENDING" | "IN_REVIEW" | "APPROVED" | "DECLINED" | "EXPIRED";
 
 export type Feature =
   | "invoices"
@@ -200,6 +281,7 @@ export interface OrgContractor {
   country: string;
   payoutCurrency: string;
   type: "INDIVIDUAL" | "BUSINESS";
+  kycStatus: KycStatus;
   createdAt: string;
   wallet: { publicKey: string; isActivated: boolean } | null;
   /** Added to the list directly, so they can invoice you. */
@@ -296,6 +378,22 @@ export async function signUpload(kind: UploadKind): Promise<UploadSignature> {
 /* ---------------------------- Organizations --------------------------- */
 export type CreateOrganizationBody =
   components["schemas"]["CreateOrganizationDto"];
+/** How many organizations you may create, and whether the next one is open. */
+export interface OrgAllowance {
+  owned: number;
+  limit: number;
+  canCreate: boolean;
+  reason: "limit" | "unlock" | null;
+  unlockUsdc: string;
+  paidOutUsdc: string;
+  leader: { id: string; name: string } | null;
+}
+export async function getOrgAllowance(): Promise<OrgAllowance> {
+  const { data, error } = await client.GET("/api/organizations/allowance");
+  if (error) throw toError(error);
+  return data as unknown as OrgAllowance;
+}
+
 export async function createOrganization(body: CreateOrganizationBody) {
   const { data, error } = await client.POST("/api/organizations", { body });
   if (error) throw toError(error);
@@ -739,6 +837,66 @@ export const milestonesApi = {
         unwrap<{ milestone: Milestone; run: { id: string; status: string } }>(
           r,
         ),
+      ),
+};
+
+/** The identity check (KYC), run on the provider's hosted page. */
+export const kycApi = {
+  /** The contractor's standing; asks the provider when a result is still due. */
+  status: () =>
+    client
+      .GET("/api/kyc")
+      .then((r) => unwrap<{ status: KycStatus; required: boolean }>(r)),
+  /** Start or resume the check; open the returned page. */
+  start: () =>
+    client.POST("/api/kyc/start").then((r) => unwrap<{ url: string }>(r)),
+  /** The active organization's business check and allowance. */
+  kyb: () => client.GET("/api/kyb").then((r) => unwrap<KybStanding>(r)),
+  startKyb: () =>
+    client.POST("/api/kyb/start").then((r) => unwrap<{ url: string }>(r)),
+};
+
+export interface KybStanding {
+  status: KycStatus;
+  required: boolean;
+  /** Total an unverified organization may pay out. */
+  allowanceUsdc: string;
+  paidOutUsdc: string;
+  canManage: boolean;
+}
+
+/** The authenticator app (TOTP): setup, the sign-in challenge, and emailed codes. */
+export const twoFactorApi = {
+  status: () =>
+    client.GET("/api/two-factor").then((r) =>
+      unwrap<{
+        enabled: boolean;
+        pending: boolean;
+        backupCodesLeft: number;
+        afterDays: number;
+      }>(r),
+    ),
+  enroll: () =>
+    client
+      .POST("/api/two-factor/enroll")
+      .then((r) => unwrap<{ secret: string; otpauthUri: string }>(r)),
+  activate: (code: string) =>
+    client
+      .POST("/api/two-factor/activate", { body: { code } })
+      .then((r) => unwrap<{ backupCodes: string[] }>(r)),
+  disable: (code: string) =>
+    client
+      .POST("/api/two-factor/disable", { body: { code } })
+      .then((r) => unwrap<{ enabled: boolean }>(r)),
+  verify: (code: string) =>
+    client
+      .POST("/api/two-factor/verify", { body: { code } })
+      .then((r) => unwrap<{ pending: boolean }>(r)),
+  emailCode: () =>
+    client
+      .POST("/api/two-factor/email-code")
+      .then((r) =>
+        unwrap<{ sentTo: string; minutes: number; code?: string }>(r),
       ),
 };
 

@@ -2,9 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
+import { BadgeCheck, Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { Avatar } from "./ui";
-import { useMe, useSetActiveOrganization } from "@/lib/hooks/useMe";
+import {
+  useMe,
+  useOrgAllowance,
+  useSetActiveOrganization,
+} from "@/lib/hooks/useMe";
+import { usdc } from "@/lib/format";
 
 const initials = (name: string) =>
   name
@@ -36,6 +41,7 @@ export default function OrgSwitcher() {
 
   const org = me?.organization;
   const orgs = me?.organizations ?? [];
+  const allowance = useOrgAllowance().data;
   if (!org) return null;
 
   return (
@@ -49,8 +55,15 @@ export default function OrgSwitcher() {
       >
         <Avatar initials={initials(org.name)} size={32} src={org.logo} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] font-medium text-ink">
-            {org.name}
+          <span className="flex items-center gap-1.5 text-[14px] font-medium text-ink">
+            <span className="truncate">{org.name}</span>
+            {org.kybStatus === "APPROVED" && (
+              <BadgeCheck
+                size={15}
+                className="shrink-0 text-accent"
+                aria-label="Verified business"
+              />
+            )}
           </span>
           <span className="block text-[12px] capitalize text-muted">
             {org.role}
@@ -85,8 +98,15 @@ export default function OrgSwitcher() {
               >
                 <Avatar initials={initials(o.name)} size={28} src={o.logo} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] text-ink">
-                    {o.name}
+                  <span className="flex items-center gap-1.5 text-[14px] text-ink">
+                    <span className="truncate">{o.name}</span>
+                    {o.kybStatus === "APPROVED" && (
+                      <BadgeCheck
+                        size={14}
+                        className="shrink-0 text-accent"
+                        aria-label="Verified business"
+                      />
+                    )}
                   </span>
                   <span className="block text-[12px] capitalize text-muted">
                     {o.role}
@@ -96,16 +116,24 @@ export default function OrgSwitcher() {
               </button>
             );
           })}
-          <Link
-            href="/portal/organizations/new"
-            onClick={() => setOpen(false)}
-            className="mt-1 flex items-center gap-3 rounded-[14px] border-t border-line px-2.5 py-2.5 text-[14px] text-ink hover:bg-subtle"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-line">
-              <Plus size={14} />
-            </span>
-            New organization
-          </Link>
+          {!allowance || allowance.canCreate ? (
+            <Link
+              href="/portal/organizations/new"
+              onClick={() => setOpen(false)}
+              className="mt-1 flex items-center gap-3 rounded-[14px] border-t border-line px-2.5 py-2.5 text-[14px] text-ink hover:bg-subtle"
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border border-line">
+                <Plus size={14} />
+              </span>
+              New organization
+            </Link>
+          ) : (
+            <div className="mt-1 border-t border-line px-2.5 py-2.5 text-[12.5px] leading-[1.45] text-muted">
+              {allowance.reason === "unlock"
+                ? `Pay out $${usdc(allowance.unlockUsdc)} USDC from ${allowance.leader?.name ?? "your organization"} to unlock a second organization ($${usdc(allowance.paidOutUsdc)} so far).`
+                : `Your account may create ${allowance.limit} ${allowance.limit === 1 ? "organization" : "organizations"}. Need another? Contact Disburs.`}
+            </div>
+          )}
         </div>
       )}
     </div>

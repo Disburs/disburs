@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { rememberRole } from "@/lib/last-role";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -15,6 +16,7 @@ import {
   Menu,
   X,
   type LucideIcon,
+  KeyRound,
 } from "lucide-react";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
@@ -27,6 +29,7 @@ const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Invoices", href: "/contractor/invoices", icon: FileText },
   { label: "Milestones", href: "/contractor/milestones", icon: Flag },
   { label: "Cash out", href: "/contractor/cashout", icon: ArrowLeftRight },
+  { label: "Security", href: "/contractor/security", icon: KeyRound },
 ];
 
 function Wordmark() {
@@ -45,6 +48,8 @@ export default function ContractorShell({
 }: {
   children: React.ReactNode;
 }) {
+  // This device now uses the contractor side: preselect it at the next sign-in.
+  useEffect(() => rememberRole("CONTRACTOR"), []);
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);

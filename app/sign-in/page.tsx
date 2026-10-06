@@ -9,6 +9,7 @@ import Wordmark from "@/components/Wordmark";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient, callbackURL, type RoleIntent } from "@/lib/auth-client";
 import { getAuthProviders, type SocialProvider } from "@/lib/api";
+import { readLastRole, rememberRole } from "@/lib/last-role";
 
 const ROLES: { value: RoleIntent; label: string; sub: string }[] = [
   { value: "CLIENT", label: "Pay my team", sub: "I run payroll" },
@@ -50,6 +51,14 @@ function SignInForm() {
   const next = useSearchParams().get("next");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<RoleIntent>("CLIENT");
+  const [lastRole, setLastRole] = useState<RoleIntent | null>(null);
+  useEffect(() => {
+    const last = readLastRole();
+    if (last) {
+      setLastRole(last);
+      setRole(last);
+    }
+  }, []);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
   );
@@ -69,6 +78,7 @@ function SignInForm() {
   }, []);
 
   const signInWith = async (provider: SocialProvider) => {
+    rememberRole(role);
     setSocialBusy(provider);
     setMessage(null);
     const { error } = await authClient.signIn.social({
@@ -107,6 +117,7 @@ function SignInForm() {
   }, [status, role, next, router]);
 
   const send = async (e?: React.FormEvent) => {
+    rememberRole(role);
     e?.preventDefault();
     const trimmed = email.trim();
     if (!trimmed || status === "sending") return;
@@ -197,20 +208,26 @@ function SignInForm() {
                     {ROLES.map((r) => {
                       const on = role === r.value;
                       return (
-                        <Button
-                          variant={on ? "default" : "outline"}
-                                                    key={r.value}
-                          onClick={() => setRole(r.value)}
-                          aria-pressed={on}
-                          className="h-12 text-[15px]"
-                        >
-                          {r.label}
-                          <span
-                            className={`text-[13px] font-normal ${on ? "text-ink-deep/60" : "text-muted"}`}
+                        <span key={r.value} className="relative inline-flex">
+                          <Button
+                            variant={on ? "default" : "outline"}
+                            onClick={() => setRole(r.value)}
+                            aria-pressed={on}
+                            className="h-12 text-[15px]"
                           >
-                            {r.sub}
-                          </span>
-                        </Button>
+                            {r.label}
+                            <span
+                              className={`text-[13px] font-normal ${on ? "text-ink-deep/60" : "text-muted"}`}
+                            >
+                              {r.sub}
+                            </span>
+                          </Button>
+                          {lastRole === r.value && (
+                            <span className="pointer-events-none absolute -right-2 -top-2.5 rounded-full bg-ink-deep px-2.5 py-1 text-[11px] font-medium leading-none text-white">
+                              Last used
+                            </span>
+                          )}
+                        </span>
                       );
                     })}
                   </div>

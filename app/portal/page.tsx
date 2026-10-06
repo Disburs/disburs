@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -13,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageTitle, StatTile } from "@/components/portal/ui";
+import KybBanner from "@/components/portal/KybBanner";
+import SetupNudge from "@/components/two-factor/SetupNudge";
 import { runVariant } from "@/components/portal/RunLines";
 import { useMe } from "@/lib/hooks/useMe";
 import { useContractors, useLedger } from "@/lib/hooks/usePayments";
@@ -109,6 +112,11 @@ export default function DashboardPage() {
       >
         {greeting()}, {firstName}.
       </PageTitle>
+
+      <Suspense fallback={null}>
+        <KybBanner />
+      </Suspense>
+      <SetupNudge href="/portal/security" />
 
       {shortfall > 0 && largest && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-[#FBF1DC] px-5 py-4 text-[#8A5A00]">
