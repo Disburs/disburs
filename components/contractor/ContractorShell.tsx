@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   type LucideIcon,
+  KeyRound,
 } from "lucide-react";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
@@ -28,6 +29,7 @@ const NAV: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Invoices", href: "/contractor/invoices", icon: FileText },
   { label: "Milestones", href: "/contractor/milestones", icon: Flag },
   { label: "Cash out", href: "/contractor/cashout", icon: ArrowLeftRight },
+  { label: "Security", href: "/contractor/security", icon: KeyRound },
 ];
 
 function Wordmark() {
