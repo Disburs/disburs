@@ -54,6 +54,9 @@ export default function KybBanner() {
   }, [waiting, q]);
 
   if (!enabled || !standing || !status || !standing.required) return null;
+  // The floating KybNotice shows the standing everywhere; this banner only
+  // covers the moment someone returns from the provider.
+  if (!returned) return null;
   if (status === "APPROVED")
     return returned ? (
       <div
