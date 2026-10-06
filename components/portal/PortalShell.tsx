@@ -25,6 +25,7 @@ import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "./ui";
 import OrgSwitcher from "./OrgSwitcher";
+import KybNotice, { KYB_NOTICE_KEY } from "./KybNotice";
 import PaymentsTabs, { inPayments, inSettings } from "./PaymentsTabs";
 
 /**
@@ -129,6 +130,14 @@ function SignOutButton() {
   const [busy, setBusy] = useState(false);
   const signOut = async () => {
     setBusy(true);
+    // Hidden notices return at the next sign-in.
+    try {
+      Object.keys(sessionStorage)
+        .filter((k) => k.startsWith(KYB_NOTICE_KEY))
+        .forEach((k) => sessionStorage.removeItem(k));
+    } catch {
+      /* ignore */
+    }
     await authClient.signOut();
     router.replace("/sign-in");
   };
@@ -271,6 +280,7 @@ export default function PortalShell({
           </div>
         </header>
 
+        <KybNotice />
         <main className="max-w-[1240px] px-5 pb-20 pt-8 md:px-8 md:pt-10">
           <PaymentsTabs />
           {children}
