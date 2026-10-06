@@ -21,7 +21,7 @@ const PLANS: Plan[] = [
     features: [
       "Core zero-knowledge privacy",
       "Stellar batch payouts",
-      "Cash-out in 2 countries",
+      "Withdraw to any Stellar wallet",
       "Basic reporting",
       "Email support",
     ],
@@ -36,7 +36,7 @@ const PLANS: Plan[] = [
       "Contract reading & interpretation",
       "Routine exception handling",
       "FX rate optimization",
-      "Cash-out in 4 countries",
+      "Withdraw to any Stellar wallet",
       "Priority support",
     ],
   },
@@ -48,7 +48,7 @@ const PLANS: Plan[] = [
     features: [
       "Platform integration APIs",
       "Custom approval workflows",
-      "Cash-out in all countries",
+      "Withdraw to any Stellar wallet",
       "Zero-knowledge private payroll",
       "Dedicated support",
     ],
