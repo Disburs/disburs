@@ -21,6 +21,7 @@ export default function Home() {
         <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
       </noscript>
       <Nav />
+      <div id="content" tabIndex={-1} className="outline-none" />
       <Hero />
       <Privacy />
       <Statement />
