@@ -1,16 +1,16 @@
 # Disburs
 
-The autonomous AI payroll agent for Africa — marketing site and product
-simulation for **disburs.io**.
+Privacy-preserving, autonomous global payroll on Stellar and USDC — marketing
+site and product simulation for **disburs.io**.
 
 Disburs reads your contracts, calculates what every contractor is owed, picks
-the best exchange rate, and pays your entire African team in USDC via the
-Stellar network — automatically.
+the best exchange rate, and pays your global team in USDC via the Stellar
+network — automatically, with every run waiting for your approval.
 
 ## Tech stack
 
-- **Next.js 15** (App Router) + **React 19** + **TypeScript**
-- **Tailwind CSS** + a Safe{Wallet}-style design system (mint `#12FF80` accent)
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS** + a Playfair Display and Archivo design system (mint `#12FF80` accent)
 - **Framer Motion** for subtle motion
 - **Lucide** icons
 
