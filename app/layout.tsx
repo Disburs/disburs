@@ -45,6 +45,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body>
+        <a
+          href="#content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#0e1a14] focus:text-[#12ff80] focus:rounded-full focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#12ff80] text-sm font-medium transition"
+        >
+          Skip to content
+        </a>
         <Providers>
           {children}
           <WaitlistModal />
