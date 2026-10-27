@@ -36,4 +36,15 @@ test.describe("Landing page", () => {
     await page.keyboard.press("Enter");
     await expect(page.locator("#content")).toBeFocused();
   });
+
+  test(
+    "keeps the landing-page skip link off application routes",
+    async ({ page }) => {
+      await page.goto("/sign-in");
+
+      await expect(
+        page.getByRole("link", { name: "Skip to content" }),
+      ).toHaveCount(0);
+    },
+  );
 });
