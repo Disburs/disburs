@@ -38,8 +38,16 @@ test.describe("Landing page", () => {
     await expect(payments).toHaveAttribute("aria-selected", "true");
     await expect(page.getByRole("tabpanel")).toHaveAttribute("aria-labelledby", "faq-tab-1");
 
+    await page.keyboard.press("ArrowLeft");
+    await expect(general).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    const privacy = page.getByRole("tab", { name: "Privacy & security" });
+    await expect(privacy).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(general).toBeFocused();
+
     await page.keyboard.press("End");
-    await expect(page.getByRole("tab", { name: "Privacy & security" })).toBeFocused();
+    await expect(privacy).toBeFocused();
     await page.keyboard.press("Home");
     await expect(general).toBeFocused();
   });
