@@ -260,6 +260,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/external-payees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active organization's address book, with each address's screening */
+        get: operations["ExternalPayeesController_list"];
+        put?: never;
+        /** Add an address to the book; it is screened on the way in (owners, admins) */
+        post: operations["ExternalPayeesController_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/external-payees/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** This month's external-payee spend against the cap that applies */
+        get: operations["ExternalPayeesController_usage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/external-payees/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an address from the book (owners, admins) */
+        delete: operations["ExternalPayeesController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/waitlist": {
         parameters: {
             query?: never;
@@ -1849,6 +1901,21 @@ export interface components {
             /** @description A 6-digit authenticator code, or a backup code. */
             code: string;
         };
+        CreateExternalPayeeDto: {
+            /** @example Ama Mensah */
+            name: string;
+            /**
+             * @description Their Stellar address.
+             * @example GB…
+             */
+            address: string;
+            /** @description Memo their address needs (exchange deposits). */
+            memo?: string;
+            /** @enum {string} */
+            memoType?: "text" | "id";
+            /** @description Told when paid, and invited to Disburs. */
+            email?: string;
+        };
         /**
          * @description CLIENT = an employer paying contractors, CONTRACTOR = a worker getting paid.
          * @enum {string}
@@ -1951,10 +2018,12 @@ export interface components {
         };
         PayContractorDto: {
             /**
-             * @description The contractor (payee) to pay.
+             * @description The contractor to pay. Give this or externalPayeeId.
              * @example a1b2c3d4-…
              */
-            contractorId: string;
+            contractorId?: string;
+            /** @description An address from the address book to pay instead of a contractor. Public on Stellar. */
+            externalPayeeId?: string;
             /**
              * @description USDC amount (max 7 decimal places).
              * @example 250.5
@@ -2130,6 +2199,11 @@ export interface components {
              * @example 3000
              */
             contractorMonthlyCap?: string | null;
+            /**
+             * @description Most paid per month to addresses outside Disburs. Null: the platform default. "0": none.
+             * @example 2000
+             */
+            externalPayeeMonthlyCap?: string | null;
         };
         CompleteMilestoneDto: {
             note?: string;
@@ -2527,6 +2601,80 @@ export interface operations {
         requestBody?: never;
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateExternalPayeeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_usage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

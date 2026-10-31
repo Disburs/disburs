@@ -3,7 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addContractor,
+  addExternalPayee,
+  externalPayeeUsage,
   fundWallet,
+  listExternalPayees,
+  removeExternalPayee,
   listContractors,
   listLedger,
   lookupContractor,
@@ -85,5 +89,41 @@ export function useFundWallet() {
   return useMutation({
     mutationFn: fundWallet,
     onSuccess: () => qc.invalidateQueries({ queryKey: ME_KEY }),
+  });
+}
+
+export const EXTERNAL_PAYEES_KEY = ["external-payees"] as const;
+export const EXTERNAL_PAYEE_USAGE_KEY = ["external-payees", "usage"] as const;
+
+/** The address book: people paid at a Stellar address without a Disburs account. */
+export function useExternalPayees() {
+  return useQuery({
+    queryKey: EXTERNAL_PAYEES_KEY,
+    queryFn: listExternalPayees,
+    staleTime: 10_000,
+  });
+}
+
+export function useExternalPayeeUsage() {
+  return useQuery({
+    queryKey: EXTERNAL_PAYEE_USAGE_KEY,
+    queryFn: externalPayeeUsage,
+    staleTime: 10_000,
+  });
+}
+
+export function useAddExternalPayee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: addExternalPayee,
+    onSuccess: () => qc.invalidateQueries({ queryKey: EXTERNAL_PAYEES_KEY }),
+  });
+}
+
+export function useRemoveExternalPayee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: removeExternalPayee,
+    onSuccess: () => qc.invalidateQueries({ queryKey: EXTERNAL_PAYEES_KEY }),
   });
 }
