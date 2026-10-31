@@ -203,6 +203,7 @@ export type Feature =
   | "oneOffPay"
   | "cashouts"
   | "clientSignup"
+  | "externalPayees"
   | "testnetFunding";
 
 export async function getMe(): Promise<Me | null> {
@@ -252,6 +253,16 @@ export interface LedgerEntry {
   userId: string | null;
   organizationId: string | null;
   contractorId: string | null;
+  /** Set when this payout went to an address-book payee, not a contractor. */
+  externalPayee?: {
+    id: string;
+    name: string;
+    address: string;
+    /** Their email already belongs to a Disburs contractor. */
+    onDisburs?: boolean;
+    /** Whether the "you were paid" email went out; null when they have no email. */
+    emailSent?: boolean | null;
+  } | null;
   /** The run this entry was paid in, or null for a one-off payment. */
   runId?: string | null;
   createdAt: string;
@@ -333,6 +344,56 @@ export async function payContractor(
   const { data, error } = await client.POST("/api/payments/pay", { body });
   if (error) throw toError(error);
   return data as unknown as LedgerEntry;
+}
+
+/* --------------------------- External payees --------------------------- */
+export type ScreenStatus = "PENDING" | "CLEAR" | "FLAGGED" | "UNAVAILABLE";
+/** An address-book entry: someone paid at a Stellar address without a Disburs account. */
+export interface ExternalPayee {
+  id: string;
+  name: string;
+  address: string;
+  memo: string | null;
+  memoType: string | null;
+  email: string | null;
+  screenStatus: ScreenStatus;
+  screenRisk: number | null;
+  screenedAt: string | null;
+  createdAt: string;
+  /** Their email already belongs to a Disburs contractor. */
+  onDisburs: boolean;
+}
+export type ExternalPayeeBody = components["schemas"]["CreateExternalPayeeDto"];
+
+export async function listExternalPayees(): Promise<ExternalPayee[]> {
+  const { data, error } = await client.GET("/api/external-payees");
+  if (error) throw toError(error);
+  return (data ?? []) as unknown as ExternalPayee[];
+}
+
+export async function addExternalPayee(
+  body: ExternalPayeeBody,
+): Promise<ExternalPayee> {
+  const { data, error } = await client.POST("/api/external-payees", { body });
+  if (error) throw toError(error);
+  return data as unknown as ExternalPayee;
+}
+
+export async function removeExternalPayee(id: string) {
+  const { error } = await client.DELETE("/api/external-payees/{id}", {
+    params: { path: { id } },
+  });
+  if (error) throw toError(error);
+}
+
+/** This month's spend on address-book payees against the cap that applies. */
+export async function externalPayeeUsage(): Promise<{
+  capUsdc: number;
+  usedUsdc: number;
+}> {
+  const { data, error } = await client.GET("/api/external-payees/usage");
+  if (error) throw toError(error);
+  return data as unknown as { capUsdc: number; usedUsdc: number };
 }
 
 export type FundBody = components["schemas"]["FundDto"];
@@ -738,6 +799,8 @@ export interface OrgRules {
   requireEvidenceAbove: string | null;
   monthlyBudget: string | null;
   contractorMonthlyCap: string | null;
+  /** Monthly cap on payments to address-book payees; "0" switches them off. */
+  externalPayeeMonthlyCap: string | null;
   /** Invoices and milestones approved so far this calendar month. */
   approvedThisMonth: string;
 }

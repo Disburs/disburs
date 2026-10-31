@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import { Avatar, Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
-import { useMe } from "@/lib/hooks/useMe";
+import { useFeature, useMe } from "@/lib/hooks/useMe";
 import { useAddContractor, useContractors } from "@/lib/hooks/usePayments";
+import AddressBook from "@/components/portal/AddressBook";
 import {
   Dialog,
   DialogContent,
@@ -85,6 +86,7 @@ export default function ContractorsPage() {
     });
 
   const network = me?.network ?? "testnet";
+  const externalOn = useFeature("externalPayees");
   const canManage = Boolean(
     me?.organization?.role && MONEY_ROLES.includes(me.organization.role),
   );
@@ -367,6 +369,9 @@ export default function ContractorsPage() {
           </div>
         )}
       </Card>
+
+      {externalOn && <AddressBook canManage={canManage} network={network} />}
+
       <Dialog
         open={adding}
         onOpenChange={(o) => {

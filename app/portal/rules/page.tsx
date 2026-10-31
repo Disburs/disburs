@@ -41,6 +41,13 @@ const RULES: { key: Key; title: string; explain: string; example: string }[] = [
     explain: "The most you approve for any one contractor in a calendar month.",
     example: "3000",
   },
+  {
+    key: "externalPayeeMonthlyCap",
+    title: "Monthly cap on address payments",
+    explain:
+      "The most you pay to address-book payees (people paid at a Stellar address, not through Disburs) in a calendar month. Empty uses the Disburs default; 0 switches address payments off for this organization.",
+    example: "2000",
+  },
 ];
 
 /**
@@ -82,6 +89,7 @@ function Form({ rules, canManage }: { rules: OrgRules; canManage: boolean }) {
     requireEvidenceAbove: rules.requireEvidenceAbove ?? "",
     monthlyBudget: rules.monthlyBudget ?? "",
     contractorMonthlyCap: rules.contractorMonthlyCap ?? "",
+    externalPayeeMonthlyCap: rules.externalPayeeMonthlyCap ?? "",
   });
   const valid = RULES.every(
     (r) => draft[r.key] === "" || AMOUNT.test(draft[r.key]),
