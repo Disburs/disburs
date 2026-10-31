@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://disburs.io"),
+  metadataBase: new URL("https://disburs.xyz"),
   title: "Disburs: Payroll That Thinks",
   description:
     "Disburs is autonomous payroll infrastructure. An agent reads your contracts and proposes each run, policy checks and zero-knowledge proofs validate it, and nothing settles until you approve. Paid in USDC on Stellar.",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: "Disburs: Payroll That Thinks",
     description:
       "An agent proposes each payroll run, policy checks and zero-knowledge proofs validate it, and you approve before anything settles. Private payroll in USDC on Stellar.",
-    url: "https://disburs.io",
+    url: "https://disburs.xyz",
     siteName: "Disburs",
     type: "website",
   },

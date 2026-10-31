@@ -2172,11 +2172,11 @@ export interface components {
             name?: string;
         };
         LoginOptionsDto: {
-            /** @example ops@disburs.io */
+            /** @example ops@disburs.xyz */
             email: string;
         };
         LoginVerifyDto: {
-            /** @example ops@disburs.io */
+            /** @example ops@disburs.xyz */
             email: string;
             /** @description The AuthenticationResponseJSON from the browser. */
             response: Record<string, never>;
@@ -2190,7 +2190,7 @@ export interface components {
             name?: string;
         };
         CreateStaffDto: {
-            /** @example ops@disburs.io */
+            /** @example ops@disburs.xyz */
             email: string;
             name: string;
             /** @enum {string} */
