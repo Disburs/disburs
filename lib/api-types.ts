@@ -2071,6 +2071,11 @@ export interface components {
             /** @enum {string} */
             cadence?: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
             memo?: string;
+            /**
+             * @description Scheduled drafts: when the next run is drafted (ISO date-time, in the future). null switches it off.
+             * @example 2026-12-01T09:00:00.000Z
+             */
+            nextDraftAt?: string | null;
         };
         OtpDto: {
             /**

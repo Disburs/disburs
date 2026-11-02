@@ -496,6 +496,8 @@ export interface PayrollDefinition {
   name: string;
   cadence: PayrollCadence;
   memo: string | null;
+  /** Scheduled drafts: when the next run is drafted for review. Null means off. */
+  nextDraftAt: string | null;
   /** Set while archived; restorable until `purgeAt`, then deleted for good. */
   archivedAt: string | null;
   purgeAt: string | null;

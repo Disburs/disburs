@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
+  CalendarClock,
   Check,
   Loader2,
   Pencil,
@@ -202,6 +203,13 @@ export default function PayrollDetail({ id }: { id: string }) {
               </FeaturePaused>
             ))
           )}
+          {def && !def.archivedAt && payrollOn && (
+            <SchedulePanel
+              key={`schedule-${def.id}`}
+              def={def}
+              canManage={canManage}
+            />
+          )}
           {lastRun && (
             <Card padding={0}>
               <div className="flex items-center justify-between border-b border-line px-6 py-4">
@@ -239,6 +247,162 @@ export default function PayrollDetail({ id }: { id: string }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ------------------------------ schedule ------------------------------- */
+
+/** "2026-12-01T09:00" in the browser's zone, for a datetime-local input. */
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** Nine in the morning, a week from now, as a sensible first suggestion. */
+function suggestedStart() {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  d.setHours(9, 0, 0, 0);
+  return toLocalInput(d.toISOString());
+}
+
+/**
+ * Scheduled drafts: on the chosen date Disburs drafts the run from the
+ * roster and emails owners and admins to review it. Approval and payment
+ * stay with a person, with their code. Off for manual payrolls.
+ */
+function SchedulePanel({
+  def,
+  canManage,
+}: {
+  def: PayrollDefinition;
+  canManage: boolean;
+}) {
+  const update = useUpdateDefinition(def.id);
+  // `openedAt` is the clock reading taken when the form opens, so render
+  // stays pure and "in the future" means after the moment you started editing.
+  const [openedAt, setOpenedAt] = useState<number | null>(null);
+  const [value, setValue] = useState(() =>
+    def.nextDraftAt ? toLocalInput(def.nextDraftAt) : suggestedStart(),
+  );
+  const editing = openedAt !== null;
+  const setEditing = (open: boolean) => setOpenedAt(open ? Date.now() : null);
+  const on = Boolean(def.nextDraftAt);
+  const manual = def.cadence === "MANUAL";
+  const chosen = value ? new Date(value) : null;
+  const future = Boolean(chosen && openedAt && chosen.getTime() > openedAt);
+
+  const save = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chosen || !future || update.isPending) return;
+    update.mutate(
+      { nextDraftAt: chosen.toISOString() },
+      { onSuccess: () => setEditing(false) },
+    );
+  };
+
+  return (
+    <Card padding={0}>
+      <div className="flex items-center justify-between gap-3 border-b border-line px-6 py-4">
+        <div className="flex items-center gap-2 text-[15px] font-medium text-ink">
+          <CalendarClock size={16} /> Scheduled drafts
+        </div>
+        <Badge variant={on ? "success" : "neutral"}>{on ? "on" : "off"}</Badge>
+      </div>
+      <div className="flex flex-col gap-3 px-6 py-4 text-[14px]">
+        {manual ? (
+          <p className="text-muted">
+            A manual payroll has no schedule. Set a cadence (weekly, every two
+            weeks or monthly) to draft runs on a date.
+          </p>
+        ) : on && !editing ? (
+          <>
+            <p className="text-ink">
+              Next draft <b className="font-medium">{when(def.nextDraftAt!)}</b>
+              , then {CADENCE_LABEL[def.cadence].toLowerCase()}.
+            </p>
+            <p className="text-[13px] leading-[1.5] text-muted">
+              On that date Disburs drafts the run from this roster and emails
+              owners and admins to review it. Nothing is paid until someone
+              approves it with their code.
+            </p>
+          </>
+        ) : !editing ? (
+          <p className="text-[13px] leading-[1.5] text-muted">
+            Have Disburs draft each run on payday and tell you it is ready. You
+            still review, approve with your code, and pay.
+          </p>
+        ) : null}
+        {editing && !manual && (
+          <form onSubmit={save} className="flex flex-col gap-3">
+            <Field
+              label="First draft on"
+              hint="Later drafts follow the cadence from this date."
+            >
+              <input
+                type="datetime-local"
+                className={inputClass}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                aria-label="Next draft date"
+              />
+            </Field>
+            {value && !future && (
+              <p className="text-[13px] text-[#A32D1C]">
+                Pick a date in the future.
+              </p>
+            )}
+            {update.isError && (
+              <p className="text-[13px] text-[#A32D1C]">
+                {(update.error as Error).message}
+              </p>
+            )}
+            <div className="flex gap-2">
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!future || update.isPending}
+              >
+                {update.isPending ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : null}{" "}
+                {on ? "Save date" : "Turn on"}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setEditing(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        )}
+        {canManage && !manual && !editing && (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={on ? "outline" : "default"}
+              onClick={() => setEditing(true)}
+            >
+              {on ? "Change date" : "Turn on"}
+            </Button>
+            {on && (
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={update.isPending}
+                onClick={() => update.mutate({ nextDraftAt: null })}
+              >
+                Turn off
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }
 

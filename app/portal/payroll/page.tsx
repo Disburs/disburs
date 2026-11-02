@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Archive, ArrowRight, Plus, Users } from "lucide-react";
+import { Archive, ArrowRight, CalendarClock, Plus, Users } from "lucide-react";
 import { Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import { runVariant } from "@/components/portal/RunLines";
@@ -237,6 +237,12 @@ export default function PayrollsPage() {
                       <Users size={14} /> {items.length}{" "}
                       {items.length === 1 ? "payee" : "payees"} per run
                     </div>
+                    {d.nextDraftAt && (
+                      <div className="mt-1.5 flex items-center gap-1.5 text-[13.5px] text-muted">
+                        <CalendarClock size={14} /> Next draft{" "}
+                        {when(d.nextDraftAt)}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between gap-3 border-t border-line pt-4 text-[13px]">
                     <span className="text-muted">
