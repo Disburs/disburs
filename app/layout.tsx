@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import WaitlistModal from "@/components/WaitlistModal";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://disburs.io"),
+  metadataBase: new URL("https://disburs.xyz"),
   title: "Disburs: Private Global Payroll",
   description:
     "Global payroll that keeps every salary private. Disburs prepares each run for your approval and pays contractors in USDC on Stellar.",
@@ -21,7 +25,7 @@ export const metadata: Metadata = {
     title: "Disburs: Private Global Payroll",
     description:
       "Global payroll that keeps every salary private. Approve each run and pay contractors in USDC on Stellar.",
-    url: "https://disburs.io",
+    url: "https://disburs.xyz",
     siteName: "Disburs",
     type: "website",
   },
@@ -39,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body>
         <Providers>
           {children}

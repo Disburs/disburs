@@ -5,8 +5,9 @@ import { Plus } from "lucide-react";
 import { Container, Heading, Lead } from "./Section";
 import Reveal from "./Reveal";
 
-type QA = { q: string; a: string };
-type Category = { name: string; items: QA[] };
+export type QA = { q: string; a: string };
+export type FaqCategory = { name: string; items: QA[] };
+type Category = FaqCategory;
 
 // FAQ content is unchanged from the previous page.
 const CATEGORIES: Category[] = [
@@ -49,7 +50,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Can anyone see our payroll on the blockchain?",
-        a: "Stellar is a public network, so records are visible. We are bringing zero-knowledge proofs to Disburs so payroll amounts stay private while the network still verifies every payment is valid.",
+        a: "On a public network, yes: a normal transfer shows the sender, the recipient and the amount to anyone, forever. Disburs is bringing zero-knowledge proofs to payroll so the amounts stay private while the network still verifies every payment. When you need to show the figures to an auditor or a regulator, you share a view key and they see your history and nothing else.",
       },
       {
         q: "Is it secure?",
@@ -63,23 +64,31 @@ const CATEGORIES: Category[] = [
   },
 ];
 
-export default function Faq() {
+export default function Faq({
+  categories = CATEGORIES,
+  lead = "Everything about how the agent runs, protects and pays out your payroll.",
+}: {
+  categories?: FaqCategory[];
+  lead?: string;
+}) {
   const [cat, setCat] = useState(0);
   const [open, setOpen] = useState<number | null>(0);
-  const items = CATEGORIES[cat].items;
+  const items = categories[cat].items;
 
   return (
     <section id="faq" className="bg-subtle py-24 md:py-36">
       <Container>
         <Reveal className="grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-16">
-          <Heading size="lg">
-            Questions, answered plainly.
-          </Heading>
-          <Lead className="max-w-[40ch]">Everything about how the agent runs, protects and pays out your payroll.</Lead>
+          <Heading size="lg">Questions, answered plainly.</Heading>
+          <Lead className="max-w-[40ch]">{lead}</Lead>
         </Reveal>
 
-        <div role="tablist" aria-label="FAQ categories" className="mt-12 flex flex-wrap gap-2 md:mt-16">
-          {CATEGORIES.map((c, i) => {
+        <div
+          role="tablist"
+          aria-label="FAQ categories"
+          className="mt-12 flex flex-wrap gap-2 md:mt-16"
+        >
+          {categories.map((c, i) => {
             const on = i === cat;
             return (
               <button
@@ -92,7 +101,9 @@ export default function Faq() {
                   setOpen(0);
                 }}
                 className={`h-12 cursor-pointer rounded-full px-6 text-[15px] font-medium transition-colors duration-150 ${
-                  on ? "bg-ink-deep text-white" : "border border-line bg-canvas text-ink hover:opacity-[0.84]"
+                  on
+                    ? "bg-ink-deep text-white"
+                    : "border border-line bg-canvas text-ink hover:opacity-[0.84]"
                 }`}
               >
                 {c.name}
@@ -132,7 +143,9 @@ export default function Faq() {
                   style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
                 >
                   <div className="overflow-hidden">
-                    <p className="max-w-[64ch] pb-7 text-[17px] leading-[1.5] text-muted md:text-[19px]">{it.a}</p>
+                    <p className="max-w-[64ch] pb-7 text-[17px] leading-[1.5] text-muted md:text-[19px]">
+                      {it.a}
+                    </p>
                   </div>
                 </div>
               </div>

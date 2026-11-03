@@ -1,7 +1,7 @@
 # Disburs
 
 Privacy-preserving, autonomous global payroll on Stellar and USDC — marketing
-site and product simulation for **disburs.io**.
+site and product simulation for **disburs.xyz**.
 
 Disburs reads your contracts, calculates what every contractor is owed, picks
 the best exchange rate, and pays your global team in USDC via the Stellar
