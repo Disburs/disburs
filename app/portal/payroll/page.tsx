@@ -7,7 +7,7 @@ import { Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import { runVariant } from "@/components/portal/RunLines";
 import CreatePayroll from "@/components/portal/payroll/CreatePayroll";
-import { CADENCE_LABEL } from "@/components/portal/payroll/PayrollDetail";
+import { cadenceText } from "@/components/portal/payroll/PayrollDetail";
 import {
   DeleteButton,
   RestoreButton,
@@ -141,7 +141,7 @@ export default function PayrollsPage() {
                           {d.name}
                         </h3>
                         <div className="mt-0.5 text-[13px] text-muted">
-                          {CADENCE_LABEL[d.cadence]}
+                          {cadenceText(d)}
                         </div>
                       </div>
                       <Badge variant="warn" dot>
@@ -215,7 +215,7 @@ export default function PayrollsPage() {
                           {d.name}
                         </h3>
                         <div className="mt-0.5 text-[13px] text-muted">
-                          {CADENCE_LABEL[d.cadence]}
+                          {cadenceText(d)}
                         </div>
                       </div>
                       {open ? (

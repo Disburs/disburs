@@ -476,7 +476,8 @@ export async function updateOrganization(body: UpdateOrganizationBody) {
 }
 
 /* ------------------------------- Payroll ------------------------------ */
-export type PayrollCadence = "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+export type PayrollCadence =
+  "MONTHLY" | "SEMIMONTHLY" | "BIWEEKLY" | "WEEKLY" | "CUSTOM" | "MANUAL";
 export type RunStatus =
   "DRAFT" | "APPROVED" | "EXECUTING" | "SETTLED" | "PARTIAL" | "FAILED";
 export type LineStatus = "PENDING" | "SETTLED" | "FAILED";
@@ -495,6 +496,8 @@ export interface PayrollDefinition {
   organizationId: string;
   name: string;
   cadence: PayrollCadence;
+  /** CUSTOM cadence: draft every this many days. */
+  everyDays: number | null;
   memo: string | null;
   /** Scheduled drafts: when the next run is drafted for review. Null means off. */
   nextDraftAt: string | null;
