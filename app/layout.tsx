@@ -9,10 +9,12 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://disburs.xyz"),
-  title: "Disburs: Payroll That Thinks",
+  title: "Disburs: Stablecoin Payroll",
   description:
-    "Disburs is autonomous payroll infrastructure. An agent reads your contracts and proposes each run, policy checks and zero-knowledge proofs validate it, and nothing settles until you approve. Paid in USDC on Stellar.",
+    "Stablecoin payroll for global teams. Fund a treasury in USDC on Stellar, run payroll, invoices and milestones, and approve before anything settles. An agent prepares each run, and salaries stay private.",
   keywords: [
+    "stablecoin payroll",
+    "USDC payroll",
     "payroll",
     "African contractors",
     "Stellar",
@@ -22,18 +24,18 @@ export const metadata: Metadata = {
     "remote payments",
   ],
   openGraph: {
-    title: "Disburs: Payroll That Thinks",
+    title: "Disburs: Stablecoin Payroll",
     description:
-      "An agent proposes each payroll run, policy checks and zero-knowledge proofs validate it, and you approve before anything settles. Private payroll in USDC on Stellar.",
+      "Stablecoin payroll for global teams: fund a treasury in USDC on Stellar, approve each run, and every contractor is paid in seconds. Salaries stay private.",
     url: "https://disburs.xyz",
     siteName: "Disburs",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Disburs: Payroll That Thinks",
+    title: "Disburs: Stablecoin Payroll",
     description:
-      "An agent proposes each payroll run, policy checks and zero-knowledge proofs validate it, and you approve before anything settles. Private payroll in USDC on Stellar.",
+      "Stablecoin payroll for global teams: fund a treasury in USDC on Stellar, approve each run, and every contractor is paid in seconds. Salaries stay private.",
   },
 };
 

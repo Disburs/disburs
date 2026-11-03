@@ -13,7 +13,7 @@ export default function Hero() {
       <Container>
         <Reveal immediate>
           <Heading as="h1" size="xl" className="max-w-[14ch]">
-            Global payroll that keeps every salary <Em>private.</Em>
+            Stablecoin payroll that keeps every salary <Em>private.</Em>
           </Heading>
         </Reveal>
         <Reveal immediate delay={0.1}>
