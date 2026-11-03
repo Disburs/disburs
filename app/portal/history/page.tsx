@@ -1,182 +1,247 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRight, ChevronDown, Loader2 } from "lucide-react";
+import { Badge, Card, PageTitle } from "@/components/portal/ui";
+import { Button } from "@/components/ui/button";
+import RunLines, { runVariant } from "@/components/portal/RunLines";
+import { useMe } from "@/lib/hooks/useMe";
+import { useContractors, useLedger } from "@/lib/hooks/usePayments";
+import { ExternalLink } from "lucide-react";
 import {
-  ChevronDown,
-  ExternalLink,
-  Download,
-  FileText,
-  Sparkles,
-  MessageCircle,
-} from "lucide-react";
-import { Card, Badge, Button, Avatar, PageTitle, statusVariant } from "@/components/portal/ui";
-import { payrollRuns, payrollLines } from "@/lib/mock";
+  useApproveAndExecute,
+  useDiscardRun,
+  useExecuteRun,
+  useRuns,
+} from "@/lib/hooks/usePayroll";
+import { toast } from "@/components/ui/sonner";
+import { MONEY_ROLES, explorerUrl } from "@/lib/api";
+import { usdc, when } from "@/lib/format";
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US");
-}
-
-const DISPUTES = [
-  {
-    name: "Bola Adewale",
-    initials: "BA",
-    flag: "🇳🇬",
-    date: "Nov 1, 2026",
-    summary: "Claimed 4 hrs of unpaid overtime.",
-    resolution:
-      "Agent checked ticket #2847, confirmed 4 hrs logged and approved, and paid an extra $360 automatically. Closed in 3 minutes.",
-    amount: 360,
-  },
-  {
-    name: "Amara Njoroge",
-    initials: "AN",
-    flag: "🇰🇪",
-    date: "Oct 12, 2026",
-    summary: "Payment arrived to an old wallet address.",
-    resolution:
-      "Agent verified the new wallet via a low-risk change check, reissued the payment, and updated her record. No double payment.",
-    amount: 0,
-  },
-];
-
+/**
+ * Everything the organization has paid: batches (payroll, invoices,
+ * milestones) with their lines, and one-off payments from the Pay screen.
+ */
 export default function HistoryPage() {
-  const [tab, setTab] = useState<"runs" | "disputes">("runs");
-  const [open, setOpen] = useState<string | null>(payrollRuns[0].id);
+  const { data: me } = useMe();
+  const runs = useRuns();
+  const ledger = useLedger();
+  const contractors = useContractors();
+  const nameOf = (id: string | null) =>
+    contractors.data?.find((c) => c.id === id)?.name ?? "Contractor";
+  // One-off payments: payouts that were not a line of any batch.
+  const oneOff = (ledger.data ?? []).filter(
+    (e) =>
+      e.type === "PAYOUT" &&
+      !e.runId &&
+      e.organizationId === me?.organization?.id,
+  );
+  const retry = useExecuteRun();
+  const pay = useApproveAndExecute();
+  const discard = useDiscardRun();
+  const balance = Number(me?.organization?.treasuryWallet?.balances?.usdc ?? 0);
+  const [open, setOpen] = useState<string | null>(null);
+  const network = me?.network ?? "testnet";
+  const canManage = Boolean(
+    me?.organization?.role && MONEY_ROLES.includes(me.organization.role),
+  );
 
   return (
     <div className="flex flex-col gap-5">
-      <PageTitle
-        sub="Every run and every dispute, with the transaction behind it."
-        action={
-          <div className="flex gap-2">
-            <Button variant="secondary" size="sm">
-              <Download size={14} /> Export CSV
-            </Button>
-            <Button variant="secondary" size="sm">
-              <FileText size={14} /> PDF
-            </Button>
-          </div>
-        }
-      >
-        History
+      <PageTitle sub="Every payment your organization has made, with the transaction behind it.">
+        Transactions
       </PageTitle>
-
-      <div className="flex flex-wrap gap-2">
-        {(["runs", "disputes"] as const).map((t) => {
-          const active = tab === t;
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTab(t)}
-              aria-pressed={active}
-              className={`inline-flex h-9 items-center rounded-full border px-4 text-[13.5px] font-medium transition-colors ${
-                active
-                  ? "border-ink-deep bg-ink-deep text-white"
-                  : "border-line bg-canvas text-muted hover:border-ink hover:text-ink"
-              }`}
-            >
-              {t === "runs" ? "Payroll runs" : "Dispute history"}
-            </button>
-          );
-        })}
-      </div>
-
-      {tab === "runs" && (
-        <Card padding={0}>
-          <div className="hidden items-center border-b border-line px-5 py-3 text-[12.5px] font-medium text-muted md:flex">
-            <div className="flex-[1.2_1_0%]">Run date</div>
-            <div className="flex-[1_1_0%]">Contractors</div>
-            <div className="flex-[1.4_1_0%]">Transaction</div>
-            <div className="flex-[1_1_0%]">Status</div>
-            <div className="flex-[1_1_0%] text-right">Total</div>
-            <div className="w-8" />
+      <h2 className="text-[13px] font-medium uppercase tracking-[0.06em] text-muted">
+        Batches
+      </h2>
+      <Card padding={0}>
+        {runs.isPending ? (
+          <div className="px-6 py-6 text-[14px] text-muted">Loading…</div>
+        ) : runs.data?.length === 0 ? (
+          <div className="px-6 py-6 text-[14px] text-muted">
+            No batches yet. Draft one from Payments.
           </div>
-
-          <div className="divide-y divide-line">
-            {payrollRuns.map((run) => {
-              const isOpen = open === run.id;
+        ) : (
+          <ul className="divide-y divide-line">
+            {runs.data?.map((r) => {
+              const on = open === r.id;
               return (
-                <div key={run.id}>
+                <li key={r.id}>
                   <button
                     type="button"
-                    onClick={() => setOpen(isOpen ? null : run.id)}
-                    aria-expanded={isOpen}
-                    className="flex w-full flex-wrap items-center gap-y-1 px-5 py-4 text-left"
+                    onClick={() => setOpen(on ? null : r.id)}
+                    aria-expanded={on}
+                    className="flex w-full flex-wrap items-center justify-between gap-3 px-6 py-4 text-left"
                   >
-                    <div className="flex-[1.2_1_120px] text-[14.5px] text-ink">{run.date}</div>
-                    <div className="flex-[1_1_0%] text-[14.5px] text-muted">{run.count}</div>
-                    <div className="flex flex-[1.4_1_0%] items-center gap-1.5 text-accent">
-                      <span className="font-mono text-[13px]">{run.tx}</span>
-                      <ExternalLink size={13} />
+                    <div>
+                      <div className="text-[15px] font-medium text-ink">
+                        {r.label}
+                      </div>
+                      <div className="text-[13px] text-muted">
+                        {r.lineCount} payees ·{" "}
+                        {r.executedAt
+                          ? `paid ${when(r.executedAt)}`
+                          : `drafted ${when(r.createdAt)}`}
+                        {r.memo ? ` · memo ${r.memo}` : ""}
+                      </div>
                     </div>
-                    <div className="flex-[1_1_0%]">
-                      <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
-                    </div>
-                    <div className="tabular flex-[1_1_0%] text-right text-[15px] font-medium text-ink">
-                      ${fmt(run.total)}
-                    </div>
-                    <span className="flex w-8 justify-end text-muted">
+                    <div className="flex items-center gap-3">
+                      <span className="tabular text-[14.5px] font-medium text-ink">
+                        ${usdc(r.totalAmount)}
+                      </span>
+                      <Badge variant={runVariant(r.status)}>
+                        {r.status.toLowerCase()}
+                      </Badge>
                       <ChevronDown
-                        size={18}
-                        className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                        size={16}
+                        className={`text-muted transition-transform ${on ? "rotate-180" : ""}`}
                       />
-                    </span>
+                    </div>
                   </button>
-
-                  {isOpen && (
-                    <div className="bg-subtle px-5 pb-4">
-                      <ul className="divide-y divide-line">
-                        {payrollLines.slice(0, run.count).map((l) => (
-                          <li key={l.id} className="flex items-center justify-between gap-4 py-3">
-                            <div className="flex items-center gap-3">
-                              <Avatar initials={l.initials} flag={l.flag} size={30} />
-                              <span className="text-[14px] text-ink">{l.name}</span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <span className="text-[13px] text-muted">{l.country}</span>
-                              <span className="tabular text-[14.5px] font-medium text-ink">${fmt(l.amount)}</span>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                  {on && (
+                    <div className="border-t border-line bg-subtle">
+                      <RunLines lines={r.lines} network={network} />
+                      {canManage && r.status === "DRAFT" && (
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-6 py-3">
+                          <span className="text-[13.5px] text-muted">
+                            {balance < Number(r.totalAmount)
+                              ? `Treasury holds $${usdc(balance)}. Fund it before approving.`
+                              : "Nothing moves until you approve."}
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                discard.mutate(r.id, {
+                                  onSuccess: () =>
+                                    toast.success("Draft discarded"),
+                                  onError: (e) =>
+                                    toast.error("Could not discard", {
+                                      description: (e as Error).message,
+                                    }),
+                                })
+                              }
+                              disabled={discard.isPending || pay.isPending}
+                            >
+                              Discard
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                pay.mutate(r.id, {
+                                  onSuccess: (run) =>
+                                    toast.success(
+                                      `Run ${run.status.toLowerCase()}`,
+                                      {
+                                        description: `${run.lines.filter((l) => l.status === "SETTLED").length} of ${run.lineCount} lines paid.`,
+                                      },
+                                    ),
+                                  onError: (e) =>
+                                    toast.error("Could not pay", {
+                                      description: (e as Error).message,
+                                    }),
+                                })
+                              }
+                              disabled={
+                                pay.isPending || balance < Number(r.totalAmount)
+                              }
+                            >
+                              {pay.isPending && pay.variables === r.id ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : null}{" "}
+                              Approve & pay ${usdc(r.totalAmount)}{" "}
+                              <ArrowRight size={14} />
+                            </Button>
+                          </span>
+                        </div>
+                      )}
+                      {canManage &&
+                        (r.status === "PARTIAL" || r.status === "FAILED") && (
+                          <div className="border-t border-line px-6 py-3">
+                            <Button
+                              size="sm"
+                              onClick={() => retry.mutate(r.id)}
+                              disabled={retry.isPending}
+                            >
+                              {retry.isPending ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : null}{" "}
+                              Retry failed lines
+                            </Button>
+                          </div>
+                        )}
                     </div>
                   )}
-                </div>
+                </li>
               );
             })}
-          </div>
-        </Card>
-      )}
+          </ul>
+        )}
+      </Card>
 
-      {tab === "disputes" && (
-        <div className="flex flex-col gap-4">
-          {DISPUTES.map((d) => (
-            <Card key={d.name}>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <Avatar initials={d.initials} flag={d.flag} />
-                  <div>
-                    <div className="text-[14.5px] text-ink">{d.name}</div>
-                    <div className="text-[13px] text-muted">{d.date}</div>
+      <h2 className="mt-3 text-[13px] font-medium uppercase tracking-[0.06em] text-muted">
+        One-off payments
+      </h2>
+      <Card padding={0}>
+        {ledger.isPending ? (
+          <div className="px-6 py-6 text-[14px] text-muted">Loading…</div>
+        ) : oneOff.length === 0 ? (
+          <div className="px-6 py-6 text-[14px] text-muted">
+            No one-off payments yet.
+          </div>
+        ) : (
+          <ul className="divide-y divide-line">
+            {oneOff.map((e) => (
+              <li
+                key={e.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-[15px] font-medium text-ink">
+                    {e.externalPayee
+                      ? e.externalPayee.name
+                      : nameOf(e.contractorId)}
+                    {e.externalPayee && <Badge variant="warn">Public</Badge>}
+                  </div>
+                  <div className="text-[13px] text-muted">
+                    {when(e.createdAt)}
+                    {e.memo ? ` · memo ${e.memo}` : ""}
+                    {e.error ? ` · ${e.error}` : ""}
                   </div>
                 </div>
-                <Badge variant="success" dot>
-                  Resolved
-                </Badge>
-              </div>
-              <div className="mt-4 flex items-start gap-2 text-[14.5px] text-ink">
-                <MessageCircle size={16} className="mt-0.5 shrink-0 text-muted" />
-                {d.summary}
-              </div>
-              <div className="mt-3 flex gap-2 rounded-[24px] bg-accent-soft px-4 py-3">
-                <Sparkles size={15} className="mt-0.5 shrink-0 text-accent" />
-                <span className="text-[14px] leading-[1.5] text-accent">{d.resolution}</span>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+                <div className="flex items-center gap-3">
+                  <span className="tabular text-[15px] font-medium text-ink">
+                    ${usdc(e.amount)}
+                  </span>
+                  <Badge
+                    variant={
+                      e.status === "SETTLED"
+                        ? "success"
+                        : e.status === "FAILED"
+                          ? "danger"
+                          : "warn"
+                    }
+                  >
+                    {e.status.toLowerCase()}
+                  </Badge>
+                  {e.txHash && (
+                    <a
+                      href={explorerUrl(network, "tx", e.txHash)}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="View transaction"
+                      className="text-muted hover:text-ink"
+                    >
+                      <ExternalLink size={15} />
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
     </div>
   );
 }

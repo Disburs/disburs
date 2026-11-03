@@ -20,9 +20,10 @@ export default function Agent() {
           <Heading size="lg">Payroll, prepared for you.</Heading>
           <div>
             <Lead className="max-w-[40ch]">
-              The agent reads the contracts, applies rate changes, picks the FX window and clears the
-              routine exceptions. It proposes; it never holds the keys. Every decision is written
-              down in plain English, and nothing moves until you approve it.
+              The agent reads the contracts, applies rate changes, picks the FX
+              window and clears the routine exceptions. It proposes; it never
+              holds the keys. Every decision is written down in plain English,
+              and nothing moves until you approve it.
             </Lead>
             <div className="mt-8">
               <LinkButton href="#waitlist" variant="ink">
@@ -36,23 +37,37 @@ export default function Agent() {
           <div className="on-dark grid overflow-hidden rounded-tile border border-line bg-ink-deep lg:grid-cols-2">
             <div className="p-6 md:p-10">
               <div className="flex items-center justify-between">
-                <span className="text-[15px] font-medium text-white">Agent activity · March payroll</span>
+                <span className="text-[15px] font-medium text-white">
+                  Agent activity · March payroll
+                </span>
                 <span className="inline-flex items-center gap-1.5 text-[13px] text-mint">
-                  <span className="h-1.5 w-1.5 rounded-full bg-mint" aria-hidden />
+                  <span
+                    className="h-1.5 w-1.5 rounded-full bg-mint"
+                    aria-hidden
+                  />
                   Awaiting approval
                 </span>
               </div>
               <ol className="mt-5 divide-y divide-white/10 border-y border-white/10">
                 {LOG.map(([t, msg]) => (
                   <li key={msg} className="flex items-center gap-3 py-4">
-                    <Check size={16} strokeWidth={2.5} className="shrink-0 text-mint" aria-hidden />
+                    <Check
+                      size={16}
+                      strokeWidth={2.5}
+                      className="shrink-0 text-mint"
+                      aria-hidden
+                    />
                     <span className="flex-1 text-[15px] text-white">{msg}</span>
-                    <span className="tabular font-mono text-[12px] text-white/50">{t}</span>
+                    <span className="tabular font-mono text-[12px] text-white/50">
+                      {t}
+                    </span>
                   </li>
                 ))}
               </ol>
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-                <span className="text-[14px] text-white/60">Nothing moves until you approve.</span>
+                <span className="text-[14px] text-white/60">
+                  Nothing moves until you approve.
+                </span>
                 <MockButton tone="mint">Approve payroll</MockButton>
               </div>
             </div>
