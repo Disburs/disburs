@@ -15,6 +15,12 @@ import Footer from "@/components/landing/Footer";
 export default function Home() {
   return (
     <main id="top" className="overflow-x-clip">
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-ink-deep focus:px-4 focus:py-2 focus:text-white"
+      >
+        Skip to content
+      </a>
       {/* Scroll reveals are hidden by CSS until JS reveals them; without JS,
           show everything. Pure CSS — no DOM mutation before hydration. */}
       <noscript>

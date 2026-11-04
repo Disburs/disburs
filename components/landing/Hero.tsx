@@ -7,7 +7,8 @@ import Dashboard from "./Dashboard";
 export default function Hero() {
   return (
     <section
-      id="hero"
+      id="content"
+      tabIndex={-1}
       className="bg-canvas pb-20 pt-[152px] md:pb-28 md:pt-[184px]"
     >
       <Container>
