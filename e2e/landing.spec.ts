@@ -17,6 +17,20 @@ test.describe("Landing page", () => {
     await expect(page.locator('a[href="#waitlist"]').first()).toBeVisible();
   });
 
+  test("links to the privacy policy and terms pages", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('a[href="/privacy"]')).toBeVisible();
+    await expect(page.locator('a[href="/terms"]')).toBeVisible();
+
+    await page.goto("/privacy");
+    await expect(page.getByRole("heading", { name: "Privacy policy" })).toBeVisible();
+    await expect(page.getByText("Last updated: September 2026")).toBeVisible();
+
+    await page.goto("/terms");
+    await expect(page.getByRole("heading", { name: "Terms" })).toBeVisible();
+    await expect(page.getByText("Last updated: September 2026")).toBeVisible();
+  });
+
   test("renders without a client-side page error", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
