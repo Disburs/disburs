@@ -25,4 +25,18 @@ test.describe("Landing page", () => {
     await page.waitForLoadState("networkidle");
     expect(errors).toEqual([]);
   });
+
+  test("returns focus to the mobile menu button after Escape closes the drawer", async ({ page }) => {
+    await page.setViewportSize({ width: 800, height: 600 });
+    await page.goto("/");
+
+    const menuButton = page.getByRole("button", { name: "Open menu" });
+    await menuButton.click();
+    await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
+
+    await page.keyboard.press("Escape");
+
+    await expect(menuButton).toBeFocused();
+    await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
+  });
 });
