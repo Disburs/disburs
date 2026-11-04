@@ -88,6 +88,20 @@ test.describe("Waitlist modal", () => {
     await expect(dialog(page)).toBeHidden();
   });
 
+  test("moves focus into the modal and restores it to a keyboard trigger", async ({ page }) => {
+    await page.goto("/");
+    const trigger = page.locator('a[href="#waitlist"]').first();
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+
+    await expect(dialog(page)).toBeVisible();
+    await expect(page.getByPlaceholder("you@company.com")).toBeFocused();
+
+    await page.keyboard.press("Escape");
+    await expect(dialog(page)).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
   test("closes with the close button", async ({ page }) => {
     await openModal(page);
     await page.getByRole("button", { name: "Close" }).click();
