@@ -9,10 +9,12 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://disburs.xyz"),
-  title: "Disburs: Private Global Payroll",
+  title: "Disburs: Stablecoin Payroll",
   description:
-    "Global payroll that keeps every salary private. Disburs prepares each run for your approval and pays contractors in USDC on Stellar.",
+    "Stablecoin payroll for global teams. Fund a treasury in USDC on Stellar, run payroll, invoices and milestones, and approve before anything settles. An agent prepares each run, and salaries stay private.",
   keywords: [
+    "stablecoin payroll",
+    "USDC payroll",
     "payroll",
     "African contractors",
     "Stellar",
@@ -22,18 +24,18 @@ export const metadata: Metadata = {
     "remote payments",
   ],
   openGraph: {
-    title: "Disburs: Private Global Payroll",
+    title: "Disburs: Stablecoin Payroll",
     description:
-      "Global payroll that keeps every salary private. Approve each run and pay contractors in USDC on Stellar.",
+      "Stablecoin payroll for global teams: fund a treasury in USDC on Stellar, approve each run, and every contractor is paid in seconds. Salaries stay private.",
     url: "https://disburs.xyz",
     siteName: "Disburs",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Disburs: Private Global Payroll",
+    title: "Disburs: Stablecoin Payroll",
     description:
-      "Global payroll that keeps every salary private. Approve each run and pay contractors in USDC on Stellar.",
+      "Stablecoin payroll for global teams: fund a treasury in USDC on Stellar, approve each run, and every contractor is paid in seconds. Salaries stay private.",
   },
 };
 

@@ -49,10 +49,21 @@ function monthLabel() {
 
 export const CADENCE_LABEL = {
   MONTHLY: "Monthly",
+  SEMIMONTHLY: "Twice a month (1st and 15th)",
   BIWEEKLY: "Every two weeks",
   WEEKLY: "Weekly",
+  CUSTOM: "Every N days",
   MANUAL: "Manual",
 } as const;
+
+/** The rhythm in words: "Every two weeks", "Every 10 days", "Manual". */
+export function cadenceText(
+  def: Pick<PayrollDefinition, "cadence" | "everyDays">,
+) {
+  if (def.cadence === "CUSTOM")
+    return def.everyDays ? `Every ${def.everyDays} days` : "Custom";
+  return CADENCE_LABEL[def.cadence];
+}
 
 /**
  * One payroll: its roster on the left, its current run on the right.
@@ -149,8 +160,8 @@ export default function PayrollDetail({ id }: { id: string }) {
         sub={
           def ? (
             <>
-              {CADENCE_LABEL[def.cadence]} ·{" "}
-              {def.items.filter((i) => i.active).length} on the roster
+              {cadenceText(def)} · {def.items.filter((i) => i.active).length} on
+              the roster
             </>
           ) : (
             "Loading…"
@@ -272,6 +283,53 @@ function suggestedStart() {
  * roster and emails owners and admins to review it. Approval and payment
  * stay with a person, with their code. Off for manual payrolls.
  */
+const WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const ordinal = (n: number) =>
+  `${n}${["th", "st", "nd", "rd"][n % 100 > 10 && n % 100 < 14 ? 0 : Math.min(n % 10, 4) % 4] ?? "th"}`;
+
+/**
+ * Plain words for what a rhythm and its first date add up to, in the
+ * viewer's own time with UTC beside it, since the server drafts on UTC.
+ */
+function describeSchedule(
+  cadence: PayrollDefinition["cadence"],
+  everyDays: number | null,
+  at: Date | null,
+): string | null {
+  if (!at || Number.isNaN(at.getTime())) return null;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const time = at.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  const utc = `${pad(at.getUTCHours())}:${pad(at.getUTCMinutes())} UTC`;
+  const clock = `at ${time} (${utc})`;
+  switch (cadence) {
+    case "WEEKLY":
+      return `Every ${WEEKDAYS[at.getDay()]} ${clock}.`;
+    case "BIWEEKLY":
+      return `Every other ${WEEKDAYS[at.getDay()]} ${clock}.`;
+    case "MONTHLY":
+      return `On the ${ordinal(at.getDate())} of each month ${clock}. In a shorter month, the last day.`;
+    case "SEMIMONTHLY":
+      return `On the 1st and the 15th of each month ${clock}, starting ${at.toLocaleDateString("en-US", { month: "short", day: "numeric" })}.`;
+    case "CUSTOM":
+      return everyDays
+        ? `Every ${everyDays} days ${clock}, counting from ${at.toLocaleDateString("en-US", { month: "short", day: "numeric" })}.`
+        : "Say how many days apart.";
+    default:
+      return null;
+  }
+}
+
 function SchedulePanel({
   def,
   canManage,
@@ -283,24 +341,54 @@ function SchedulePanel({
   // `openedAt` is the clock reading taken when the form opens, so render
   // stays pure and "in the future" means after the moment you started editing.
   const [openedAt, setOpenedAt] = useState<number | null>(null);
+  const [cadence, setCadence] = useState<PayrollDefinition["cadence"]>(
+    def.cadence,
+  );
+  const [days, setDays] = useState(def.everyDays ? String(def.everyDays) : "");
   const [value, setValue] = useState(() =>
     def.nextDraftAt ? toLocalInput(def.nextDraftAt) : suggestedStart(),
   );
   const editing = openedAt !== null;
-  const setEditing = (open: boolean) => setOpenedAt(open ? Date.now() : null);
+  const open = () => {
+    setCadence(def.cadence);
+    setDays(def.everyDays ? String(def.everyDays) : "");
+    setValue(
+      def.nextDraftAt ? toLocalInput(def.nextDraftAt) : suggestedStart(),
+    );
+    setOpenedAt(Date.now());
+  };
+  const close = () => setOpenedAt(null);
   const on = Boolean(def.nextDraftAt);
-  const manual = def.cadence === "MANUAL";
+  const manual = cadence === "MANUAL";
+  const everyDays = /^\d+$/.test(days) ? Number(days) : null;
+  const daysOk =
+    cadence !== "CUSTOM" ||
+    (everyDays !== null && everyDays >= 1 && everyDays <= 90);
   const chosen = value ? new Date(value) : null;
   const future = Boolean(chosen && openedAt && chosen.getTime() > openedAt);
+  const canSave = manual || (daysOk && future);
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chosen || !future || update.isPending) return;
+    if (!canSave || update.isPending) return;
     update.mutate(
-      { nextDraftAt: chosen.toISOString() },
-      { onSuccess: () => setEditing(false) },
+      manual
+        ? { cadence: "MANUAL" }
+        : {
+            cadence,
+            everyDays: cadence === "CUSTOM" ? everyDays : null,
+            nextDraftAt: chosen!.toISOString(),
+          },
+      { onSuccess: close },
     );
   };
+
+  const current = describeSchedule(
+    def.cadence,
+    def.everyDays,
+    def.nextDraftAt ? new Date(def.nextDraftAt) : null,
+  );
+  const preview = manual ? null : describeSchedule(cadence, everyDays, chosen);
 
   return (
     <Card padding={0}>
@@ -311,46 +399,92 @@ function SchedulePanel({
         <Badge variant={on ? "success" : "neutral"}>{on ? "on" : "off"}</Badge>
       </div>
       <div className="flex flex-col gap-3 px-6 py-4 text-[14px]">
-        {manual ? (
-          <p className="text-muted">
-            A manual payroll has no schedule. Set a cadence (weekly, every two
-            weeks or monthly) to draft runs on a date.
-          </p>
-        ) : on && !editing ? (
+        {!editing && on && (
           <>
             <p className="text-ink">
               Next draft <b className="font-medium">{when(def.nextDraftAt!)}</b>
-              , then {CADENCE_LABEL[def.cadence].toLowerCase()}.
+              . {current}
             </p>
             <p className="text-[13px] leading-[1.5] text-muted">
-              On that date Disburs drafts the run from this roster and emails
+              On each date Disburs drafts the run from this roster and emails
               owners and admins to review it. Nothing is paid until someone
               approves it with their code.
             </p>
           </>
-        ) : !editing ? (
+        )}
+        {!editing && !on && (
           <p className="text-[13px] leading-[1.5] text-muted">
-            Have Disburs draft each run on payday and tell you it is ready. You
-            still review, approve with your code, and pay.
+            Rhythm: <b className="font-medium text-ink">{cadenceText(def)}</b>.
+            Set a date and Disburs drafts each run on payday and tells you it is
+            ready. You still review, approve with your code, and pay.
           </p>
-        ) : null}
-        {editing && !manual && (
+        )}
+        {editing && (
           <form onSubmit={save} className="flex flex-col gap-3">
-            <Field
-              label="First draft on"
-              hint="Later drafts follow the cadence from this date."
-            >
-              <input
-                type="datetime-local"
-                className={inputClass}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                aria-label="Next draft date"
-              />
+            <Field label="Draft every">
+              <div className="flex gap-2">
+                <select
+                  className={inputClass}
+                  value={cadence}
+                  onChange={(e) =>
+                    setCadence(e.target.value as PayrollDefinition["cadence"])
+                  }
+                  aria-label="Rhythm"
+                >
+                  {(
+                    Object.keys(CADENCE_LABEL) as PayrollDefinition["cadence"][]
+                  ).map((c) => (
+                    <option key={c} value={c}>
+                      {c === "MANUAL"
+                        ? "Manual (no schedule)"
+                        : CADENCE_LABEL[c]}
+                    </option>
+                  ))}
+                </select>
+                {cadence === "CUSTOM" && (
+                  <input
+                    className={`${inputClass} w-[110px]`}
+                    inputMode="numeric"
+                    value={days}
+                    onChange={(e) =>
+                      setDays(e.target.value.replace(/\D/g, "").slice(0, 2))
+                    }
+                    placeholder="days"
+                    aria-label="Every how many days"
+                  />
+                )}
+              </div>
             </Field>
-            {value && !future && (
+            {cadence === "CUSTOM" && days && !daysOk && (
+              <p className="text-[13px] text-[#A32D1C]">
+                Between 1 and 90 days.
+              </p>
+            )}
+            {!manual && (
+              <Field
+                label="First draft on"
+                hint="Later drafts follow the rhythm from this date and time."
+              >
+                <input
+                  type="datetime-local"
+                  className={inputClass}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  aria-label="Next draft date"
+                />
+              </Field>
+            )}
+            {!manual && value && !future && (
               <p className="text-[13px] text-[#A32D1C]">
                 Pick a date in the future.
+              </p>
+            )}
+            {preview && future && (
+              <p className="text-[13px] leading-[1.5] text-accent">{preview}</p>
+            )}
+            {manual && (
+              <p className="text-[13px] leading-[1.5] text-muted">
+                No schedule: you draft each run yourself.
               </p>
             )}
             {update.isError && (
@@ -362,32 +496,27 @@ function SchedulePanel({
               <Button
                 type="submit"
                 size="sm"
-                disabled={!future || update.isPending}
+                disabled={!canSave || update.isPending}
               >
                 {update.isPending ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : null}{" "}
-                {on ? "Save date" : "Turn on"}
+                {manual ? "Save" : on ? "Save schedule" : "Turn on"}
               </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => setEditing(false)}
-              >
+              <Button type="button" size="sm" variant="outline" onClick={close}>
                 Cancel
               </Button>
             </div>
           </form>
         )}
-        {canManage && !manual && !editing && (
+        {canManage && !editing && (
           <div className="flex gap-2">
             <Button
               size="sm"
               variant={on ? "outline" : "default"}
-              onClick={() => setEditing(true)}
+              onClick={open}
             >
-              {on ? "Change date" : "Turn on"}
+              {on ? "Change" : "Set up"}
             </Button>
             {on && (
               <Button
@@ -422,7 +551,6 @@ function Roster({
   const update = useUpdateDefinition(def.id);
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(def.name);
-  const [draftCadence, setDraftCadence] = useState(def.cadence);
   const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
   const items = def.items.filter((i) => i.active);
@@ -452,7 +580,7 @@ function Roster({
             onSubmit={(e) => {
               e.preventDefault();
               update.mutate(
-                { name: draftName.trim() || def.name, cadence: draftCadence },
+                { name: draftName.trim() || def.name },
                 { onSuccess: () => setEditing(false) },
               );
             }}
@@ -464,21 +592,6 @@ function Roster({
               maxLength={120}
               autoFocus
             />
-            <select
-              className={`${inputClass} h-10 w-[170px]`}
-              value={draftCadence}
-              onChange={(e) =>
-                setDraftCadence(e.target.value as PayrollDefinition["cadence"])
-              }
-            >
-              {(
-                Object.keys(CADENCE_LABEL) as PayrollDefinition["cadence"][]
-              ).map((c) => (
-                <option key={c} value={c}>
-                  {CADENCE_LABEL[c]}
-                </option>
-              ))}
-            </select>
             <Button type="submit" size="sm" disabled={update.isPending}>
               Save
             </Button>
@@ -494,9 +607,7 @@ function Roster({
           <div className="flex items-center gap-2">
             <div>
               <h3 className="text-[16px] font-medium text-ink">{def.name}</h3>
-              <div className="text-[13px] text-muted">
-                {CADENCE_LABEL[def.cadence]}
-              </div>
+              <div className="text-[13px] text-muted">{cadenceText(def)}</div>
             </div>
             {canManage && (
               <>
@@ -506,7 +617,6 @@ function Roster({
                   aria-label="Rename payroll"
                   onClick={() => {
                     setDraftName(def.name);
-                    setDraftCadence(def.cadence);
                     setEditing(true);
                   }}
                   className="h-8 w-8"

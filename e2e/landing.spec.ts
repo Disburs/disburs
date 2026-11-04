@@ -17,20 +17,20 @@ test.describe("Landing page", () => {
     await expect(page.locator('a[href="#waitlist"]').first()).toBeVisible();
   });
 
-  test("shares private global payroll metadata on the official domain", async ({ page }) => {
+  test("shares stablecoin payroll metadata on the official domain", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle("Disburs: Private Global Payroll");
+    await expect(page).toHaveTitle("Disburs: Stablecoin Payroll");
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
-      "Global payroll that keeps every salary private. Disburs prepares each run for your approval and pays contractors in USDC on Stellar.",
+      "Stablecoin payroll for global teams. Fund a treasury in USDC on Stellar, run payroll, invoices and milestones, and approve before anything settles. An agent prepares each run, and salaries stay private.",
     );
     for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) {
-      await expect(page.locator(selector)).toHaveAttribute("content", "Disburs: Private Global Payroll");
+      await expect(page.locator(selector)).toHaveAttribute("content", "Disburs: Stablecoin Payroll");
     }
     for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) {
       await expect(page.locator(selector)).toHaveAttribute(
         "content",
-        "Global payroll that keeps every salary private. Approve each run and pay contractors in USDC on Stellar.",
+        "Stablecoin payroll for global teams: fund a treasury in USDC on Stellar, approve each run, and every contractor is paid in seconds. Salaries stay private.",
       );
     }
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://disburs.xyz");

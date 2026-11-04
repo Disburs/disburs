@@ -2062,14 +2062,18 @@ export interface components {
              * @default MONTHLY
              * @enum {string}
              */
-            cadence: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+            cadence: "MONTHLY" | "SEMIMONTHLY" | "BIWEEKLY" | "WEEKLY" | "CUSTOM" | "MANUAL";
+            /** @description CUSTOM cadence: draft every this many days (1–90). */
+            everyDays?: number;
             /** @description Default transaction memo for runs. */
             memo?: string;
         };
         UpdateDefinitionDto: {
             name?: string;
             /** @enum {string} */
-            cadence?: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+            cadence?: "MONTHLY" | "SEMIMONTHLY" | "BIWEEKLY" | "WEEKLY" | "CUSTOM" | "MANUAL";
+            /** @description CUSTOM cadence: draft every this many days (1–90). */
+            everyDays?: number | null;
             memo?: string;
             /**
              * @description Scheduled drafts: when the next run is drafted (ISO date-time, in the future). null switches it off.
