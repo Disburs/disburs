@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import Wordmark from "@/components/Wordmark";
@@ -46,19 +46,21 @@ const SOCIAL: Record<SocialProvider, { label: string; icon: React.ReactNode }> =
 const inputClass =
   "h-14 w-full rounded-none border border-line bg-canvas px-4 text-[16px] text-ink placeholder:text-faint focus:border-ink focus:outline-none";
 
+const subscribeNever = () => () => {};
+
 function SignInForm() {
   const router = useRouter();
   const next = useSearchParams().get("next");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<RoleIntent>("CLIENT");
-  const [lastRole, setLastRole] = useState<RoleIntent | null>(null);
-  useEffect(() => {
-    const last = readLastRole();
-    if (last) {
-      setLastRole(last);
-      setRole(last);
-    }
-  }, []);
+  // The last-used role lives in localStorage: null on the server, read after
+  // hydration. It preselects the role until the person picks one.
+  const lastRole = useSyncExternalStore(
+    subscribeNever,
+    readLastRole,
+    () => null,
+  );
+  const [pickedRole, setRole] = useState<RoleIntent | null>(null);
+  const role = pickedRole ?? lastRole ?? "CLIENT";
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
   );
