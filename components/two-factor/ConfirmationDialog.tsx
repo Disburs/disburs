@@ -37,24 +37,23 @@ export default function ConfirmationDialog() {
           resolver.current = resolve;
           setCode("");
           setReq(r);
+          // Email path: send a code as soon as the dialog opens (not on a retry).
+          if (r.method !== "email" || r.error) return;
+          setSending(true);
+          setSent(null);
+          twoFactorApi
+            .emailCode()
+            .then((res) =>
+              setSent(
+                res.code ? `${res.sentTo} (dev code ${res.code})` : res.sentTo,
+              ),
+            )
+            .catch(() => setSent(null))
+            .finally(() => setSending(false));
         }),
     );
     return () => setConfirmationAsker(null);
   }, []);
-
-  // Email path: send a code as soon as the dialog opens (not on a retry).
-  useEffect(() => {
-    if (!req || req.method !== "email" || req.error) return;
-    setSending(true);
-    setSent(null);
-    twoFactorApi
-      .emailCode()
-      .then((r) =>
-        setSent(r.code ? `${r.sentTo} (dev code ${r.code})` : r.sentTo),
-      )
-      .catch(() => setSent(null))
-      .finally(() => setSending(false));
-  }, [req]);
 
   const finish = (value: string | null) => {
     resolver.current?.(value);
