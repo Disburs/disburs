@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { markImage } from "@/lib/logo-image";
 
 /**
  * The share card X, LinkedIn, Slack and WhatsApp show for disburs.xyz.
@@ -49,7 +50,8 @@ export default async function OpenGraphImage() {
           letterSpacing: "-0.02em",
         }}
       >
-        Disburs
+        {markImage(56, 13)}
+        <span style={{ marginLeft: 18 }}>Disburs</span>
         <span style={{ color: "#12FF80" }}>.</span>
       </div>
       <div

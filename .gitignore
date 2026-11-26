@@ -33,3 +33,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Brand kit: a local check image, rebuilt by brand/generate.mjs
+/brand/preview-x.png
