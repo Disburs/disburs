@@ -3,6 +3,7 @@ import Hero from "@/components/landing/Hero";
 import Statement from "@/components/landing/Statement";
 import Privacy from "@/components/landing/Privacy";
 import Agent from "@/components/landing/Agent";
+import Features from "@/components/landing/Features";
 import Advantages from "@/components/landing/Advantages";
 import Rails from "@/components/landing/Rails";
 import Audience from "@/components/landing/Audience";
@@ -25,6 +26,7 @@ export default function Home() {
       <Privacy />
       <Statement />
       <Agent />
+      <Features />
       <Advantages />
       <Rails />
       <Audience />

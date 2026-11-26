@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Check } from "lucide-react";
-import { Container, Heading, Lead } from "./Section";
+import { Container, Eyebrow, Heading, Lead } from "./Section";
 import LinkButton from "./Button";
 import Reveal from "./Reveal";
 import { MockButton } from "./mock";
@@ -12,18 +12,31 @@ const LOG: [string, string][] = [
   ["09:03:07", "18 payroll lines prepared"],
 ];
 
+/** What the agent does, and who stays in charge of it. */
+const PILLARS: [string, string][] = [
+  ["Drafted runs", "Who is due, how much and when, ready for your review."],
+  ["Rule-bound", "It works inside the budgets, caps and approval rules you set."],
+  ["You approve", "Nothing settles until a person says yes."],
+  ["Every action logged", "A plain-English record of what the agent did and why."],
+];
+
 export default function Agent() {
   return (
     <section id="agent" className="bg-canvas py-24 md:py-36">
       <Container>
         <Reveal className="grid gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
-          <Heading size="lg">Payroll, prepared for you.</Heading>
+          <div>
+            <Eyebrow>Payroll Agent</Eyebrow>
+            <Heading size="md" className="mt-4">
+              <span className="block">It prepares the run.</span>
+              <span className="block">You approve the outcome.</span>
+            </Heading>
+          </div>
           <div>
             <Lead className="max-w-[40ch]">
-              The agent reads the contracts, applies rate changes, picks the FX
-              window and clears the routine exceptions. It proposes; it never
-              holds the keys. Every decision is written down in plain English,
-              and nothing moves until you approve it.
+              More than a chatbot. The Disburs agent drafts each payroll run,
+              checks it against your rules, and waits for your approval before
+              a single dollar moves.
             </Lead>
             <div className="mt-8">
               <LinkButton href="#waitlist" variant="ink">
@@ -32,6 +45,19 @@ export default function Agent() {
             </div>
           </div>
         </Reveal>
+
+        <ul className="mt-12 grid gap-x-8 gap-y-8 border-t border-line pt-10 sm:grid-cols-2 md:mt-16 lg:grid-cols-4">
+          {PILLARS.map(([title, body], i) => (
+            <Reveal as="li" key={title} delay={i * 0.05}>
+              <h3 className="text-[19px] font-semibold tracking-[-0.01em] text-ink">
+                {title}
+              </h3>
+              <p className="mt-2 text-[16px] leading-[1.45] text-muted">
+                {body}
+              </p>
+            </Reveal>
+          ))}
+        </ul>
 
         <Reveal delay={0.08} className="mt-14 md:mt-20">
           <div className="on-dark grid overflow-hidden rounded-tile border border-line bg-ink-deep lg:grid-cols-2">
