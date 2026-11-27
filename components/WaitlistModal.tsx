@@ -21,6 +21,7 @@ export default function WaitlistModal() {
   const [alreadyJoined, setAlreadyJoined] = useState(false);
 
   const mutation = useJoinWaitlist();
+  const resetMutation = mutation.reset;
 
   // Open the modal whenever any waitlist CTA is clicked, anywhere on the page.
   useEffect(() => {
@@ -31,24 +32,18 @@ export default function WaitlistModal() {
       );
       if (trigger) {
         e.preventDefault();
+        // Start from a clean form each time the modal opens.
+        setDone(false);
+        setAlreadyJoined(false);
+        setEmail("");
+        setRole(null);
+        resetMutation();
         setOpen(true);
       }
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
-  }, []);
-
-  // Reset the form each time the modal opens.
-  useEffect(() => {
-    if (open) {
-      setDone(false);
-      setAlreadyJoined(false);
-      setEmail("");
-      setRole(null);
-      mutation.reset();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [resetMutation]);
 
   // Escape to close + lock body scroll while open.
   useEffect(() => {

@@ -12,9 +12,6 @@ const apiProxyTarget = (
 
 const nextConfig = {
   reactStrictMode: true,
-  // Linting runs as its own step (`npm run lint` / a dedicated CI job), so keep
-  // `next build` focused on compilation + type-checking and don't lint twice.
-  eslint: { ignoreDuringBuilds: true },
 
   /**
    * Same-origin API. With API_PROXY_TARGET set, `/api/*` on this app is

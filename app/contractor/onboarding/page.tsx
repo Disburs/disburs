@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import WalletStep from "@/components/onboarding/WalletStep";
 import { Field, inputClass } from "@/components/portal/ui";
@@ -40,8 +40,13 @@ export default function ContractorOnboarding() {
   const updateName = useUpdateName();
 
   const [type, setType] = useState<"INDIVIDUAL" | "BUSINESS">("INDIVIDUAL");
-  const [first, setFirst] = useState("");
-  const [last, setLast] = useState("");
+  // null = untouched, so the account name (Google sign-in already carries
+  // one) shows through until the person types.
+  const [firstInput, setFirst] = useState<string | null>(null);
+  const [lastInput, setLast] = useState<string | null>(null);
+  const accountName = splitName(me?.user.name ?? "");
+  const first = firstInput ?? accountName.first;
+  const last = lastInput ?? accountName.last;
   const [country, setCountry] = useState("Kenya");
   const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("KES");
   const [companyLegalName, setCompanyLegalName] = useState("");
@@ -54,13 +59,6 @@ export default function ContractorOnboarding() {
     first.trim() &&
     last.trim() &&
     (!business || (companyLegalName.trim() && businessAddress.trim()));
-
-  useEffect(() => {
-    if (!me?.user.name) return;
-    const n = splitName(me.user.name);
-    setFirst((v) => v || n.first);
-    setLast((v) => v || n.last);
-  }, [me?.user.name]);
 
   const pickCountry = (c: string) => {
     setCountry(c);
