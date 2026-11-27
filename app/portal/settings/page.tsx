@@ -240,7 +240,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[820px] flex-col gap-5">
+    <div className="flex max-w-[820px] flex-col gap-5">
       <PageTitle sub="Your organization's profile and your own details.">
         Settings
       </PageTitle>
