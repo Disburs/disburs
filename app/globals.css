@@ -170,3 +170,16 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Audience tabs: the product picture fades in when the tab changes. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[fade-in"] {
+    animation: none;
+  }
+}
