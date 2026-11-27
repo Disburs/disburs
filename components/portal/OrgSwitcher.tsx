@@ -10,6 +10,7 @@ import {
   useSetActiveOrganization,
 } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
+import { ORG_REQUEST_MAILTO } from "@/lib/support";
 
 const initials = (name: string) =>
   name
@@ -129,9 +130,22 @@ export default function OrgSwitcher() {
             </Link>
           ) : (
             <div className="mt-1 border-t border-line px-2.5 py-2.5 text-[12.5px] leading-[1.45] text-muted">
-              {allowance.reason === "unlock"
-                ? `Pay out $${usdc(allowance.unlockUsdc)} USDC from ${allowance.leader?.name ?? "your organization"} to unlock a second organization ($${usdc(allowance.paidOutUsdc)} so far).`
-                : `Your account may create ${allowance.limit} ${allowance.limit === 1 ? "organization" : "organizations"}. Need another? Contact Disburs.`}
+              {allowance.reason === "unlock" ? (
+                `Pay out $${usdc(allowance.unlockUsdc)} USDC from ${allowance.leader?.name ?? "your organization"} to unlock another organization ($${usdc(allowance.paidOutUsdc)} so far).`
+              ) : (
+                <>
+                  Your account can have {allowance.limit}{" "}
+                  {allowance.limit === 1 ? "organization" : "organizations"}.
+                  Need another?{" "}
+                  <a
+                    href={ORG_REQUEST_MAILTO}
+                    className="font-medium text-accent underline underline-offset-2"
+                  >
+                    Message Disburs
+                  </a>{" "}
+                  and we will allow it.
+                </>
+              )}
             </div>
           )}
         </div>

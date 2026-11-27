@@ -13,6 +13,7 @@ import {
   useOrgAllowance,
 } from "@/lib/hooks/useMe";
 import { usdc } from "@/lib/format";
+import { ORG_REQUEST_MAILTO, SUPPORT_EMAIL } from "@/lib/support";
 import FeaturePaused from "@/components/FeaturePaused";
 
 const COUNTRIES = [
@@ -64,17 +65,24 @@ export default function NewOrganizationPage() {
         <Card>
           <div className="text-[17px] font-medium text-ink">
             {allowance.reason === "unlock"
-              ? "A second organization unlocks with use"
-              : "Your account is at its limit"}
+              ? "Another organization unlocks with use"
+              : "Need another organization?"}
           </div>
           <p className="mt-2 text-[14.5px] leading-[1.55] text-muted">
             {allowance.reason === "unlock"
               ? `Once ${allowance.leader?.name ?? "your organization"} has paid out $${usdc(allowance.unlockUsdc)} USDC in total, you can open another organization here. It has paid out $${usdc(allowance.paidOutUsdc)} so far.`
-              : `Accounts may create ${allowance.limit} ${allowance.limit === 1 ? "organization" : "organizations"}. If you run more entities, contact Disburs and we will raise it for you.`}
+              : `Each account can have ${allowance.limit} ${allowance.limit === 1 ? "organization" : "organizations"}. If you run another company, message Disburs at ${SUPPORT_EMAIL} and we will allow it for your account.`}
           </p>
-          <Button asChild variant="outline" className="mt-5">
-            <Link href="/portal">Back to the dashboard</Link>
-          </Button>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {allowance.reason === "limit" && (
+              <Button asChild>
+                <a href={ORG_REQUEST_MAILTO}>Message Disburs</a>
+              </Button>
+            )}
+            <Button asChild variant="outline">
+              <Link href="/portal">Back to the dashboard</Link>
+            </Button>
+          </div>
         </Card>
       ) : (
         <form onSubmit={submit} className="flex flex-col gap-5">
