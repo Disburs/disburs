@@ -1,18 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { rememberRole } from "@/lib/last-role";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Brand from "@/components/Wordmark";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  History,
   LayoutDashboard,
   Users,
-  UsersRound,
   ReceiptText,
-  Send,
-  History,
   Wallet,
   Settings,
   LogOut,
@@ -22,26 +21,40 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useMe, useRequireProfile } from "@/lib/hooks/useMe";
-import type { Feature } from "@/lib/api";
 import { usdc } from "@/lib/format";
 import UsdcMark from "@/components/UsdcMark";
 import { Avatar } from "./ui";
 import OrgSwitcher from "./OrgSwitcher";
+import KybNotice, { KYB_NOTICE_KEY } from "./KybNotice";
+import PaymentsTabs, { inPayments, inSettings } from "./PaymentsTabs";
 
+/**
+ * Six destinations. Ways of paying people live under Payments, the record of
+ * what was paid is Transactions, and the team sits inside Settings.
+ */
 const NAV: {
   label: string;
   href: string;
   icon: LucideIcon;
-  feature?: Feature;
+  /** Also active on these paths (the pages grouped under this link). */
+  group?: (pathname: string) => boolean;
 }[] = [
   { label: "Dashboard", href: "/portal", icon: LayoutDashboard },
   { label: "Contractors", href: "/portal/contractors", icon: Users },
-  { label: "Pay", href: "/portal/pay", icon: Send, feature: "oneOffPay" },
-  { label: "Payroll", href: "/portal/payroll", icon: ReceiptText },
-  { label: "History", href: "/portal/history", icon: History },
-  { label: "Wallet", href: "/portal/wallet", icon: Wallet },
-  { label: "Team", href: "/portal/team", icon: UsersRound },
-  { label: "Settings", href: "/portal/settings", icon: Settings },
+  {
+    label: "Payments",
+    href: "/portal/payroll",
+    icon: ReceiptText,
+    group: inPayments,
+  },
+  { label: "Transactions", href: "/portal/history", icon: History },
+  { label: "Treasury", href: "/portal/wallet", icon: Wallet },
+  {
+    label: "Settings",
+    href: "/portal/settings",
+    icon: Settings,
+    group: inSettings,
+  },
 ];
 
 function Wordmark() {
@@ -56,37 +69,32 @@ function Wordmark() {
 }
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
-  const features = useMe().data?.features;
   const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-1" aria-label="Portal">
-      {NAV.filter((n) => !n.feature || features?.[n.feature] !== false).map(
-        (item) => {
-          const Icon = item.icon;
-          const active =
-            pathname === item.href ||
-            (item.href !== "/portal" && pathname.startsWith(item.href + "/"));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={active ? "page" : undefined}
-              className={`flex h-11 items-center gap-3 rounded-full px-4 text-[14.5px] transition-colors duration-150 ${
-                active
-                  ? "border border-line bg-canvas font-medium text-ink"
-                  : "text-muted hover:text-ink"
-              }`}
-            >
-              <Icon
-                size={17}
-                className={active ? "text-accent" : "text-faint"}
-              />
-              {item.label}
-            </Link>
-          );
-        },
-      )}
+      {NAV.map((item) => {
+        const Icon = item.icon;
+        const active =
+          pathname === item.href ||
+          (item.href !== "/portal" && pathname.startsWith(item.href + "/")) ||
+          Boolean(item.group?.(pathname));
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
+            className={`flex h-11 items-center gap-3 rounded-full px-4 text-[14.5px] transition-colors duration-150 ${
+              active
+                ? "border border-line bg-canvas font-medium text-ink"
+                : "text-muted hover:text-ink"
+            }`}
+          >
+            <Icon size={17} className={active ? "text-accent" : "text-faint"} />
+            {item.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
@@ -122,6 +130,14 @@ function SignOutButton() {
   const [busy, setBusy] = useState(false);
   const signOut = async () => {
     setBusy(true);
+    // Hidden notices return at the next sign-in.
+    try {
+      Object.keys(sessionStorage)
+        .filter((k) => k.startsWith(KYB_NOTICE_KEY))
+        .forEach((k) => sessionStorage.removeItem(k));
+    } catch {
+      /* ignore */
+    }
     await authClient.signOut();
     router.replace("/sign-in");
   };
@@ -145,6 +161,8 @@ function Sidebar({
   onNavigate?: () => void;
   onClose?: () => void;
 }) {
+  // This device now uses the company side: preselect it at the next sign-in.
+  useEffect(() => rememberRole("CLIENT"), []);
   return (
     <div className="flex h-full flex-col border-r border-line bg-subtle p-5">
       <div className="flex items-center justify-between px-2 pb-8">
@@ -262,7 +280,9 @@ export default function PortalShell({
           </div>
         </header>
 
+        <KybNotice />
         <main className="max-w-[1240px] px-5 pb-20 pt-8 md:px-8 md:pt-10">
+          <PaymentsTabs />
           {children}
         </main>
       </div>

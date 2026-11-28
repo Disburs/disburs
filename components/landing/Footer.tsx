@@ -18,7 +18,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Company",
     links: [
-      { label: "Contact", href: "mailto:hello@disburs.io" },
+      { label: "Contact", href: "mailto:hello@disburs.xyz" },
       { label: "Privacy policy", href: "#" },
       { label: "Terms", href: "#" },
     ],
@@ -43,7 +43,7 @@ export default function Footer() {
                 Join the waitlist
               </LinkButton>
               <LinkButton
-                href="mailto:hello@disburs.io"
+                href="mailto:hello@disburs.xyz"
                 variant="outline"
                 size="lg"
               >
@@ -108,7 +108,7 @@ export default function Footer() {
               Disburs is in private beta. Custodial service; not a bank.
             </span>
             <span>
-              Official: disburs.io and hello@disburs.io. Anything else is not
+              Official: disburs.xyz and hello@disburs.xyz. Anything else is not
               Disburs. We will never message you first or ask for a key.
             </span>
           </div>

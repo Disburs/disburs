@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -13,19 +14,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageTitle, StatTile } from "@/components/portal/ui";
+import KybBanner from "@/components/portal/KybBanner";
+import SetupNudge from "@/components/two-factor/SetupNudge";
 import { runVariant } from "@/components/portal/RunLines";
+import { cadenceText } from "@/components/portal/payroll/PayrollDetail";
 import { useMe } from "@/lib/hooks/useMe";
 import { useContractors, useLedger } from "@/lib/hooks/usePayments";
 import { useDefinitions, useRuns } from "@/lib/hooks/usePayroll";
 import { MONEY_ROLES, explorerUrl } from "@/lib/api";
 import { shortKey, usdc, when } from "@/lib/format";
-
-const CADENCE = {
-  MONTHLY: "Monthly",
-  BIWEEKLY: "Every two weeks",
-  WEEKLY: "Weekly",
-  MANUAL: "Manual",
-} as const;
 
 function greeting() {
   const h = new Date().getHours();
@@ -110,6 +107,11 @@ export default function DashboardPage() {
         {greeting()}, {firstName}.
       </PageTitle>
 
+      <Suspense fallback={null}>
+        <KybBanner />
+      </Suspense>
+      <SetupNudge href="/portal/security" />
+
       {shortfall > 0 && largest && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-[#FBF1DC] px-5 py-4 text-[#8A5A00]">
           <div className="flex items-center gap-3">
@@ -176,7 +178,7 @@ export default function DashboardPage() {
                             {p.name}
                           </div>
                           <div className="text-[13px] text-muted">
-                            {CADENCE[p.cadence]} · {p.payees}{" "}
+                            {cadenceText(p)} · {p.payees}{" "}
                             {p.payees === 1 ? "payee" : "payees"}
                           </div>
                         </div>

@@ -15,7 +15,7 @@ const CASES = [
   },
   {
     title: "Marketplaces & gig apps",
-    body: "Pay drivers, creators and freelancers across borders the moment work is accepted. Per-task amounts, memos for exchange deposits, local cash-out through anchors.",
+    body: "Pay drivers, creators and freelancers across borders the moment work is accepted. Per-task amounts, memos for exchange deposits, withdrawal to any wallet or exchange.",
     roster: [TEAM[2], TEAM[0]],
     line: "Per task · settles in ~4s",
   },

@@ -12,7 +12,7 @@ const POINTS: [string, string][] = [
     "Stellar confirms payments in seconds and charges a fraction of a cent. Batch payouts to every contractor land at once.",
   ],
   [
-    "Local cash-out",
+    "Withdraw anywhere",
     "Contractors in Kenya, Ghana and South Africa convert USDC to shillings, cedis or rand through Stellar anchor partners, with more countries on the way. Nothing to install, no crypto to understand.",
   ],
   [

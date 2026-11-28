@@ -23,6 +23,11 @@ export default function CreatePayroll({
   const [name, setName] = useState(first ? "Payroll" : "");
   const [cadence, setCadence] =
     useState<PayrollDefinition["cadence"]>("MONTHLY");
+  const [days, setDays] = useState("");
+  const everyDays = /^\d+$/.test(days) ? Number(days) : null;
+  const daysOk =
+    cadence !== "CUSTOM" ||
+    (everyDays !== null && everyDays >= 1 && everyDays <= 90);
   return (
     <Card>
       <div className="flex items-start justify-between gap-3">
@@ -51,9 +56,13 @@ export default function CreatePayroll({
           className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2"
           onSubmit={(e) => {
             e.preventDefault();
-            if (name.trim())
+            if (name.trim() && daysOk)
               create.mutate(
-                { name: name.trim(), cadence },
+                {
+                  name: name.trim(),
+                  cadence,
+                  ...(cadence === "CUSTOM" ? { everyDays: everyDays! } : {}),
+                },
                 { onSuccess: (d) => onCreated(d.id) },
               );
           }}
@@ -86,13 +95,32 @@ export default function CreatePayroll({
               ))}
             </select>
           </Field>
+          {cadence === "CUSTOM" && (
+            <Field
+              label="Every how many days"
+              hint="Between 1 and 90. The first date is set on the payroll page."
+            >
+              <input
+                className={inputClass}
+                inputMode="numeric"
+                value={days}
+                onChange={(e) =>
+                  setDays(e.target.value.replace(/\D/g, "").slice(0, 2))
+                }
+                placeholder="10"
+              />
+            </Field>
+          )}
           {create.isError && (
             <p className="text-[13.5px] text-[#A32D1C] sm:col-span-2">
               {(create.error as Error).message}
             </p>
           )}
           <div className="sm:col-span-2">
-            <Button type="submit" disabled={!name.trim() || create.isPending}>
+            <Button
+              type="submit"
+              disabled={!name.trim() || !daysOk || create.isPending}
+            >
               {create.isPending ? (
                 <Loader2 size={15} className="animate-spin" />
               ) : null}{" "}

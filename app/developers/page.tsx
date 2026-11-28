@@ -88,8 +88,8 @@ const FAQ: FaqCategory[] = [
         a: "Disburs does, envelope-encrypted at rest and used only to sign that wallet's own payments. No endpoint ever returns a secret.",
       },
       {
-        q: "Which countries can cash out?",
-        a: "Kenya, Ghana and South Africa through Stellar anchor partners, with more on the way. USDC itself can be held or sent anywhere Stellar reaches.",
+        q: "How do contractors get local currency?",
+        a: "They withdraw their USDC to a licensed exchange or Stellar anchor in their country and cash out there. Disburs settles in USDC and does not convert to fiat itself; USDC can be held or sent anywhere Stellar reaches.",
       },
     ],
   },

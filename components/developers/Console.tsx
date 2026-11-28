@@ -5,7 +5,7 @@ import { Check, Copy } from "lucide-react";
 import { highlight } from "./highlight";
 
 const REQUEST = {
-  curl: `curl -X POST https://api.disburs.io/api/payments/pay \\
+  curl: `curl -X POST https://api.disburs.xyz/api/payments/pay \\
   -H "Content-Type: application/json" \\
   -b "session=…" \\
   -d '{

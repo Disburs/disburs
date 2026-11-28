@@ -138,8 +138,8 @@ const MENUS: Menu[] = [
       },
       {
         label: "Contact",
-        desc: "hello@disburs.io",
-        href: "mailto:hello@disburs.io",
+        desc: "hello@disburs.xyz",
+        href: "mailto:hello@disburs.xyz",
       },
     ],
   },

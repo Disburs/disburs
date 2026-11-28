@@ -38,6 +38,280 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/kyc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where your identity check stands (contractors) */
+        get: operations["KycController_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/kyc/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start or resume your identity check; returns the page to open */
+        post: operations["KycController_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/kyb": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Where your organization's business check stands, and the allowance used */
+        get: operations["KycController_kybStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/kyb/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start or resume the business check; returns the page to open (owners, admins) */
+        post: operations["KycController_startKyb"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/allowance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How many organizations you may create, and whether the next one is open */
+        get: operations["OrganizationsController_allowance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every organization you belong to, with your role, and which one is active */
+        get: operations["OrganizationsController_list"];
+        put?: never;
+        /** Create another organization (you become its owner; a treasury is provisioned; it becomes active) */
+        post: operations["OrganizationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit the active organization's name, logo, country or team size (owner/admin) */
+        patch: operations["OrganizationsController_update"];
+        trace?: never;
+    };
+    "/api/two-factor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your authenticator: set up or not, and whether this session still owes a code */
+        get: operations["TwoFactorController_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/two-factor/enroll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start setting up an authenticator app; returns the secret to scan */
+        post: operations["TwoFactorController_enroll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/two-factor/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm the first code; returns backup codes, shown once */
+        post: operations["TwoFactorController_activate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/two-factor/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Remove the authenticator (needs a current code) */
+        post: operations["TwoFactorController_disable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/two-factor/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay the sign-in challenge for this session */
+        post: operations["TwoFactorController_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/two-factor/email-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Email a code for the next money action (people without an authenticator) */
+        post: operations["TwoFactorController_emailCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/external-payees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active organization's address book, with each address's screening */
+        get: operations["ExternalPayeesController_list"];
+        put?: never;
+        /** Add an address to the book; it is screened on the way in (owners, admins) */
+        post: operations["ExternalPayeesController_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/external-payees/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** This month's external-payee spend against the cap that applies */
+        get: operations["ExternalPayeesController_usage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/external-payees/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an address from the book (owners, admins) */
+        delete: operations["ExternalPayeesController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/waitlist": {
         parameters: {
             query?: never;
@@ -90,41 +364,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/organizations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Every organization you belong to, with your role, and which one is active */
-        get: operations["OrganizationsController_list"];
-        put?: never;
-        /** Create another organization (you become its owner; a treasury is provisioned; it becomes active) */
-        post: operations["OrganizationsController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/organizations/current": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Edit the active organization's name, logo, country or team size (owner/admin) */
-        patch: operations["OrganizationsController_update"];
         trace?: never;
     };
     "/api/me": {
@@ -236,11 +475,29 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Contractors the active organization works with: on a payroll roster or paid before */
+        /** Contractors the active organization works with: added, on a payroll roster, or paid before */
         get: operations["ContractorsController_list"];
         put?: never;
-        post?: never;
+        /** Add an onboarded contractor to your list by email, so they can invoice you (owner/admin) */
+        post: operations["ContractorsController_add"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/contractors/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a contractor from your list (rosters and history stay) */
+        delete: operations["ContractorsController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -591,6 +848,281 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/invoices/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Organizations you can invoice (contractors) */
+        get: operations["InvoicesController_organizations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your invoices, newest first (contractors) */
+        get: operations["InvoicesController_mine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active organization's invoices (any member) */
+        get: operations["InvoicesController_list"];
+        put?: never;
+        /** Submit an invoice to an organization you work with */
+        post: operations["InvoicesController_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw an invoice that has not been decided */
+        post: operations["InvoicesController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve an invoice (owner/admin) */
+        post: operations["InvoicesController_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject an invoice with a reason (owner/admin) */
+        post: operations["InvoicesController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay one invoice now: approves it if needed, then pays it in one step (owner/admin) */
+        post: operations["InvoicesController_pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/invoices/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay several approved invoices together: drafts one payment batch (owner/admin) */
+        post: operations["InvoicesController_draftRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active organization's rules and this month's approved total */
+        get: operations["RulesController_get"];
+        /** Set the rules; null switches one off (owner/admin) */
+        put: operations["RulesController_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your milestones across every organization (contractors) */
+        get: operations["MilestonesController_mine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark a milestone complete, with a note and a link to the work */
+        post: operations["MilestonesController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The active organization's milestones (any member) */
+        get: operations["MilestonesController_list"];
+        put?: never;
+        /** Agree a milestone with a contractor on your list (owner/admin) */
+        post: operations["MilestonesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a completed milestone (owner/admin) */
+        post: operations["MilestonesController_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones/{id}/request-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send a completed milestone back with what to change (owner/admin) */
+        post: operations["MilestonesController_requestChanges"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel a milestone that has not been paid (owner/admin) */
+        post: operations["MilestonesController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/milestones/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay a completed milestone now: approves it if needed, then pays (owner/admin) */
+        post: operations["MilestonesController_pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/staff/auth/enroll/options": {
         parameters: {
             query?: never;
@@ -915,6 +1447,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/users/{id}/organization-limit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Allow an account more organizations than the platform default (null = default) */
+        patch: operations["AdminController_setOrganizationLimit"];
+        trace?: never;
+    };
     "/api/admin/organizations/deploy-missing-contracts": {
         parameters: {
             query?: never;
@@ -1136,6 +1685,143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/contracts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The factory and every organization contract with its version */
+        get: operations["AdminController_contracts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contracts/upgrade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upgrade one or every organization contract to an uploaded wasm, then migrate */
+        post: operations["AdminController_upgradeContracts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/contracts/factory-wasm-hash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Point the factory at new payroll code for future deployments */
+        post: operations["AdminController_setFactoryWasmHash"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/compliance/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Compliance cases, newest first */
+        get: operations["AdminController_complianceCases"];
+        put?: never;
+        /** Open a compliance case on an organization or a contractor */
+        post: operations["AdminController_openCase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/compliance/cases/{id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a note to a case */
+        post: operations["AdminController_caseNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/compliance/cases/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start review, clear, or block (blocking stops payments for the subject) */
+        post: operations["AdminController_caseStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every invoice on the platform, newest first */
+        get: operations["AdminController_invoicesAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/milestones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every milestone on the platform, newest first */
+        get: operations["AdminController_milestonesAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/settings": {
         parameters: {
             query?: never;
@@ -1191,6 +1877,45 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CreateOrganizationDto: {
+            /** @example Acme Studio */
+            name: string;
+            /** @example Kenya */
+            country?: string;
+            /** @example 8 */
+            teamSize?: number;
+            /** @description Logo URL from a signed upload. */
+            logo?: string;
+        };
+        UpdateOrganizationDto: {
+            /** @example Acme Studio */
+            name?: string;
+            /** @example Kenya */
+            country?: string;
+            /** @example 8 */
+            teamSize?: number;
+            /** @description Logo URL from a signed upload. */
+            logo?: string;
+        };
+        CodeDto: {
+            /** @description A 6-digit authenticator code, or a backup code. */
+            code: string;
+        };
+        CreateExternalPayeeDto: {
+            /** @example Ama Mensah */
+            name: string;
+            /**
+             * @description Their Stellar address.
+             * @example GB…
+             */
+            address: string;
+            /** @description Memo their address needs (exchange deposits). */
+            memo?: string;
+            /** @enum {string} */
+            memoType?: "text" | "id";
+            /** @description Told when paid, and invited to Disburs. */
+            email?: string;
+        };
         /**
          * @description CLIENT = an employer paying contractors, CONTRACTOR = a worker getting paid.
          * @enum {string}
@@ -1251,26 +1976,6 @@ export interface components {
              */
             businessAddress?: string;
         };
-        CreateOrganizationDto: {
-            /** @example Acme Studio */
-            name: string;
-            /** @example Kenya */
-            country?: string;
-            /** @example 8 */
-            teamSize?: number;
-            /** @description Logo URL from a signed upload. */
-            logo?: string;
-        };
-        UpdateOrganizationDto: {
-            /** @example Acme Studio */
-            name?: string;
-            /** @example Kenya */
-            country?: string;
-            /** @example 8 */
-            teamSize?: number;
-            /** @description Logo URL from a signed upload. */
-            logo?: string;
-        };
         FundDto: {
             /**
              * @description Public key of a wallet the caller owns.
@@ -1313,10 +2018,12 @@ export interface components {
         };
         PayContractorDto: {
             /**
-             * @description The contractor (payee) to pay.
+             * @description The contractor to pay. Give this or externalPayeeId.
              * @example a1b2c3d4-…
              */
-            contractorId: string;
+            contractorId?: string;
+            /** @description An address from the address book to pay instead of a contractor. Public on Stellar. */
+            externalPayeeId?: string;
             /**
              * @description USDC amount (max 7 decimal places).
              * @example 250.5
@@ -1334,6 +2041,13 @@ export interface components {
             /** @description Idempotency key — a retry with the same key never double-pays. */
             idempotencyKey?: string;
         };
+        LookupContractorDto: {
+            /**
+             * @description The contractor’s sign-in email.
+             * @example kwabena@example.com
+             */
+            email: string;
+        };
         SignUploadDto: {
             /**
              * @description What the image is for; picks the folder + transformation.
@@ -1348,15 +2062,24 @@ export interface components {
              * @default MONTHLY
              * @enum {string}
              */
-            cadence: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+            cadence: "MONTHLY" | "SEMIMONTHLY" | "BIWEEKLY" | "WEEKLY" | "CUSTOM" | "MANUAL";
+            /** @description CUSTOM cadence: draft every this many days (1–90). */
+            everyDays?: number;
             /** @description Default transaction memo for runs. */
             memo?: string;
         };
         UpdateDefinitionDto: {
             name?: string;
             /** @enum {string} */
-            cadence?: "MONTHLY" | "BIWEEKLY" | "WEEKLY" | "MANUAL";
+            cadence?: "MONTHLY" | "SEMIMONTHLY" | "BIWEEKLY" | "WEEKLY" | "CUSTOM" | "MANUAL";
+            /** @description CUSTOM cadence: draft every this many days (1–90). */
+            everyDays?: number | null;
             memo?: string;
+            /**
+             * @description Scheduled drafts: when the next run is drafted (ISO date-time, in the future). null switches it off.
+             * @example 2026-12-01T09:00:00.000Z
+             */
+            nextDraftAt?: string | null;
         };
         OtpDto: {
             /**
@@ -1380,6 +2103,10 @@ export interface components {
             active: boolean;
         };
         AdHocLineDto: {
+            /** @description The approved invoice this line pays (set by the invoices flow). */
+            invoiceId?: string;
+            /** @description The approved milestone this line pays (set by the milestones flow). */
+            milestoneId?: string;
             contractorId: string;
             /** @example 250.00 */
             amount: string;
@@ -1407,6 +2134,114 @@ export interface components {
             destination: string;
             note?: string;
         };
+        InvoiceItemDto: {
+            /** @example Onboarding screens */
+            description: string;
+            /**
+             * @description How many (hours, days, units), up to 3 dp.
+             * @example 7.5
+             */
+            quantity: string;
+            /**
+             * @description USDC per unit, up to 7 dp.
+             * @example 40
+             */
+            rate: string;
+        };
+        CreateInvoiceDto: {
+            /** @description The organization being invoiced (one you work with). */
+            organizationId: string;
+            /**
+             * @description One-line summary.
+             * @example March design work
+             */
+            description: string;
+            /** @description The lines; the total is their sum. */
+            items: components["schemas"]["InvoiceItemDto"][];
+            /**
+             * @description First day of the period covered.
+             * @example 2026-03-01
+             */
+            periodStart?: string;
+            /**
+             * @description Last day of the period covered.
+             * @example 2026-03-31
+             */
+            periodEnd?: string;
+            /**
+             * @description When payment is due.
+             * @example 2026-04-14
+             */
+            dueDate?: string;
+            /** @description A link to evidence (an uploaded file, a document, a repo). */
+            evidenceUrl?: string;
+        };
+        DecideInvoiceDto: {
+            note?: string;
+        };
+        RunFromInvoicesDto: {
+            /** @example Invoices · March */
+            label: string;
+            /** @description Transaction memo. */
+            memo?: string;
+            /** @description Only these approved invoices; omit for every approved invoice. */
+            invoiceIds?: string[];
+        };
+        UpdatePolicyDto: {
+            /**
+             * @description Auto-approve invoices under this amount.
+             * @example 200
+             */
+            autoApproveInvoiceUnder?: string | null;
+            /**
+             * @description Invoices above this need an evidence link.
+             * @example 500
+             */
+            requireEvidenceAbove?: string | null;
+            /**
+             * @description Most approved per calendar month.
+             * @example 10000
+             */
+            monthlyBudget?: string | null;
+            /**
+             * @description Most approved for one contractor per month.
+             * @example 3000
+             */
+            contractorMonthlyCap?: string | null;
+            /**
+             * @description Most paid per month to addresses outside Disburs. Null: the platform default. "0": none.
+             * @example 2000
+             */
+            externalPayeeMonthlyCap?: string | null;
+        };
+        CompleteMilestoneDto: {
+            note?: string;
+            /** @description A link to the delivered work. */
+            evidenceUrl?: string;
+        };
+        CreateMilestoneDto: {
+            /** @description A contractor on your list. */
+            contractorId: string;
+            /** @example Homepage design, final */
+            title: string;
+            /**
+             * @description USDC paid when it is approved (max 7 dp).
+             * @example 800
+             */
+            amount: string;
+            /**
+             * @description Groups milestones.
+             * @example Website redesign
+             */
+            project?: string;
+            /** @description What "done" means. */
+            description?: string;
+            /** @example 2026-04-14 */
+            dueDate?: string;
+        };
+        MilestoneNoteDto: {
+            note?: string;
+        };
         EnrollOptionsDto: {
             /** @description The token from the enrolment link. */
             token: string;
@@ -1420,11 +2255,11 @@ export interface components {
             name?: string;
         };
         LoginOptionsDto: {
-            /** @example ops@disburs.io */
+            /** @example ops@disburs.xyz */
             email: string;
         };
         LoginVerifyDto: {
-            /** @example ops@disburs.io */
+            /** @example ops@disburs.xyz */
             email: string;
             /** @description The AuthenticationResponseJSON from the browser. */
             response: Record<string, never>;
@@ -1438,11 +2273,43 @@ export interface components {
             name?: string;
         };
         CreateStaffDto: {
-            /** @example ops@disburs.io */
+            /** @example ops@disburs.xyz */
             email: string;
             name: string;
             /** @enum {string} */
             role: "super_admin" | "operations" | "finance" | "support";
+        };
+        OrgLimitDto: {
+            /** @description How many organizations this account may create; null returns it to the platform default. */
+            limit?: number | null;
+        };
+        UpgradeContractsDto: {
+            /** @description sha256 of the uploaded payroll wasm, 64 hex characters */
+            wasmHash: string;
+            /** @description The version label the upgraded contracts report, e.g. 0.3.1 */
+            version: string;
+            /** @description Upgrade only this organization; omit for all */
+            organizationId?: string;
+        };
+        FactoryWasmHashDto: {
+            /** @description sha256 of the uploaded payroll wasm, 64 hex characters */
+            wasmHash: string;
+        };
+        OpenCaseDto: {
+            /** @enum {string} */
+            subjectType: "ORGANIZATION" | "CONTRACTOR";
+            /** @description The organization or contractor id. */
+            subjectId: string;
+            /** @description Why this is being looked at. */
+            summary: string;
+        };
+        CaseNoteDto: {
+            note: string;
+        };
+        CaseStatusDto: {
+            /** @enum {string} */
+            status: "IN_REVIEW" | "CLEARED" | "BLOCKED";
+            note?: string;
         };
     };
     responses: never;
@@ -1492,18 +2359,31 @@ export interface operations {
             };
         };
     };
-    WaitlistController_join: {
+    KycController_status: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["JoinWaitlistDto"];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
+    };
+    KycController_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             201: {
                 headers: {
@@ -1513,18 +2393,31 @@ export interface operations {
             };
         };
     };
-    OnboardingController_onboardClient: {
+    KycController_kybStatus: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OnboardClientDto"];
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
+    };
+    KycController_startKyb: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             201: {
                 headers: {
@@ -1534,20 +2427,16 @@ export interface operations {
             };
         };
     };
-    OnboardingController_onboardContractor: {
+    OrganizationsController_allowance: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OnboardContractorDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1607,6 +2496,257 @@ export interface operations {
         };
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_enroll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CodeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_disable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CodeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CodeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TwoFactorController_emailCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateExternalPayeeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_usage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExternalPayeesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    WaitlistController_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinWaitlistDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingController_onboardClient: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OnboardClientDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OnboardingController_onboardContractor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OnboardContractorDto"];
+            };
+        };
+        responses: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1733,6 +2873,46 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContractorsController_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LookupContractorDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContractorsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2242,6 +3422,399 @@ export interface operations {
             };
         };
     };
+    InvoicesController_organizations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_list: {
+        parameters: {
+            query?: {
+                status?: "SUBMITTED" | "APPROVED" | "REJECTED" | "CANCELLED" | "PAID";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvoiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideInvoiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideInvoiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_pay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideInvoiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoicesController_draftRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunFromInvoicesDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RulesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RulesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePolicyDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteMilestoneDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_list: {
+        parameters: {
+            query?: {
+                status?: "PENDING" | "SUBMITTED" | "APPROVED" | "PAID" | "CANCELLED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMilestoneDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilestoneNoteDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_requestChanges: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilestoneNoteDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilestoneNoteDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MilestonesController_pay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilestoneNoteDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     StaffAuthController_enrollOptions: {
         parameters: {
             query?: never;
@@ -2626,6 +4199,29 @@ export interface operations {
             };
         };
     };
+    AdminController_setOrganizationLimit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrgLimitDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AdminController_deployMissing: {
         parameters: {
             query?: never;
@@ -2865,6 +4461,185 @@ export interface operations {
         requestBody?: never;
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_contracts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_upgradeContracts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpgradeContractsDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_setFactoryWasmHash: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FactoryWasmHashDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_complianceCases: {
+        parameters: {
+            query?: {
+                status?: "OPEN" | "IN_REVIEW" | "CLEARED" | "BLOCKED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_openCase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpenCaseDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_caseNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseNoteDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_caseStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseStatusDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_invoicesAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_milestonesAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

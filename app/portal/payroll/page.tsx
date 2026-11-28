@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Archive, ArrowRight, Plus, Users } from "lucide-react";
+import { Archive, ArrowRight, CalendarClock, Plus, Users } from "lucide-react";
 import { Badge, Card, PageTitle } from "@/components/portal/ui";
 import { Button } from "@/components/ui/button";
 import { runVariant } from "@/components/portal/RunLines";
 import CreatePayroll from "@/components/portal/payroll/CreatePayroll";
-import { CADENCE_LABEL } from "@/components/portal/payroll/PayrollDetail";
+import { cadenceText } from "@/components/portal/payroll/PayrollDetail";
 import {
   DeleteButton,
   RestoreButton,
@@ -141,7 +141,7 @@ export default function PayrollsPage() {
                           {d.name}
                         </h3>
                         <div className="mt-0.5 text-[13px] text-muted">
-                          {CADENCE_LABEL[d.cadence]}
+                          {cadenceText(d)}
                         </div>
                       </div>
                       <Badge variant="warn" dot>
@@ -215,7 +215,7 @@ export default function PayrollsPage() {
                           {d.name}
                         </h3>
                         <div className="mt-0.5 text-[13px] text-muted">
-                          {CADENCE_LABEL[d.cadence]}
+                          {cadenceText(d)}
                         </div>
                       </div>
                       {open ? (
@@ -237,6 +237,12 @@ export default function PayrollsPage() {
                       <Users size={14} /> {items.length}{" "}
                       {items.length === 1 ? "payee" : "payees"} per run
                     </div>
+                    {d.nextDraftAt && (
+                      <div className="mt-1.5 flex items-center gap-1.5 text-[13.5px] text-muted">
+                        <CalendarClock size={14} /> Next draft{" "}
+                        {when(d.nextDraftAt)}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between gap-3 border-t border-line pt-4 text-[13px]">
                     <span className="text-muted">

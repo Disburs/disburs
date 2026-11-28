@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import Wordmark from "@/components/Wordmark";
@@ -36,8 +36,13 @@ export default function OnboardingPage() {
   const signupOn = useFeature("clientSignup");
   const updateName = useUpdateName();
 
-  const [first, setFirst] = useState("");
-  const [last, setLast] = useState("");
+  // null = untouched, so the account name (Google sign-in already carries
+  // one) shows through until the person types.
+  const [firstInput, setFirst] = useState<string | null>(null);
+  const [lastInput, setLast] = useState<string | null>(null);
+  const accountName = splitName(me?.user.name ?? "");
+  const first = firstInput ?? accountName.first;
+  const last = lastInput ?? accountName.last;
   const [company, setCompany] = useState("");
   const [logo, setLogo] = useState<string | null>(null);
   const [country, setCountry] = useState("Kenya");
@@ -45,14 +50,6 @@ export default function OnboardingPage() {
 
   const hasOrg = Boolean(me?.organization);
   const step = hasOrg ? 1 : 0;
-
-  // Prefill from the account (Google sign-in already carries a name).
-  useEffect(() => {
-    if (!me?.user.name) return;
-    const n = splitName(me.user.name);
-    setFirst((v) => v || n.first);
-    setLast((v) => v || n.last);
-  }, [me?.user.name]);
 
   const busy = onboard.isPending || updateName.isPending;
   const valid = first.trim() && last.trim() && company.trim();

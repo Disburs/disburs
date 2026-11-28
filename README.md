@@ -1,7 +1,7 @@
 # Disburs
 
 The autonomous AI payroll agent for Africa — marketing site and product
-simulation for **disburs.io**.
+simulation for **disburs.xyz**.
 
 Disburs reads your contracts, calculates what every contractor is owed, picks
 the best exchange rate, and pays your entire African team in USDC via the

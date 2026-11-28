@@ -1,20 +1,55 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fundWallet, listContractors, listLedger, lookupContractor, payContractor } from "../api";
+import {
+  addContractor,
+  addExternalPayee,
+  externalPayeeUsage,
+  fundWallet,
+  listExternalPayees,
+  removeExternalPayee,
+  listContractors,
+  listLedger,
+  lookupContractor,
+  payContractor,
+  removeContractor,
+} from "../api";
 import { ME_KEY } from "./useMe";
 
 export const LEDGER_KEY = ["ledger"] as const;
 
 export function useLedger() {
-  return useQuery({ queryKey: LEDGER_KEY, queryFn: listLedger, staleTime: 10_000 });
+  return useQuery({
+    queryKey: LEDGER_KEY,
+    queryFn: listLedger,
+    staleTime: 10_000,
+  });
 }
 
 export const CONTRACTORS_KEY = ["contractors"] as const;
 
 /** Contractors the active organization works with (on a roster or paid before). */
 export function useContractors() {
-  return useQuery({ queryKey: CONTRACTORS_KEY, queryFn: listContractors, staleTime: 10_000 });
+  return useQuery({
+    queryKey: CONTRACTORS_KEY,
+    queryFn: listContractors,
+    staleTime: 10_000,
+  });
+}
+
+export function useAddContractor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: addContractor,
+    onSuccess: () => qc.invalidateQueries({ queryKey: CONTRACTORS_KEY }),
+  });
+}
+export function useRemoveContractor() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: removeContractor,
+    onSuccess: () => qc.invalidateQueries({ queryKey: CONTRACTORS_KEY }),
+  });
 }
 
 export function useLookupContractor() {
@@ -54,5 +89,41 @@ export function useFundWallet() {
   return useMutation({
     mutationFn: fundWallet,
     onSuccess: () => qc.invalidateQueries({ queryKey: ME_KEY }),
+  });
+}
+
+export const EXTERNAL_PAYEES_KEY = ["external-payees"] as const;
+export const EXTERNAL_PAYEE_USAGE_KEY = ["external-payees", "usage"] as const;
+
+/** The address book: people paid at a Stellar address without a Disburs account. */
+export function useExternalPayees() {
+  return useQuery({
+    queryKey: EXTERNAL_PAYEES_KEY,
+    queryFn: listExternalPayees,
+    staleTime: 10_000,
+  });
+}
+
+export function useExternalPayeeUsage() {
+  return useQuery({
+    queryKey: EXTERNAL_PAYEE_USAGE_KEY,
+    queryFn: externalPayeeUsage,
+    staleTime: 10_000,
+  });
+}
+
+export function useAddExternalPayee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: addExternalPayee,
+    onSuccess: () => qc.invalidateQueries({ queryKey: EXTERNAL_PAYEES_KEY }),
+  });
+}
+
+export function useRemoveExternalPayee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: removeExternalPayee,
+    onSuccess: () => qc.invalidateQueries({ queryKey: EXTERNAL_PAYEES_KEY }),
   });
 }

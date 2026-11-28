@@ -84,7 +84,7 @@ export default function DevPricing() {
                 </td>
                 <td className="py-5 pr-4">
                   <LinkButton
-                    href="mailto:hello@disburs.io"
+                    href="mailto:hello@disburs.xyz"
                     variant="outline"
                     size="sm"
                   >

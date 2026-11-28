@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Container } from "./Section";
 import ModeSwitch from "./ModeSwitch";
+import { useMe } from "@/lib/hooks/useMe";
 
 const LINKS = [
   { label: "How it works", href: "/#how-it-works" },
@@ -30,7 +31,13 @@ export function Logo({ tone = "light" }: { tone?: "dark" | "light" }) {
 
 export default function Nav() {
   const links = LINKS;
-  const cta = { label: "Sign in", href: "/sign-in" };
+  // Someone already signed in sees their way back in, not a sign-in prompt.
+  const { data: me } = useMe();
+  const cta = me?.organization
+    ? { label: "Dashboard", href: "/portal" }
+    : me?.contractor
+      ? { label: "Dashboard", href: "/contractor" }
+      : { label: "Sign in", href: "/sign-in" };
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const reduce = useReducedMotion();
