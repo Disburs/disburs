@@ -17,6 +17,25 @@ test.describe("Landing page", () => {
     await expect(page.locator('a[href="#waitlist"]').first()).toBeVisible();
   });
 
+  test("shares stablecoin payroll metadata on the official domain", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveTitle("Disburs: Stablecoin Payroll");
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      "Stablecoin payroll for global teams. Fund a treasury in USDC on Stellar, run payroll, invoices and milestones, and approve before anything settles. An agent prepares each run, and salaries stay private.",
+    );
+    for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) {
+      await expect(page.locator(selector)).toHaveAttribute("content", "Disburs: Stablecoin Payroll");
+    }
+    for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+      await expect(page.locator(selector)).toHaveAttribute(
+        "content",
+        "Stablecoin payroll for global teams: fund a treasury in USDC on Stellar, approve each run, and every contractor is paid in seconds. Salaries stay private.",
+      );
+    }
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://disburs.xyz");
+  });
+
   test("renders without a client-side page error", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
